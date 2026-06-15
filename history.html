@@ -38,42 +38,52 @@ body {
   min-height: 100vh;
 }
 
-/* ── TOPBAR ── */
-.topbar {
-  background: var(--forest);
-  padding: 0.75rem 1.5rem;
-  display: flex; align-items: center; gap: 1rem;
-  position: sticky; top: 0; z-index: 100;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+/* ── ICB BANNER ── */
+.icb-banner {
+  background: #e8eef8;
+  padding: 0.4rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
-.topbar a {
-  color: rgba(255,255,255,0.6);
-  text-decoration: none;
-  font-size: 0.75rem;
+
+.icb-stats {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.icb-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.icb-stat-val {
+  font-family: var(--serif);
+  font-size: 1.0rem;
+  font-weight: 700;
+  color: #1e3a7a;
+}
+
+.icb-stat-label {
   font-family: var(--mono);
-  transition: color 0.15s;
+  font-size: 0.55rem;
+  color: #365EBF;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
-.topbar a:hover { color: #fff; }
-.topbar-title {
-  font-family: 'Cabinet Grotesk', var(--sans);
-  font-size: 1.15rem;
-  color: #fff;
-  flex: 1;
-}
-.topbar-badge {
+
+.icb-source {
   font-family: var(--mono);
-  font-size: 0.7rem;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.7);
+  font-size: 0.55rem;
+  color: #6b7ea8;
+  letter-spacing: 0.04em;
 }
-.live-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #4ade80;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
 
 /* ── MAIN LAYOUT ── */
 .main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
@@ -274,12 +284,52 @@ footer {
 </head>
 <body>
 
-<div class="topbar">
-  <a href="/">← Overview</a>
-  <div class="topbar-title">FEP Trend History</div>
-  <div class="live-dot"></div>
-  <span class="topbar-badge">Daily refresh</span>
-  <span class="topbar-badge">Kent &amp; Medway ICB</span>
+<!-- TOPBAR -->
+<nav style="background:#365EBF;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
+  <div style="display:flex;align-items:center;gap:0.85rem">
+    <a href="/" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.6);text-decoration:none;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.15s;flex-shrink:0" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&#8592; Overview</a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <a href="/" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0" title="Assistiv Systems">
+      <div style="position:relative;width:32px;height:32px;flex-shrink:0;">
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:#ffffff;z-index:2;"></div>
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;border:1.5px solid rgba(255,255,255,0.6);"></div>
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border:1.5px solid rgba(255,255,255,0.25);"></div>
+      </div>
+    </a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-family:'Cabinet Grotesk','Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1">FEP Trend History</span>
+      <span style="font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);line-height:1">Layer 2 · Longitudinal</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.75rem">
+    <span style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.18rem 0.5rem;border-radius:20px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.65)">Kent &amp; Medway · 13 Districts</span>
+    <span style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.18rem 0.5rem;border-radius:20px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.65)">Daily Refresh</span>
+    <span style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.18rem 0.5rem;border-radius:20px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);color:white">&#9679; History Archive</span>
+  </div>
+</nav>
+
+<!-- ICB BANNER — real NHS data -->
+<div class="icb-banner">
+  <div class="icb-stats">
+    <div class="icb-stat">
+      <span class="icb-stat-val">1,917</span>
+      <span class="icb-stat-label">Falls Admissions 65+ / 100k</span>
+    </div>
+    <div class="icb-stat">
+      <span class="icb-stat-val">10.7 / 12.3</span>
+      <span class="icb-stat-label">HLE at 65 · M / F · yrs</span>
+    </div>
+    <div class="icb-stat">
+      <span class="icb-stat-val">6.2%</span>
+      <span class="icb-stat-label">Loneliness Rate</span>
+    </div>
+    <div class="icb-stat">
+      <span class="icb-stat-val">155.2</span>
+      <span class="icb-stat-label">Self-harm / 100k ▲</span>
+    </div>
+  </div>
+  <div class="icb-source">OHID PHOF · NHS Kent &amp; Medway ICB QKS · Published 6 May 2026</div>
 </div>
 
 <div class="main">
