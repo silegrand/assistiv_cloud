@@ -1098,18 +1098,20 @@ function showDistrictDetail(name) {
   const tier         = getDistrictTier(name);
 
   const tierLabel    = { critical:'Critical Pressure', high:'High Pressure', moderate:'Moderate Pressure', low:'Lower Pressure' }[tier] || tier;
+  const fepRiskLabel = { critical:'Critical', high:'High', moderate:'Moderate', low:'Low' }[fepRisk] || fepRisk;
 
   let html = `
     <div class="district-header">
       <div class="district-name">${name}</div>
       <div class="district-meta">Kent &amp; Medway · ${trustShort}</div>
       <div class="pressure-display">
-        <div class="pressure-circle risk-${tier}" style="color:${tierBorder(tier)}">
+        <div class="pressure-circle risk-${fepRisk}" style="color:${tierBorder(fepRisk)}">
           <span class="pressure-circle-val">${fepScore ?? '–'}</span>
           <span class="pressure-circle-label">FEP</span>
         </div>
         <div>
-          <div class="risk-pill risk-${tier}">${tierLabel}</div>
+          <div class="risk-pill risk-${fepRisk}">${fepRiskLabel} frailty</div>
+          <div class="risk-pill risk-${tier}" style="margin-top:0.3rem">${tierLabel} · ${trustShort}</div>
           <div class="district-meta" style="margin-top:0.3rem">
             <span class="trust-chip">${trustCode} · ${trustShort}</span>
           </div>
