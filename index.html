@@ -634,8 +634,9 @@ footer {
     </a>
 
     <ul class="links">
-      <li><a href="#tools">Tools</a></li>
+      <li><a href="#tools">Find</a></li>
       <li><a href="#carers">Carers</a></li>
+      <li><a href="#reach">Reach</a></li>
       <li><a href="#how-it-works">How it works</a></li>
       <li><a href="#evidence">Evidence</a></li>
       <li class="eco">
@@ -815,22 +816,6 @@ footer {
   </div>
 </div>
 
-<!-- EFI POSITIONING -->
-<div style="background:var(--white);border-bottom:1px solid var(--cream-dark);padding:3.5rem 2rem;">
-  <div style="max-width:1200px;margin:0 auto;">
-    <div style="display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:2.5rem;align-items:center;" class="efi-grid">
-      <div>
-        <div class="section-label">Where this sits alongside the eFI</div>
-        <div style="font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:700;line-height:1.25;color:var(--forest-mid);letter-spacing:-0.01em;">The eFI tells you where someone <em>is</em>. Assistiv tells you which direction a population is <em>travelling</em> and how fast.</div>
-      </div>
-      <div style="font-size:0.92rem;color:var(--ink-mid);line-height:1.75;border-left:3px solid var(--sage);padding-left:1.5rem;">
-        Every GP system in England runs the Electronic Frailty Index, a validated, clinician-trusted measure of where an individual patient sits in the frailty journey. This platform does a different job: it works at population level, on open data, with no patient identifiers, and it updates daily. Every Primary Care Network in England is contractually required to identify and manage frailty under the PCN Directed Enhanced Service, yet no commissioned tool covers the space between appointments and ahead of presentation. That is the gap this intelligence layer exists to fill — as a complement to the eFI, never a competitor.
-      </div>
-    </div>
-  </div>
-</div>
-<style>@media (max-width: 860px) { .efi-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; } }</style>
-
 <!-- BRIEFING TEASER -->
 <div class="briefing-teaser-section" style="background:var(--forest-mid,#1e3a2f);color:#fff;padding:2.6rem 0">
   <div class="data-inner" style="max-width:1100px;margin:0 auto;padding:0 1.4rem">
@@ -863,70 +848,51 @@ footer {
 <div class="tools-section" id="tools">
   <div class="tools-inner">
     <div class="tools-header">
-      <div class="section-label">Intelligence tools · Live on NHS open data</div>
-      <div class="section-heading">Ten tools. One intelligence layer.</div>
-      <div class="section-sub">All built on open NHS data. No login. No procurement. Open in a browser now.</div>
+      <div class="section-label">Step one · Find them</div>
+      <div class="section-heading">Where the Missing Middle are. Right now.</div>
+      <div class="section-sub">Six tools built on open NHS data reveal which districts and neighbourhoods carry the highest hidden risk. No login, no procurement, no identifiers. The eFI tells you where an individual patient is; these tools tell you which direction a whole population is travelling and how fast.</div>
     </div>
 
+    <!-- FIND: six geographic intelligence tools -->
     <div class="tools-grid">
       <div class="tool-card-wrap"><a href="/frailty-heat-map/" class="tool-card">
-        <div class="tool-tag">Primary tool · Layer 2</div>
+        <div class="tool-tag">Primary tool · District level</div>
         <div class="tool-title">Frailty Heat Map</div>
         <div class="tool-desc">Live ONS district boundaries, FEP colour tiers, economic cost of inaction, discharge intelligence, 111 demand, prescribing signals. One-click PDF commissioner briefing.</div>
         <div class="tool-link">Open map →</div>
       </a><a href="method-fep-heatmap.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/frailty-emergence-probability-calculator/" class="tool-card">
-        <div class="tool-tag">Scoring engine · Layer 2</div>
-        <div class="tool-title">Frailty Emergence Probability (FEP) Configurator</div>
+        <div class="tool-tag">Scoring engine · Configurable</div>
+        <div class="tool-title">FEP Configurator</div>
         <div class="tool-desc">21 adjustable signal weights. Commissioner-configurable scoring. Ranked zone results with uncertainty flags. Ada AI explainer built in.</div>
         <div class="tool-link">Open scoring engine →</div>
       </a><a href="method-fep-configurator.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/kent-falls-map/" class="tool-card">
-        <div class="tool-tag">Falls intelligence · SECAmb FOI · 2025</div>
+        <div class="tool-tag">Falls intelligence · SECAmb FOI 2025</div>
         <div class="tool-title">Kent Falls Hotspot Map</div>
-        <div class="tool-desc">10,720 ambulance falls callouts (65+) across Kent in 2025, mapped by district. SECAmb FOI data integrated with Fingertips hip fracture admissions, giving the first district-level view of the full community falls burden, not just hospital admissions. Seasonal curves and the Medway divergence: the highest callout rate in Kent, 27% above the next district, yet only mid-table on FEP, where the operational signal and the risk model disagree.</div>
+        <div class="tool-desc">10,720 ambulance falls callouts (65+) across Kent in 2025, mapped by district. SECAmb FOI data integrated with Fingertips hip fracture admissions. The Medway divergence: highest callout rate in Kent, 27% above the next district, yet only mid-table on FEP.</div>
         <div class="tool-link">Open falls map →</div>
       </a><a href="method-kent-falls.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
     <div class="tools-grid" style="margin-top:1rem">
-      <div class="tool-card-wrap"><a href="/reachable-neighbourhoods/" class="tool-card">
-        <div class="tool-tag">Neighbourhood shortlist · Layer 2→3</div>
-        <div class="tool-title">Reachable Neighbourhoods</div>
-        <div class="tool-desc">Drills below district level to 17 named neighbourhoods of ~7,500 residents, ranked by deprivation, solo living, access and three-month prescribing velocity. Plain-English briefing cards tell outreach teams where to set up first.</div>
-        <div class="tool-link">Open shortlist →</div>
-      </a><a href="method-reachable-neighbourhoods.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
-      <div class="tool-card-wrap"><a href="/community-touchpoints/" class="tool-card">
-        <div class="tool-tag">Outreach action planning · Layer 3 · AI-assisted</div>
-        <div class="tool-title">Community Outreach Map</div>
-        <div class="tool-desc">Closes the loop from risk to action. High-risk LSOAs overlaid with community touchpoints — pharmacies, libraries, leisure centres, faith venues, community halls. Click any venue to see the dominant neighbourhood risks and generate specific, venue-matched outreach ideas using AI. For commissioners, social prescribers, and community workers planning where to go and what to do.</div>
-        <div class="tool-link">Open outreach planner →</div>
-      </a><a href="method-community-touchpoints.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/rural-access-vulnerability/" class="tool-card">
-        <div class="tool-tag">LSOA hotspot map · Layer 2</div>
+        <div class="tool-tag">LSOA level · Rural hotspots</div>
         <div class="tool-title">Rural Access Vulnerability</div>
         <div class="tool-desc">1,065 LSOA-level hotspots revealing hidden frailty in Challock, Hever, Appledore and 53 unnamed rural settlements, invisible to district-level FEP scores.</div>
         <div class="tool-link">Open RAVI map →</div>
       </a><a href="method-ravi.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
-    </div>
-    <div class="tools-grid" style="margin-top:1rem">
       <div class="tool-card-wrap"><a href="/nhs-pressure-map/" class="tool-card">
-        <div class="tool-tag">NHS system pressure · Layer 2</div>
+        <div class="tool-tag">NHS system pressure · Monthly</div>
         <div class="tool-title">NHS Pressure Intelligence Map</div>
-        <div class="tool-desc">Corridor care, non-elective admissions, SHMI mortality and GP population data mapped to district. Four NHS open data sources. Tells commissioners where system pressure and Missing Middle risk converge — updated monthly.</div>
+        <div class="tool-desc">Corridor care, non-elective admissions, SHMI mortality and GP population data mapped to district. Tells commissioners where system pressure and Missing Middle risk converge.</div>
         <div class="tool-link">Open NHS pressure map →</div>
       </a><a href="method-nhs-pressure.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/winter-readiness/" class="tool-card">
-        <div class="tool-tag">2026-27 Planning · Live NHS Data</div>
+        <div class="tool-tag">Forward planning · 2026-27</div>
         <div class="tool-title">Winter Readiness Intelligence</div>
-        <div class="tool-desc">District-level Winter Vulnerability Index for all 13 Kent districts. Forward-looking risk scoring across five components — frailty load, seasonal amplifiers, prescribing signals, system headroom, and social isolation. Deployment planner with NICE-evidenced intervention windows. PDF commissioner briefing. Ada winter planning mode.</div>
+        <div class="tool-desc">District-level Winter Vulnerability Index across five components: frailty load, seasonal amplifiers, prescribing signals, system headroom, and social isolation. NICE-evidenced intervention windows and PDF briefing.</div>
         <div class="tool-link">Open winter readiness →</div>
       </a><a href="method-winter-readiness.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
-      <div class="tool-card-wrap"><a href="https://www.assistiv.tools" target="_blank" rel="noopener" class="tool-card">
-        <div class="tool-tag">Community screening · Layer 4</div>
-        <div class="tool-title">Voice-First Frailty Screen</div>
-        <div class="tool-desc">Twelve conversational questions across six life domains. PRISMA-7 and FRAIL Scale scored in real time. Structured GP referral output. Carer pathway integrated. Deployable in any community setting with no clinical training required.</div>
-        <div class="tool-link">Open assistiv.tools ↗</div>
-      </a><a href="method-voice-screen.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
   </div>
 </div>
@@ -935,9 +901,9 @@ footer {
 <div class="tools-section" id="carers" style="background:var(--cream);border-top:1px solid var(--cream-dark)">
   <div class="tools-inner">
     <div class="tools-header" style="max-width:760px">
-      <div class="section-label">The load-bearing layer · Unpaid carers</div>
-      <div class="section-heading" style="color:var(--forest)">Behind every frail person is a carer. They are the largest care workforce, and the least seen.</div>
-      <div class="section-sub" style="color:var(--ink-mid);margin-top:0.9rem">Unpaid carers hold more people out of hospital and residential care than any statutory services. They are also the system's quietest point of failure: when a carer reaches breakdown, through their own illness, exhaustion, or ageing, the person they support can convert from stable to emergency within days. This group is underserved and less understood, yet without it the NHS would come to its knees. These two tools make that workforce visible, so commissioners can resource it before it collapses rather than after.</div>
+      <div class="section-label">Step two · Understand who holds them up</div>
+      <div class="section-heading" style="color:var(--forest)">Behind every frail person is a carer. The largest care workforce, and the least seen.</div>
+      <div class="section-sub" style="color:var(--ink-mid);margin-top:0.9rem">Unpaid carers hold more people out of hospital and residential care than any statutory service. They are also the system's quietest point of failure: when a carer reaches breakdown — through their own illness, exhaustion, or age — the person they support can convert from stable to emergency within days. These two tools make that workforce visible, so commissioners can resource it before it collapses rather than after.</div>
     </div>
 
     <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:2.4rem">
@@ -951,32 +917,63 @@ footer {
       </div>
       <div style="flex:1;min-width:180px">
         <div style="font-family:var(--serif);font-size:2.6rem;font-weight:700;color:var(--sage);line-height:1">Thanet</div>
-        <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;color:var(--ink-mid);text-transform:uppercase;margin-top:0.4rem">highest heavy-care intensity, the same coastal pattern as frailty</div>
+        <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;color:var(--ink-mid);text-transform:uppercase;margin-top:0.4rem">highest heavy-care intensity — the same coastal pattern as frailty</div>
       </div>
     </div>
 
     <div class="tools-grid-2">
       <div class="tool-card-wrap"><a href="/kent-carers-map/" class="tool-card">
-        <div class="tool-tag">Informal care · Census 2021 · Layer 2</div>
+        <div class="tool-tag">Informal care · Census 2021</div>
         <div class="tool-title">Carers Intensity Map</div>
-        <div class="tool-desc">Where unpaid care is most concentrated across the thirteen districts, and in particular where the heaviest care, 50 or more hours a week, falls. A direct Census count rather than a model, foregrounding the band most predictive of carer breakdown, and the carers who are themselves aged 50 or over.</div>
+        <div class="tool-desc">Where unpaid care is most concentrated across the thirteen districts, and in particular where the heaviest care — 50 or more hours a week — falls. A direct Census count, foregrounding the band most predictive of carer breakdown.</div>
         <div class="tool-link">Open carers map →</div>
       </a><a href="method-kent-carers.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/cbi-fep-map/" class="tool-card">
-        <div class="tool-tag">Dual intelligence · Layer 2</div>
+        <div class="tool-tag">Dual intelligence · Risk convergence</div>
         <div class="tool-title">FEP × Carer Burden Quadrant</div>
-        <div class="tool-desc">Frailty risk and carer burden on the same axes. The top-right quadrant, where high frailty and high carer burden coincide, is where both the patient and the person holding them up are under strain at once, and where preventative investment buys the most avoided crises.</div>
+        <div class="tool-desc">Frailty risk and carer burden on the same axes. The top-right quadrant — where high frailty and high carer burden coincide — is where both the patient and the person holding them up are under strain at once. Where preventative investment buys the most avoided crises.</div>
         <div class="tool-link">Open CBI map →</div>
       </a><a href="method-cbi-fep.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
   </div>
 </div>
 
+<!-- REACH: outreach and screening -->
+<div class="tools-section" id="reach" style="background:#ffffff;border-top:1px solid var(--cream-dark)">
+  <div class="tools-inner">
+    <div class="tools-header" style="max-width:760px">
+      <div class="section-label">Step three · Reach them and act</div>
+      <div class="section-heading" style="color:var(--forest)">From a postcode to a person, in a place they already trust.</div>
+      <div class="section-sub" style="color:var(--ink-mid);margin-top:0.9rem">Knowing where risk is concentrated is not enough. These three tools close the loop: narrowing to the right neighbourhoods, generating specific outreach actions at specific venues, and screening individuals once they are in front of a community worker.</div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card-wrap"><a href="/reachable-neighbourhoods/" class="tool-card">
+        <div class="tool-tag">Neighbourhood shortlist · Below district</div>
+        <div class="tool-title">Reachable Neighbourhoods</div>
+        <div class="tool-desc">Drills below district level to 17 named neighbourhoods of ~7,500 residents, ranked by deprivation, solo living, access and three-month prescribing velocity. Plain-English briefing cards tell outreach teams where to go first.</div>
+        <div class="tool-link">Open shortlist →</div>
+      </a><a href="method-reachable-neighbourhoods.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="/community-touchpoints/" class="tool-card">
+        <div class="tool-tag">Outreach action planning · AI-assisted</div>
+        <div class="tool-title">Community Outreach Map</div>
+        <div class="tool-desc">High-risk LSOAs overlaid with 195 community touchpoints across Kent. Hover any venue to see its neighbourhood risk profile. Click to generate AI-matched outreach ideas specific to that venue type and risk combination. A place, a problem, an action.</div>
+        <div class="tool-link">Open outreach planner →</div>
+      </a><a href="method-community-touchpoints.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="https://www.assistiv.tools" target="_blank" rel="noopener" class="tool-card">
+        <div class="tool-tag">Community screening · Voice-first</div>
+        <div class="tool-title">Voice-First Frailty Screen</div>
+        <div class="tool-desc">Twelve conversational questions across six life domains. PRISMA-7 and FRAIL Scale scored in real time. Structured GP referral output. Carer pathway integrated. Deployable in any community setting with no clinical training required.</div>
+        <div class="tool-link">Open assistiv.tools ↗</div>
+      </a><a href="method-voice-screen.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+    </div>
+  </div>
+</div>
+
 <!-- HOW IT WORKS -->
 <div class="how-section" id="how-it-works">
-  <div class="section-label">The pathway</div>
-  <div class="section-heading">Seven layers. One proactive system.</div>
-  <div class="section-sub">Each layer feeds the next, from public data through geographic mapping, community identification and AI-generated outreach actions, precision screening, PCN referral, community services, and clinical triage.</div>
+  <div class="section-label">Step four · The full pathway</div>
+  <div class="section-heading">From open data to clinical action. Seven layers.</div>
+  <div class="section-sub">Find, understand, reach, screen, refer, serve, close the loop. Each layer feeds the next — and the outcomes feed back into the model, so it gets sharper with every cycle.</div>
 
   <div class="layers">
     <div class="layer">
@@ -1252,7 +1249,6 @@ footer {
           <a href="#how-it-works">How it works</a>
           <a href="#evidence">Evidence</a>
           <a href="/briefing/">Commissioner Briefing</a>
-          <a href="/community-touchpoints/">Community Outreach Map</a>
           <a href="/datastatus/">Data status</a>
         <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener">Governance &amp; Assurance</a>
         </div>
