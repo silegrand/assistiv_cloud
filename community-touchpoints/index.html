@@ -363,8 +363,10 @@
       margin: 12px 14px;
       font-size: 0.8rem;
     }
-    .popup-title { font-weight: 700; color: var(--navy); margin-bottom: 3px; }
-    .popup-type { font-size: 0.68rem; color: var(--muted); margin-bottom: 6px; }
+    .popup-title { font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+    .popup-type { font-size: 0.68rem; color: var(--muted); margin-bottom: 3px; }
+    .popup-address { font-size: 0.68rem; color: var(--muted); margin-bottom: 5px; }
+    .popup-risks { font-size: 0.67rem; color: #365EBF; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
     .popup-btn {
       display: inline-block;
       padding: 5px 12px;
@@ -493,13 +495,19 @@ function renderMarkers() {
       fillOpacity: 0.88
     }).addTo(map);
 
+    const riskLabels = mapData.risk_labels || {};
+    const riskList = tp.risks_dominant.map(r => riskLabels[r] || r).join(' · ');
     const popupContent = `
       <div class="popup-title">${vtype.icon} ${tp.name}</div>
       <div class="popup-type">${vtype.label} · ${tp.district}</div>
-      <button class="popup-btn" onclick="selectVenue('${tp.id}')">View outreach ideas</button>
+      <div class="popup-address">${tp.address}</div>
+      <div class="popup-risks">${riskList}</div>
+      <button class="popup-btn" onclick="selectVenue('${tp.id}')">Generate outreach ideas →</button>
     `;
-    marker.bindPopup(popupContent, { maxWidth: 220 });
-    marker.on('click', () => marker.openPopup());
+    marker.bindPopup(popupContent, { maxWidth: 240, autoPan: false });
+    marker.on('mouseover', function() { this.openPopup(); });
+    marker.on('mouseout', function() { this.closePopup(); });
+    marker.on('click', function() { selectVenue(tp.id); });
   });
 }
 
