@@ -578,7 +578,7 @@ footer {
   #site-nav .eco-drop {
     display: none;
     position: absolute;
-    top: calc(100% + 14px);
+    top: calc(100% + 4px);
     left: 50%;
     transform: translateX(-50%);
     background: #fff;
@@ -587,6 +587,14 @@ footer {
     min-width: 170px;
     overflow: hidden;
     z-index: 10000;
+  }
+  /* Bridge pseudo-element closes the gap so hover isn't lost in transit */
+  #site-nav .eco-drop::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0; right: 0;
+    height: 8px;
   }
   #site-nav .eco:hover .eco-drop { display: block; }
   #site-nav .eco-drop a {
