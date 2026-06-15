@@ -765,7 +765,7 @@ FEP_Thanet = (51.3 × 0.13) + (54.2 × 0.12) + ... = 62
 // Load live FEP scores into district table
 const BAND_COLOURS = {critical:'#9f1239', high:'#c2410c', moderate:'#b45309', low:'#2d6b47'};
 
-fetch('https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json')
+fetch('https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json' + '?t=' + Date.now(), {cache:'no-store'})
   .then(r => r.json())
   .then(data => {
     const grid = document.getElementById('district-scores');

@@ -776,7 +776,7 @@ function renderTrustStrip() {
 async function fetchAll() {
   const results = await Promise.allSettled(
     Object.entries(SOURCES).map(([key, url]) =>
-      fetch(url).then(r => r.ok ? r.json() : null).then(d => [key, d])
+      fetch(url + '?t=' + Date.now(), {cache:'no-store'}).then(r => r.ok ? r.json() : null).then(d => [key, d])
     )
   );
 
@@ -897,7 +897,7 @@ function updateBanner() {
 // ── MAP RENDERING ─────────────────────────────────────────────────────
 function loadMap() {
   // Use the existing kent-districts.geojson from the repo
-  fetch(BASE + 'kent-districts.geojson')
+  fetch(BASE + 'kent-districts.geojson' + '?t=' + Date.now(), {cache:'no-store'})
     .then(r => r.json())
     .then(gj => renderMap(gj))
     .catch(() => {

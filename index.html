@@ -1258,13 +1258,13 @@ footer {
 
 <script>
 // ── LIVE DATA FROM JSON ───────────────────────────────────────────────
-const FEP_URL  = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-fep-data.json';
+const FEP_URL  = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
 const RAVI_URL = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-ravi-data.json';
 
 async function loadLiveData() {
   try {
     const [fepRes, raviRes] = await Promise.allSettled([
-      fetch(FEP_URL), fetch(RAVI_URL)
+      fetch(FEP_URL + '?t=' + Date.now(), {cache:'no-store'}), fetch(RAVI_URL + '?t=' + Date.now(), {cache:'no-store'})
     ]);
 
     // FEP data

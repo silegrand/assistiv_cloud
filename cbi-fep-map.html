@@ -453,7 +453,7 @@ function quadrantClass(q) {
 async function loadData() {
   try {
     const [fepResp, cbiResp] = await Promise.all([
-      fetch(FEP_URL), fetch(CBI_URL).catch(() => null)
+      fetch(FEP_URL + '?t=' + Date.now(), {cache:'no-store'}), fetch(CBI_URL + '?t=' + Date.now(), {cache:'no-store'}).catch(() => null)
     ]);
     fepData = (await fepResp.json()).districts || [];
 

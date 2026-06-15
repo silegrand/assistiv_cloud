@@ -1158,7 +1158,7 @@ body {
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const DATA_URL   = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-winter-data.json';
-const FEP_URL    = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-fep-data.json';
+const FEP_URL    = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
 const HSCM_URL   = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-hscm-data.json';
 const AGENT_URL  = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
 
@@ -1239,7 +1239,7 @@ async function init() {
     weeksLeft > 0 ? `Weeks to October deployment deadline` : 'October deployment window open';
 
   try {
-    const [wRes, fRes, hRes] = await Promise.all([fetch(DATA_URL), fetch(FEP_URL), fetch(HSCM_URL)]);
+    const [wRes, fRes, hRes] = await Promise.all([fetch(DATA_URL + '?t=' + Date.now(), {cache:'no-store'}), fetch(FEP_URL + '?t=' + Date.now(), {cache:'no-store'}), fetch(HSCM_URL + '?t=' + Date.now(), {cache:'no-store'})]);
     winterData = await wRes.json();
     fepData    = await fRes.json();
     hscmData   = hRes.ok ? await hRes.json() : null;

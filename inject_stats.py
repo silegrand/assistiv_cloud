@@ -36,10 +36,12 @@ import sys
 import requests
 
 GITHUB_REPO  = "silegrand/assistiv_cloud"
+FEP_REPO     = "silegrand/assistivagents"   # single source of truth for kent-fep-data.json
 GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 BRANCH       = "main"
 
-API  = f"https://api.github.com/repos/{GITHUB_REPO}/contents"
+API      = f"https://api.github.com/repos/{GITHUB_REPO}/contents"
+FEP_API  = f"https://api.github.com/repos/{FEP_REPO}/contents"
 HEAD = {"Authorization": f"token {GITHUB_TOKEN}",
         "Accept": "application/vnd.github.v3+json"}
 
@@ -78,6 +80,18 @@ def get_json(path):
         return None
     try:
         return json.loads(content)
+
+def get_fep_json():
+    """Fetch kent-fep-data.json from assistivagents — the single source of truth."""
+    r = requests.get(f"{FEP_API}/kent-fep-data.json", headers=HEAD, params={"ref": BRANCH})
+    if r.status_code != 200:
+        print(f"  ✗ could not fetch kent-fep-data.json from {FEP_REPO}: {r.status_code}")
+        return None
+    try:
+        return json.loads(base64.b64decode(r.json()["content"]).decode("utf-8"))
+    except Exception as e:
+        print(f"  ✗ invalid JSON in kent-fep-data.json: {e}")
+        return None
     except json.JSONDecodeError as e:
         print(f"  ✗ invalid JSON in {path}: {e}")
         return None
@@ -88,7 +102,7 @@ def get_json(path):
 def derive_index_values():
     """Values for index.html — mirrors loadLiveData()."""
     vals = {}
-    fep = get_json("kent-fep-data.json")
+    fep = get_fep_json()  # reads from assistivagents — single source of truth
     if fep and fep.get("districts"):
         ds = fep["districts"]
         top = ds[0]
