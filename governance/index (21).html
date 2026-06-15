@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Governance &amp; Assurance · Assistiv Cloud</title>
+<meta name="description" content="How Assistiv Systems handles data, safety, and standards: open approved sources, no patient identifiers, population intelligence that ends in questions for a clinician, never a diagnosis.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:#0f2318; --forest-mid:#365EBF; --sage:#365EBF; --sage-mid:#2a4d9e;
+  --sage-light:#7a9ee0; --sage-pale:#eef2fb; --cream:#eef2fb; --cream-mid:#dde5f5;
+  --cream-dark:#c8d5ee; --ink:#1a2e1e; --ink-mid:#3d5245; --ink-muted:#6b7f71; --ink-dim:#9aaa9e;
+  --mono:'DM Mono',monospace; --serif:'Source Serif 4',Georgia,serif; --display:'Cormorant Garamond',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:var(--serif);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--sage)}
+.page{max-width:880px;margin:0 auto;padding:0 1.4rem}
+
+nav{background:#365EBF;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)}
+
+.page-header{padding:2.8rem 0 1.6rem}
+.page-kicker{font-family:var(--mono);font-size:0.64rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--sage);margin-bottom:0.9rem}
+.page-title{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4.5vw,3rem);line-height:1.05;letter-spacing:-0.01em;color:var(--forest)}
+.page-title em{font-style:italic;color:var(--sage)}
+.page-lead{font-size:1.05rem;color:var(--ink-mid);margin-top:1.1rem;max-width:64ch}
+
+.principles{background:#fff;border:1px solid var(--cream-dark);border-radius:14px;padding:1.6rem 1.7rem;margin:1.8rem 0 2.4rem}
+.principles h2{font-family:var(--mono);font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:1rem}
+.principle{display:grid;grid-template-columns:1.6rem 1fr;gap:0.7rem;padding:0.6rem 0;border-top:1px solid var(--cream)}
+.principle:first-of-type{border-top:none}
+.principle .mark{color:var(--sage);font-size:1rem;line-height:1.5}
+.principle .t{font-size:0.95rem}
+.principle .t strong{color:var(--forest)}
+
+.section{margin:2.4rem 0}
+.section-kicker{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage);margin-bottom:0.5rem}
+.section h2{font-family:var(--display);font-size:1.7rem;font-weight:600;color:var(--forest);line-height:1.1;margin-bottom:0.4rem}
+.section .who{font-family:var(--mono);font-size:0.64rem;color:var(--ink-dim);letter-spacing:0.03em;margin-bottom:0.9rem}
+.section p{margin-bottom:0.9rem;color:var(--ink-mid)}
+.section p strong{color:var(--forest)}
+
+.jump{display:flex;flex-wrap:wrap;gap:0.5rem;margin:1.4rem 0 0.4rem}
+.jump a{font-family:var(--mono);font-size:0.66rem;letter-spacing:0.03em;text-decoration:none;color:var(--sage);background:#fff;border:1px solid var(--cream-dark);border-radius:20px;padding:0.4rem 0.85rem;transition:all 0.15s}
+.jump a:hover{background:var(--sage);color:#fff}
+
+.notbox{background:var(--sage-pale);border-left:3px solid var(--sage);border-radius:8px;padding:1.1rem 1.3rem;margin:1rem 0}
+.notbox .nh{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-mid);margin-bottom:0.6rem}
+.notbox ul{list-style:none;margin:0}
+.notbox li{padding:0.35rem 0;padding-left:1.3rem;position:relative;font-size:0.93rem;color:var(--ink-mid)}
+.notbox li::before{content:'\2715';position:absolute;left:0;color:var(--sage);font-size:0.8rem}
+
+.sources{font-family:var(--mono);font-size:0.74rem;line-height:1.9;color:var(--ink-mid)}
+.sources span{color:var(--ink-dim)}
+
+.status-row{display:grid;grid-template-columns:1fr auto;gap:0.6rem;align-items:baseline;padding:0.55rem 0;border-top:1px solid var(--cream)}
+.status-row:first-child{border-top:none}
+.status-name{font-size:0.92rem;color:var(--forest)}
+.status-state{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-muted);white-space:nowrap}
+
+.footer{border-top:1px solid var(--cream-dark);margin-top:3rem;padding:1.6rem 0 2.6rem;font-family:var(--mono);font-size:0.62rem;color:var(--ink-dim);letter-spacing:0.03em;line-height:1.9}
+</style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:0.85rem">
+    <a href="/" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.6);text-decoration:none;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&#8592; Overview</a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <a href="/" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0" title="Assistiv Cloud">
+      <div style="position:relative;width:32px;height:32px;flex-shrink:0;">
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:#ffffff;z-index:2;"></div>
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;border:1.5px solid rgba(255,255,255,0.6);"></div>
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border:1.5px solid rgba(255,255,255,0.25);"></div>
+      </div>
+    </a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1">Governance &amp; Assurance</span>
+      <span style="font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);line-height:1">Assistiv Cloud · How we handle data and safety</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-kicker">Governance &amp; Assurance</div>
+    <h1 class="page-title">How we handle data,<br><em>safety, and standards</em></h1>
+    <p class="page-lead">Assistiv Cloud pools data from approved, open sources to find groups of older people who are at risk but currently invisible to the system. That is a powerful thing to do, and it carries real responsibilities. This page sets out, plainly, how we handle those responsibilities, where we are confident, and where we still have work to do. It is written to be read by whoever you are: a national body, a commissioner, a clinician, or an academic.</p>
+  </div>
+
+  <div class="principles">
+    <h2>The principles that hold across everything we do</h2>
+    <div class="principle"><span class="mark">&#9679;</span><div class="t"><strong>Open, approved data only.</strong> Every signal comes from published, authorised sources. We add nothing from private or unauthorised data.</div></div>
+    <div class="principle"><span class="mark">&#9679;</span><div class="t"><strong>No patient identifiers, ever.</strong> We work at the level of a place, never a person. We hold no patient records, no names, no addresses. We could not identify an individual if we tried, because that information never enters the platform.</div></div>
+    <div class="principle"><span class="mark">&#9679;</span><div class="t"><strong>It is not a medical device.</strong> The platform surfaces population-level signals and questions worth asking. It never diagnoses, never advises on an individual, and never replaces clinical judgement.</div></div>
+    <div class="principle"><span class="mark">&#9679;</span><div class="t"><strong>It complements the eFI, it does not compete with it.</strong> The Electronic Frailty Index works at the individual patient level inside GP systems. We work at population level, on open data, in the space between appointments. Different jobs.</div></div>
+    <div class="principle"><span class="mark">&#9679;</span><div class="t"><strong>Honest about what we have and have not proven.</strong> Our scores are modelled, not yet validated against observed outcomes. We say so, everywhere, and we are working to close that gap.</div></div>
+  </div>
+
+  <div class="jump">
+    <a href="#data">Data basis</a>
+    <a href="#standards">Standards &amp; conformance</a>
+    <a href="#safety">Clinical safety</a>
+    <a href="#rigour">Methodology &amp; rigour</a>
+    <a href="#not">What this is not</a>
+  </div>
+
+  <!-- DATA BASIS -->
+  <div class="section" id="data">
+    <div class="section-kicker">For commissioners and information governance leads</div>
+    <h2>The data basis</h2>
+    <div class="who">First question: is this lawful, and what am I exposing my system to?</div>
+    <p>The platform is built entirely on open, published data from approved national sources. We pool signals that each, on their own, say little, and combine them to reveal where groups of vulnerable older people are concentrated. The intelligence is in the pooling. None of it requires access to a single patient record.</p>
+    <p><strong>Everything is aggregated to a place, not a person.</strong> The finest geography we work at is the Lower Super Output Area, a neighbourhood of around 1,500 people. Most of the platform works at local authority district level. We never hold, and never could derive, information about a named individual. This is not a promise we ask you to trust on faith: it is a structural fact, because patient-identifiable data is never ingested in the first place.</p>
+    <p>Because we hold no patient-identifiable data, the platform does not process personal data in the sense that creates the heaviest information-governance obligations. That is a deliberate design choice, made so that the tool is safe to use and defensible to bring in. We are glad to walk any information-governance lead through the sources and the aggregation in detail.</p>
+    <p class="sources">Approved sources include: <span>OHID / NHS Fingertips public health indicators · NHSBSA open prescribing data · ONS Census 2021 · Index of Multiple Deprivation · DWP benefit statistics · published NHS England operational data · Freedom of Information responses from NHS bodies.</span></p>
+  </div>
+
+  <!-- STANDARDS -->
+  <div class="section" id="standards">
+    <div class="section-kicker">For NHS England, NHS Innovation, and system partners</div>
+    <h2>Standards and conformance</h2>
+    <div class="who">First question: does this meet the frameworks we mandate, and could it scale?</div>
+    <p>We will be straight with you, because there is no value in being anything else with this audience. <strong>We are at the start of the formal assurance pathway, and we have a long way to go.</strong> We know the frameworks that matter for a digital tool used in or alongside the NHS, and we know where we sit against them today, which is early.</p>
+    <p>We are building toward the Digital Technology Assessment Criteria (DTAC) as the overarching gate, and toward the clinical safety standards (DCB0129 for the manufacturer and DCB0160 for deployment) appropriate to a tool of this kind. We understand the Data Security and Protection Toolkit (DSPT) expectations and the NHS Service Standard. We are not claiming conformance with any of these today. We are stating that we know the path, we are on it, and we would rather show you an honest position than an inflated one.</p>
+    <p>The platform is designed from the ground up to make that path easier rather than harder: no patient-identifiable data to secure, a clear line against clinical decision-making, and a methodology we publish openly. The architecture is built on open data and standard web technology, so the question of scaling beyond a single system is a question of data coverage rather than of rebuilding the tool.</p>
+    <div class="section" style="margin:1.2rem 0 0">
+      <div class="status-row"><span class="status-name">Digital Technology Assessment Criteria (DTAC)</span><span class="status-state">On the pathway · early</span></div>
+      <div class="status-row"><span class="status-name">Clinical safety (DCB0129 / DCB0160)</span><span class="status-state">On the pathway · early</span></div>
+      <div class="status-row"><span class="status-name">Data Security &amp; Protection Toolkit (DSPT)</span><span class="status-state">Understood · not yet assessed</span></div>
+      <div class="status-row"><span class="status-name">NHS Service Standard</span><span class="status-state">Used as a design reference</span></div>
+    </div>
+  </div>
+
+  <!-- CLINICAL SAFETY -->
+  <div class="section" id="safety">
+    <div class="section-kicker">For clinicians and clinical safety officers</div>
+    <h2>Clinical safety and the line we will not cross</h2>
+    <div class="who">First question: does this tell me, or my patients, what to do?</div>
+    <p>No. And we have designed it so that it cannot. <strong>The platform produces population-level intelligence that ends in a question for a clinician, never a clinical answer.</strong> It does not diagnose. It does not advise on an individual. It does not generate a treatment, a referral decision, or a clinical instruction. When it surfaces a possible connection or a concentration of risk, it does so as something worth asking about, with the clinician deciding what, if anything, it means.</p>
+    <p>This is the same discipline that runs through our two assistant agents. Ada explains what the data shows. VERA exists specifically to challenge it, to surface the assumptions and limitations so that no one treats a score as ground truth. Neither offers clinical advice, and both are built to keep the human in charge of judgement.</p>
+    <p>We see this tool as working alongside the clinician, not over them. It points to where attention might be worth spending, at population scale, before anyone presents. The decision about a person always remains a clinical one, made by a clinician with the information and authority to make it.</p>
+  </div>
+
+  <!-- RIGOUR -->
+  <div class="section" id="rigour">
+    <div class="section-kicker">For academics, evaluators, and methodologists</div>
+    <h2>Methodology and rigour</h2>
+    <div class="who">First question: is the method sound, are the limits stated, is it validated?</div>
+    <p>Our methodology is published in full and tool by tool. We would rather be examined than take it on trust, so the workings, the weightings, and the stated weaknesses are all open to read.</p>
+    <p>The honest position on validation is the most important thing we can tell this audience: <strong>our frailty scores are modelled, not yet validated against observed Kent outcomes.</strong> They are a weighted composite of proxy signals, and the uncertainty compounds across that composite. We do not present them as measured truth, and we flag where a score reflects a model recalibration rather than real-world change. Closing the validation gap, by scoring our predictions against what actually happens as lagged NHS outcomes publish, is our single most important piece of work, and we are building toward it.</p>
+    <p>Where signals are weaker, we say so rather than dress them up. Proxies such as prescribing patterns are useful but fragile, and survey-derived figures such as unpaid care are a floor, not a true count, because of known under-identification. Treating these honestly is, we think, the difference between a tool worth trusting and one that merely looks impressive.</p>
+    <p><a href="/methodology/">Read the full methodology &#8594;</a></p>
+  </div>
+
+  <!-- WHAT THIS IS NOT -->
+  <div class="section" id="not">
+    <div class="section-kicker">For everyone</div>
+    <h2>What this is not</h2>
+    <p>It is as important to be clear about the boundaries as the capabilities. To remove any doubt:</p>
+    <div class="notbox">
+      <div class="nh">Assistiv Cloud is not</div>
+      <ul>
+        <li>A patient list, or any kind of register of named individuals</li>
+        <li>A medical device, or a source of individual clinical advice or diagnosis</li>
+        <li>A replacement for the Electronic Frailty Index or for clinical assessment</li>
+        <li>A holder of patient-identifiable data of any kind</li>
+        <li>A validated epidemiological instrument, yet, and we say so plainly until it is</li>
+      </ul>
+    </div>
+    <p>If anything on the platform ever reads as if it crosses one of these lines, that is a fault to be fixed, not an intention. We would want to hear about it.</p>
+  </div>
+
+  <div class="footer">
+    Assistiv Systems Limited · Company No. 17082597 · Faversham, Kent<br>
+    Population frailty intelligence · Powered by Anthropic technologies<br>
+    This page describes our governance position as it stands and will be updated as we progress along the assurance pathway.
+  </div>
+
+</div>
+</body>
+</html>
