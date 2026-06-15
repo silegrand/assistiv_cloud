@@ -282,7 +282,7 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
   <div class="alert-banner warning" id="alert-warning">
     <div class="alert-icon">◉</div>
     <div>
-      <div class="alert-title">Notable movement this week</div>
+      <div class="alert-title">Notable movement (past month)</div>
       <div class="alert-body" id="alert-warning-body"></div>
     </div>
   </div>
@@ -305,8 +305,8 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
     <!-- Score Movement -->
     <div class="card">
       <div class="card-hdr">
-        <span class="card-title">Score Movement — Last 7 Days</span>
-        <span class="card-badge">vs week ago</span>
+        <span class="card-title">Score Movement — Past Month</span>
+        <span class="card-badge" id="trend-window-badge">vs ~30 days ago</span>
       </div>
       <div class="card-body">
         <table class="trend-table">
@@ -315,7 +315,7 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
               <th>District</th>
               <th>12-day trend</th>
               <th style="text-align:right">FEP</th>
-              <th style="text-align:right">Δ week</th>
+              <th style="text-align:right">Δ month</th>
             </tr>
           </thead>
           <tbody id="trend-tbody"></tbody>
@@ -443,6 +443,36 @@ const BASE_HIST = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/ma
 const BASE_WINT = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-winter-data.json';
 const CB = '?t=' + Date.now();
 
+// ── MONTHLY MOVEMENT ──────────────────────────────────────────────────
+// Weekly movement on a daily-refreshed model is mostly noise plus the odd
+// recalibration jump. We compute change over a ~30-day window instead, which is
+// long enough that a shift could plausibly be real. Until a full month of history
+// exists, we use the longest window available and label it honestly rather than
+// fabricate a 30-day figure.
+const MONTH_DAYS = 30;
+function windowDelta(h) {
+  // h is a history record with a dated series [{date, fep}, ...]
+  if (!h || !Array.isArray(h.series) || h.series.length < 2) {
+    return { delta: null, days: 0, building: true, fromDate: null };
+  }
+  const series = h.series.slice().sort((a,b) => new Date(a.date) - new Date(b.date));
+  const last = series[series.length - 1];
+  const lastDate = new Date(last.date);
+  // find the earliest point within MONTH_DAYS of the latest
+  const cutoff = new Date(lastDate); cutoff.setDate(cutoff.getDate() - MONTH_DAYS);
+  let start = series.find(p => new Date(p.date) >= cutoff) || series[0];
+  const days = Math.round((lastDate - new Date(start.date)) / 86400000);
+  return {
+    delta: last.fep - start.fep,
+    days,
+    building: days < MONTH_DAYS - 2,   // not yet a full month of history
+    fromDate: start.date
+  };
+}
+function fmtDate(d) {
+  return d ? new Date(d).toLocaleDateString('en-GB', {day:'numeric', month:'short'}) : '';
+}
+
 // ── FETCH ALL DATA ────────────────────────────────────────────────────
 async function init() {
   try {
@@ -489,27 +519,27 @@ function render(fep, hist, wint) {
 
 // ── ALERTS ────────────────────────────────────────────────────────────
 function renderAlerts(districts, hist) {
-  // Critical: any district critical + rising
+  // Critical: any district critical + rising over the month window
   const critRising = [];
   if (hist?.districts) {
     districts.filter(d => d.risk === 'critical').forEach(d => {
-      const h = hist.districts[d.name];
-      if (h && h.delta_week > 2) critRising.push(`${d.name} (FEP ${d.fep}, +${h.delta_week} this week)`);
+      const wd = windowDelta(hist.districts[d.name]);
+      if (wd.delta != null && wd.delta > 3) critRising.push(`${d.name} (FEP ${d.fep}, +${wd.delta} over ${wd.days} days)`);
     });
   }
   if (critRising.length > 0) {
     document.getElementById('alert-critical').classList.add('visible');
     document.getElementById('alert-critical-body').textContent =
-      `${critRising.join('; ')} — critical band and rising. Recommend immediate commissioner attention and PCN lead briefing.`;
+      `${critRising.join('; ')}. Critical band and rising. Recommend immediate commissioner attention and PCN lead briefing.`;
   }
 
-  // Warning: big movers (±10) in non-critical districts
+  // Warning: big movers (±10) over the month window in non-critical districts
   const bigMovers = [];
   if (hist?.districts) {
     districts.filter(d => d.risk !== 'critical').forEach(d => {
-      const h = hist.districts[d.name];
-      if (h && Math.abs(h.delta_week) >= 10) {
-        const dir = h.delta_week > 0 ? `+${h.delta_week} rising` : `${h.delta_week} falling`;
+      const wd = windowDelta(hist.districts[d.name]);
+      if (wd.delta != null && Math.abs(wd.delta) >= 10) {
+        const dir = wd.delta > 0 ? `+${wd.delta} rising` : `${wd.delta} falling`;
         bigMovers.push(`${d.name} (${dir})`);
       }
     });
@@ -517,7 +547,7 @@ function renderAlerts(districts, hist) {
   if (bigMovers.length > 0) {
     document.getElementById('alert-warning').classList.add('visible');
     document.getElementById('alert-warning-body').textContent =
-      `Significant score movement: ${bigMovers.join('; ')}. Review methodology notes — large shifts may reflect data recalibration (see 13 Jun 2026 model update).`;
+      `Significant score movement: ${bigMovers.join('; ')}. Large shifts may reflect data recalibration (see 13 Jun 2026 model update) rather than real-world change. Review methodology notes.`;
   }
 }
 
@@ -572,15 +602,26 @@ function renderTrend(districts, hist) {
   const distMap = {};
   districts.forEach(d => { distMap[d.name] = d; });
 
-  // Sort by absolute delta descending
+  // Compute monthly window delta per district, sort by absolute monthly movement
   const rows = Object.entries(hist.districts)
-    .map(([name, h]) => ({ name, ...h, fep: distMap[name]?.fep || h.latest }))
-    .sort((a, b) => Math.abs(b.delta_week) - Math.abs(a.delta_week));
+    .map(([name, h]) => {
+      const wd = windowDelta(h);
+      return { name, ...h, fep: distMap[name]?.fep || h.latest, wDelta: wd.delta, wDays: wd.days, building: wd.building, fromDate: wd.fromDate };
+    })
+    .sort((a, b) => Math.abs(b.wDelta || 0) - Math.abs(a.wDelta || 0));
+
+  // If no district yet has a full month of history, flag the window as building
+  const anyFull = rows.some(r => !r.building);
+  const badge = document.getElementById('trend-window-badge');
+  if (badge && !anyFull && rows.length) {
+    badge.textContent = `building · ${rows[0].wDays} days so far`;
+  }
 
   document.getElementById('trend-tbody').innerHTML = rows.map(r => {
-    const spark = miniSpark(r.series, r.delta_week);
-    const deltaClass = r.delta_week > 2 ? 'up' : r.delta_week < -2 ? 'down' : 'flat';
-    const deltaStr = r.delta_week > 0 ? `+${r.delta_week}` : r.delta_week === 0 ? '—' : `${r.delta_week}`;
+    const d = r.wDelta;
+    const spark = miniSpark(r.series, d);
+    const deltaClass = d > 2 ? 'up' : d < -2 ? 'down' : 'flat';
+    const deltaStr = d == null ? '—' : d > 0 ? `+${d}` : d === 0 ? '—' : `${d}`;
     return `
       <tr>
         <td class="t-name">${r.name}</td>
@@ -706,7 +747,7 @@ window.PAGE_CONTEXT = {
   "description": "Auto-generated daily briefing summarising frailty risk, score movement, prescribing outliers, and winter vulnerability across all 13 Kent and Medway districts. Designed for commissioners, PCN leads, and system partners.",
   "adaStarters": [
     "Which districts should a commissioner prioritise today?",
-    "What does the score movement this week tell us?",
+    "What does the score movement over the past month tell us?",
     "How should I use this briefing in a commissioning meeting?",
     "What is the most significant finding in Kent right now?"
   ],
