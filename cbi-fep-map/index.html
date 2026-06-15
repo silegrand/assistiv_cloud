@@ -1,13 +1,1044 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-32.png">
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=../cbi-fep-map.html">
-<link rel="canonical" href="https://www.assistiv.cloud/cbi-fep-map/">
-<script>window.location.replace("../cbi-fep-map.html")</script>
-<title>Redirecting…</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frailty & Carer Burden — Kent & Medway · Assistiv Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:    #1e3a7a;
+  --forest2:   #365EBF;
+  --sage:      #365EBF;
+  --sage2:     #2a4d9e;
+  --sage3:     #7a9ee0;
+  --cream:     #eef2fb;
+  --cream2:    #dde5f5;
+  --cream3:    #c8d5ee;
+  --ink:       #0f1a14;
+  --ink2:      #5a7260;
+  --ink3:      #9aaa9e;
+  --amber:     #c49020;
+  --amber2:    #f0c040;
+  --red:       #c04040;
+  --red2:      #a03030;
+  --blue:      #2563b0;
+  --blue2:     #3b7dd4;
+  --purple:    #7b5ea7;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'DM Sans', sans-serif;
+  --tr: 0.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{display:flex;align-items:flex-end;gap:3px;height:18px;}
+.logo-mark span{display:block;width:4px;border-radius:1px;}
+.logo-mark span:nth-child(1){height:8px;background:rgba(255,255,255,0.2);}
+.logo-mark span:nth-child(2){height:13px;background:var(--sage3);}
+.logo-mark span:nth-child(3){height:18px;background:rgba(122,171,144,0.6);}
+.logo-name{font-family:var(--sans);font-size:.85rem;font-weight:500;color:var(--cream);letter-spacing:-.02em;}
+.logo-sub{font-family:var(--mono);font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.45);}
+.nav-back{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);text-decoration:none;transition:color var(--tr);}
+.nav-back:hover{color:var(--cream);}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:2.5rem 1.5rem 1.5rem;max-width:1100px;margin:0 auto;border-bottom:1px solid var(--cream3);}
+.ph-tag{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:.6rem;display:flex;align-items:center;gap:.6rem;}
+.ph-tag::before{content:'';display:block;width:20px;height:1px;background:var(--sage);}
+.ph-title{font-family:var(--serif);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:.6rem;color:var(--ink);}
+.ph-title em{font-style:italic;color:var(--sage);}
+.ph-sub{font-size:.85rem;color:var(--ink2);line-height:1.7;max-width:580px;}
+
+/* ── VIEW TOGGLE ── */
+.view-toggle{display:flex;gap:0;border:1px solid var(--cream3);border-radius:5px;overflow:hidden;margin:1.5rem 0 0;}
+.vt-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.1rem;background:transparent;color:var(--ink3);border:none;cursor:pointer;transition:background var(--tr),color var(--tr);border-right:1px solid var(--cream3);}
+.vt-btn:last-child{border-right:none;}
+.vt-btn.active{background:rgba(54,94,191,0.1);color:#365EBF;}
+.vt-btn:hover:not(.active){background:var(--cream2);color:var(--ink2);}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:1100px;margin:0 auto;padding:0 1.5rem 3rem;}
+
+/* ── QUADRANT VIEW ── */
+.quadrant-wrap{margin-top:1.5rem;}
+.quadrant-header{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;align-items:start;}
+.q-legend{display:flex;flex-direction:column;gap:.6rem;}
+.q-legend-item{display:flex;align-items:center;gap:.6rem;font-size:.78rem;color:var(--ink2);}
+.q-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.q-desc{font-size:.8rem;color:var(--ink2);line-height:1.65;}
+
+.quadrant-grid{
+  display:grid;
+  grid-template-columns:24px 1fr 1fr;
+  grid-template-rows:1fr 1fr 24px;
+  gap:4px;
+  height:420px;
+}
+
+.q-axis-label{
+  font-family:var(--mono);
+  font-size:.52rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.q-axis-label.vertical{writing-mode:vertical-rl;transform:rotate(180deg);}
+.q-axis-label.horizontal{grid-column:2 / -1;}
+
+.quadrant{
+  background:var(--cream2);
+  border:1px solid var(--cream3);
+  border-radius:6px;
+  padding:.75rem;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.q-label{
+  font-family:var(--mono);
+  font-size:.5rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:.5rem;
+  color:var(--ink3);
+}
+
+.quadrant.q-critical{background:#fef2f2;border-color:#fca5a5;}
+.quadrant.q-critical .q-label{color:var(--red);opacity:1;}
+.quadrant.q-monitor{background:#fffbeb;border-color:#fcd34d;}
+.quadrant.q-monitor .q-label{color:var(--amber);opacity:1;}
+.quadrant.q-carer{background:#eff6ff;border-color:#bfdbfe;}
+.quadrant.q-carer .q-label{color:var(--blue);opacity:1;}
+.quadrant.q-lower{background:#f0fdf4;border-color:#bbf7d0;}
+.quadrant.q-lower .q-label{color:var(--sage);opacity:1;}
+
+.q-chips{display:flex;flex-direction:column;gap:5px;flex:1;}
+.q-chip{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:.3rem .55rem;
+  border-radius:4px;
+  font-size:.72rem;
+  cursor:pointer;
+  transition:background var(--tr),transform var(--tr);
+  background:rgba(255,255,255,0.8);
+  border:1px solid var(--cream3);
+}
+.q-chip:hover{background:var(--cream);transform:translateX(2px);}
+.q-chip.selected{border-color:#365EBF;background:rgba(54,94,191,0.06);}
+.q-chip-name{font-weight:500;color:var(--ink);}
+.q-chip-scores{font-family:var(--mono);font-size:.6rem;color:var(--ink2);display:flex;gap:.4rem;}
+.q-chip-score{padding:.1rem .3rem;border-radius:2px;background:var(--cream2);}
+
+/* ── BAR VIEW ── */
+.bar-view{margin-top:1.5rem;display:none;}
+.bar-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
+.bar-toggle{display:flex;gap:0;border:1px solid var(--cream3);border-radius:4px;overflow:hidden;}
+.bt-btn{font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .75rem;background:transparent;color:var(--ink3);border:none;cursor:pointer;transition:all var(--tr);border-right:1px solid var(--cream3);}
+.bt-btn:last-child{border-right:none;}
+.bt-btn.active{background:var(--cream2);color:var(--ink);}
+.bar-rows{display:flex;flex-direction:column;gap:0;border:1px solid var(--cream3);border-radius:6px;overflow:hidden;}
+.bar-row{display:grid;grid-template-columns:150px 1fr 1fr 80px;gap:1rem;align-items:center;padding:.7rem 1rem;border-bottom:1px solid var(--cream3);cursor:pointer;transition:background var(--tr);}
+.bar-row:last-child{border-bottom:none;}
+.bar-row:hover{background:var(--cream2);}
+.bar-row.selected{background:rgba(45,107,71,0.06);}
+.bar-row.header{background:var(--cream2);cursor:default;}
+.bar-row.header:hover{background:var(--cream2);}
+.br-name{font-size:.82rem;font-weight:500;color:var(--ink);}
+.br-label{font-family:var(--mono);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);}
+.bar-track{height:6px;background:var(--cream3);border-radius:3px;overflow:hidden;position:relative;}
+.bar-fill-fep,.bar-fill-cbi{height:100%;border-radius:3px;transition:width .6s ease;}
+.bar-fill-fep{background:#365EBF;}
+.bar-fill-cbi{background:var(--blue);}
+.br-scores{font-family:var(--mono);font-size:.65rem;color:var(--ink2);text-align:right;}
+
+/* ── DETAIL PANEL ── */
+.detail-panel{
+  margin-top:1.5rem;
+  background:var(--cream);
+  border:1px solid var(--cream3);
+  border-radius:6px;
+  overflow:hidden;
+  display:none;
+}
+.detail-panel.visible{display:block;}
+.detail-header{
+  padding:1rem 1.25rem;
+  border-bottom:1px solid var(--cream3);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  flex-wrap:wrap;
+  background:var(--cream2);
+}
+.dh-name{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--ink);}
+.dh-scores{display:flex;gap:.6rem;}
+.dh-score{font-family:var(--mono);font-size:.65rem;letter-spacing:.06em;padding:.3rem .7rem;border-radius:4px;}
+.dh-score.fep{background:rgba(54,94,191,0.1);color:#365EBF;border:1px solid rgba(54,94,191,0.3);}
+.dh-score.cbi{background:rgba(37,99,176,0.1);color:var(--blue);border:1px solid rgba(37,99,176,0.3);}
+.dh-score.tier{background:var(--cream2);color:var(--ink2);border:1px solid var(--cream3);}
+.detail-body{padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.signal-group h4{font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:.75rem;}
+.signal-rows{display:flex;flex-direction:column;gap:.5rem;}
+.signal-row{display:flex;align-items:center;gap:.75rem;}
+.signal-name{font-size:.78rem;color:var(--ink2);flex:1;line-height:1.3;}
+.signal-track{width:80px;height:4px;background:var(--cream3);border-radius:2px;flex-shrink:0;}
+.signal-fill{height:100%;border-radius:2px;}
+.signal-val{font-family:var(--mono);font-size:.65rem;color:var(--ink2);min-width:28px;text-align:right;}
+.quadrant-tag{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border-radius:4px;font-size:.8rem;font-family:var(--mono);letter-spacing:.04em;margin-top:.75rem;}
+.qt-critical{background:#fef2f2;color:var(--red);border:1px solid #fca5a5;}
+.qt-monitor{background:#fffbeb;color:var(--amber);border:1px solid #fcd34d;}
+.qt-carer{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe;}
+.qt-lower{background:#eef2fb;color:#365EBF;border:1px solid #c8d5ee;}
+.detail-note{grid-column:1/-1;font-size:.75rem;color:var(--ink3);line-height:1.65;padding-top:.75rem;border-top:1px dashed var(--cream3);}
+
+/* ── CLOSE BTN ── */
+.close-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;color:var(--ink2);background:transparent;border:1px solid var(--cream3);padding:.3rem .7rem;border-radius:4px;cursor:pointer;transition:all var(--tr);}
+.close-btn:hover{color:var(--ink);border-color:var(--ink3);}
+
+/* ── DATA NOTE ── */
+.data-note{margin-top:1.5rem;padding:.75rem 1rem;border:1px solid var(--cream3);border-radius:5px;font-family:var(--mono);font-size:.58rem;letter-spacing:.04em;color:var(--ink3);line-height:1.65;}
+
+/* ── LOADING STATE ── */
+.loading{text-align:center;padding:3rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--ink3);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .quadrant-grid{height:auto;grid-template-columns:18px 1fr;grid-template-rows:auto auto auto 18px;}
+  .q-axis-label.horizontal{grid-column:2/-1;}
+  .detail-body{grid-template-columns:1fr;}
+  .bar-row{grid-template-columns:120px 1fr 1fr 60px;}
+  .quadrant-header{grid-template-columns:1fr;}
+}
+
+/* ── ASSISTIV LOGO — Cabinet Grotesk + DM Mono + Pulse rings ── */
+.nav-logo-mark {
+  position: relative; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo-dot { border-radius: 50%; position: absolute; }
+.nav-logo-core { width: 8px; height: 8px; background: #ffffff; z-index: 2; }
+.nav-logo-r1 { width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); background: none; }
+.nav-logo-r2 { width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); background: none; }
+.nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
+.nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
+.nav-logo-core.dk { background: #1a3a2a; }
+.nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
+.nav-wordmark-name {
+  font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.1;
+}
+.nav-wordmark-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem; letter-spacing: 0.18em;
+  text-transform: uppercase; line-height: 1;
+}
+
+</style>
 </head>
 <body>
-<p>Redirecting… <a href="../cbi-fep-map.html">click here if not redirected</a></p>
+
+<nav style="background:#365EBF;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
+  <div style="display:flex;align-items:center;gap:0.85rem">
+    <a href="/" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.6);text-decoration:none;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.15s;flex-shrink:0" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&#8592; Overview</a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <a href="/" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0" title="Assistiv Systems">
+      <div class="nav-logo-mark">
+        <div class="nav-logo-dot nav-logo-core"></div>
+        <div class="nav-logo-dot nav-logo-r1"></div>
+        <div class="nav-logo-dot nav-logo-r2"></div>
+      </div>
+    </a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-family:'Cabinet Grotesk','Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1">FEP × Carer Burden</span>
+      <span style="font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);line-height:1">Layer 2 · Quadrant Intelligence</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="ph-tag">Layer 2 · Dual intelligence map</div>
+  <h1 class="ph-title">Where frailty and <em>carer burden</em><br>converge.</h1>
+  <p class="ph-sub">Each district scored independently on two axes — Frailty Emergence Probability and Carer Burden Index. The intersection reveals where the NHS system faces simultaneous pressure from both directions.</p>
+  <div class="view-toggle">
+    <button class="vt-btn active" onclick="setView('quadrant')">Quadrant map</button>
+    <button class="vt-btn" onclick="setView('bars')">District bars</button>
+  </div>
+</div>
+
+<div class="main">
+  <div id="loading" class="loading">Loading district data…</div>
+
+  <!-- QUADRANT VIEW -->
+  <div class="quadrant-wrap" id="quadrant-view" style="display:none;">
+    <div class="quadrant-header">
+      <div class="q-legend">
+        <div style="font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem;">Quadrant key</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#c04040;"></div>High FEP + High CBI — simultaneous pressure · immediate priority</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#c49020;"></div>High FEP + Lower CBI — frailty risk but carers coping · monitor</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#3b7dd4;"></div>Lower FEP + High CBI — carer strain without high frailty · investigate</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#2d6b47;"></div>Lower FEP + Lower CBI — lower priority across both dimensions</div>
+      </div>
+      <p class="q-desc">FEP score above 50 = higher frailty risk than England average. CBI score above 50 = higher carer burden than Kent county baseline. Click any district for detail.</p>
+    </div>
+
+    <div class="quadrant-grid">
+      <!-- vertical axis label -->
+      <div class="q-axis-label vertical" style="grid-row:1/3;grid-column:1;">CBI — Carer Burden →</div>
+
+      <!-- top-left: high FEP, high CBI = critical -->
+      <div class="quadrant q-critical" id="q-tl">
+        <div class="q-label">High FEP · High CBI</div>
+        <div class="q-chips" id="chips-tl"></div>
+      </div>
+
+      <!-- top-right: low FEP, high CBI = carer pressure -->
+      <div class="quadrant q-carer" id="q-tr">
+        <div class="q-label">Lower FEP · High CBI</div>
+        <div class="q-chips" id="chips-tr"></div>
+      </div>
+
+      <!-- bottom-left: high FEP, low CBI = frailty monitor -->
+      <div class="quadrant q-monitor" id="q-bl">
+        <div class="q-label">High FEP · Lower CBI</div>
+        <div class="q-chips" id="chips-bl"></div>
+      </div>
+
+      <!-- bottom-right: low FEP, low CBI = lower priority -->
+      <div class="quadrant q-lower" id="q-br">
+        <div class="q-label">Lower FEP · Lower CBI</div>
+        <div class="q-chips" id="chips-br"></div>
+      </div>
+
+      <!-- horizontal axis label -->
+      <div class="q-axis-label horizontal" style="grid-row:3;grid-column:2/-1;">← Lower FEP · FEP — Frailty Emergence Probability · Higher FEP →</div>
+    </div>
+  </div>
+
+  <!-- BAR VIEW -->
+  <div class="bar-view" id="bar-view">
+    <div class="bar-header">
+      <div class="bar-toggle">
+        <button class="bt-btn active" onclick="sortBars('fep')">Sort by FEP</button>
+        <button class="bt-btn" onclick="sortBars('cbi')">Sort by CBI</button>
+        <button class="bt-btn" onclick="sortBars('combined')">Sort by combined</button>
+      </div>
+    </div>
+    <div class="bar-rows" id="bar-rows">
+      <div class="bar-row header">
+        <div class="br-label">District</div>
+        <div class="br-label">FEP — Frailty</div>
+        <div class="br-label">CBI — Carer burden</div>
+        <div class="br-label">Scores</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-header">
+      <div>
+        <div class="dh-name" id="d-name">—</div>
+        <div class="dh-scores">
+          <span class="dh-score fep" id="d-fep">FEP —</span>
+          <span class="dh-score cbi" id="d-cbi">CBI —</span>
+          <span class="dh-score tier" id="d-tier">—</span>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeDetail()">Close ✕</button>
+    </div>
+    <div class="detail-body">
+      <div class="signal-group">
+        <h4>Frailty signals (FEP)</h4>
+        <div class="signal-rows" id="d-fep-signals"></div>
+      </div>
+      <div class="signal-group">
+        <h4>Carer burden signals (CBI)</h4>
+        <div class="signal-rows" id="d-cbi-signals"></div>
+        <div id="d-quadrant-tag" style="margin-top:.75rem;"></div>
+      </div>
+      <div class="detail-note" id="d-note"></div>
+    </div>
+  </div>
+
+  <div class="data-note" id="data-note" style="display:none;">
+    FEP source: NHSBSA EPD practice-level (Mar 2026) · NHS Fingertips / OHID PHOF · ONS Census 2021 · IMD 2019 ·
+    CBI source: ONS Census 2021 TS039 (district level) · NHS Fingertips 90638, 90279, 93014, 90283 (county level) ·
+    Scores: 50 = England average · &gt;50 = above average burden · England FEP avg: 50 · England CBI avg: 50
+  </div>
+</div>
+
+<script>
+const FEP_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+const CBI_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-cbi-data.json';
+
+// CBI fallback — embed the census-derived scores so the widget works before
+// the notebook has been run and the JSON committed to GitHub
+const CBI_FALLBACK = {
+  'Thanet':              {cbi:62, tier:'high',   pct_20plus:5.98, census_score:66.2},
+  'Folkestone & Hythe':  {cbi:59, tier:'high',   pct_20plus:5.58, census_score:61.8},
+  'Dover':               {cbi:59, tier:'high',   pct_20plus:5.54, census_score:61.3},
+  'Swale':               {cbi:58, tier:'high',   pct_20plus:5.51, census_score:61.0},
+  'Gravesham':           {cbi:53, tier:'moderate',pct_20plus:4.83, census_score:53.4},
+  'Medway':              {cbi:52, tier:'moderate',pct_20plus:4.69, census_score:51.9},
+  'Ashford':             {cbi:51, tier:'moderate',pct_20plus:4.55, census_score:50.4},
+  'Canterbury':          {cbi:50, tier:'moderate',pct_20plus:4.41, census_score:48.8},
+  'Maidstone':           {cbi:48, tier:'moderate',pct_20plus:4.12, census_score:45.6},
+  'Tonbridge & Malling': {cbi:47, tier:'moderate',pct_20plus:4.10, census_score:45.3},
+  'Dartford':            {cbi:46, tier:'moderate',pct_20plus:4.06, census_score:44.9},
+  'Sevenoaks':           {cbi:45, tier:'moderate',pct_20plus:3.91, census_score:43.2},
+  'Tunbridge Wells':     {cbi:40, tier:'low',    pct_20plus:3.36, census_score:37.2},
+};
+
+const CBI_SIGNALS = [
+  {key:'census_20plus',    label:'20+ hr carers (Census 2021)', geo:'District'},
+  {key:'social_isolation', label:'Carer social isolation',      geo:'County'},
+  {key:'support_access',   label:'Support info access',         geo:'County'},
+  {key:'assessment_rate',  label:"Carer's Assessment rate",     geo:'County'},
+  {key:'wellbeing',        label:'Carer wellbeing score',       geo:'County'},
+];
+
+const FEP_SIGNAL_NAMES = [
+  'Over-75s Living Alone','Falls Admissions 65+','Hip Fracture Rate 65+',
+  'Deprivation (IMD)','Winter Mortality Index','Care Home Gap',
+  'Loneliness Rate','Dementia Diagnosis Rate','Hip Fractures 80+',
+  'Social Isolation Rate','Hypnotics','Antidepressants','Bisphosphonates',
+  'Diuretics','ACE/ARB','Anxiolytics','Bladder Antimuscarinic',
+];
+
+let fepData = [], cbiData = [], merged = [], currentView = 'quadrant', sortKey = 'fep';
+let selectedDistrict = null;
+
+const QUAD_THRESHOLD_FEP = 50;
+const QUAD_THRESHOLD_CBI = 50;
+
+function quadrantOf(d) {
+  const hiF = d.fep > QUAD_THRESHOLD_FEP;
+  const hiC = d.cbi > QUAD_THRESHOLD_CBI;
+  if (hiF && hiC)  return 'tl'; // high both
+  if (!hiF && hiC) return 'tr'; // carer pressure
+  if (hiF && !hiC) return 'bl'; // frailty monitor
+  return 'br';                   // lower priority
+}
+
+function quadrantLabel(q) {
+  return {tl:'High FEP + High CBI',tr:'Lower FEP + High CBI',bl:'High FEP + Lower CBI',br:'Lower FEP + Lower CBI'}[q];
+}
+function quadrantClass(q) {
+  return {tl:'qt-critical',tr:'qt-carer',bl:'qt-monitor',br:'qt-lower'}[q];
+}
+
+async function loadData() {
+  try {
+    const [fepResp, cbiResp] = await Promise.all([
+      fetch(FEP_URL + '?t=' + Date.now(), {cache:'no-store'}), fetch(CBI_URL + '?t=' + Date.now(), {cache:'no-store'}).catch(() => null)
+    ]);
+    fepData = (await fepResp.json()).districts || [];
+
+    if (cbiResp && cbiResp.ok) {
+      cbiData = (await cbiResp.json()).districts || [];
+    }
+  } catch(e) {
+    console.warn('Data fetch error:', e);
+  }
+
+  // Merge FEP and CBI
+  merged = fepData.map(f => {
+    const cbiDistrict = cbiData.find(c => c.name === f.name);
+    const fallback    = CBI_FALLBACK[f.name] || {cbi:50,tier:'moderate'};
+    const cbi         = cbiDistrict ? cbiDistrict.cbi : fallback.cbi;
+    const cbiTier     = cbiDistrict ? cbiDistrict.tier : fallback.tier;
+    const cbiSignals  = cbiDistrict ? cbiDistrict.signal_scores : null;
+    const censusPct   = cbiDistrict ? cbiDistrict.census?.pct_20plus : (CBI_FALLBACK[f.name]?.pct_20plus || null);
+    return { ...f, cbi, cbiTier, cbiSignals, censusPct, quad: null };
+  });
+  merged.forEach(d => d.quad = quadrantOf(d));
+
+  render();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('data-note').style.display = 'block';
+}
+
+function render() {
+  if (currentView === 'quadrant') renderQuadrant();
+  else renderBars();
+}
+
+function renderQuadrant() {
+  document.getElementById('quadrant-view').style.display = 'block';
+  document.getElementById('bar-view').style.display = 'none';
+
+  ['tl','tr','bl','br'].forEach(q => {
+    const container = document.getElementById(`chips-${q}`);
+    container.innerHTML = '';
+    const districts = merged.filter(d => d.quad === q)
+      .sort((a,b) => (b.fep+b.cbi) - (a.fep+a.cbi));
+    districts.forEach(d => {
+      const chip = document.createElement('div');
+      chip.className = 'q-chip' + (selectedDistrict === d.name ? ' selected' : '');
+      chip.innerHTML = `
+        <span class="q-chip-name">${d.name}</span>
+        <span class="q-chip-scores">
+          <span class="q-chip-score">FEP ${d.fep}</span>
+          <span class="q-chip-score">CBI ${d.cbi}</span>
+        </span>`;
+      chip.onclick = () => selectDistrict(d.name);
+      container.appendChild(chip);
+    });
+  });
+}
+
+function renderBars() {
+  document.getElementById('quadrant-view').style.display = 'none';
+  document.getElementById('bar-view').style.display = 'block';
+
+  const sorted = [...merged].sort((a,b) => {
+    if (sortKey === 'fep') return b.fep - a.fep;
+    if (sortKey === 'cbi') return b.cbi - a.cbi;
+    return (b.fep + b.cbi) - (a.fep + a.cbi);
+  });
+
+  const container = document.getElementById('bar-rows');
+  // Remove non-header rows
+  while (container.children.length > 1) container.removeChild(container.lastChild);
+
+  const maxFEP = Math.max(...merged.map(d => d.fep));
+  const maxCBI = Math.max(...merged.map(d => d.cbi));
+
+  sorted.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'bar-row' + (selectedDistrict === d.name ? ' selected' : '');
+    row.innerHTML = `
+      <div class="br-name">${d.name}</div>
+      <div>
+        <div class="bar-track"><div class="bar-fill-fep" style="width:${(d.fep/maxFEP)*100}%"></div></div>
+      </div>
+      <div>
+        <div class="bar-track"><div class="bar-fill-cbi" style="width:${(d.cbi/maxCBI)*100}%"></div></div>
+      </div>
+      <div class="br-scores">${d.fep} / ${d.cbi}</div>`;
+    row.onclick = () => selectDistrict(d.name);
+    container.appendChild(row);
+  });
+}
+
+function selectDistrict(name) {
+  selectedDistrict = selectedDistrict === name ? null : name;
+  render();
+  if (!selectedDistrict) { closeDetail(); return; }
+
+  const d = merged.find(m => m.name === name);
+  if (!d) return;
+
+  const panel = document.getElementById('detail-panel');
+  panel.classList.add('visible');
+  document.getElementById('d-name').textContent = d.name;
+  document.getElementById('d-fep').textContent  = `FEP ${d.fep}`;
+  document.getElementById('d-cbi').textContent  = `CBI ${d.cbi}`;
+
+  const q = d.quad;
+  const qLabels = {tl:'Critical priority',tr:'Carer pressure',bl:'Frailty monitor',br:'Lower priority'};
+  document.getElementById('d-tier').textContent = qLabels[q] || d.tier;
+
+  // FEP signals (top 6 by weight/value)
+  const fepSigs = document.getElementById('d-fep-signals');
+  fepSigs.innerHTML = '';
+  const topSigs = (d.signals || []).slice(0,6);
+  topSigs.forEach((val, i) => {
+    const row = document.createElement('div');
+    row.className = 'signal-row';
+    const pct = Math.round(Math.min(100,val));
+    const col = val > 60 ? '#e07070' : val > 50 ? '#f0c040' : '#7aab90';
+    row.innerHTML = `
+      <div class="signal-name">${FEP_SIGNAL_NAMES[i] || `Signal ${i+1}`}</div>
+      <div class="signal-track"><div class="signal-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="signal-val">${Math.round(val)}</div>`;
+    fepSigs.appendChild(row);
+  });
+
+  // CBI signals
+  const cbiSigs = document.getElementById('d-cbi-signals');
+  cbiSigs.innerHTML = '';
+  CBI_SIGNALS.forEach(sig => {
+    const val = d.cbiSignals ? (d.cbiSignals[sig.key] || 50) : 50;
+    const pct = Math.round(Math.min(100, val));
+    const col = val > 60 ? '#85b7eb' : val > 50 ? '#f0c040' : '#7aab90';
+    const row = document.createElement('div');
+    row.className = 'signal-row';
+    row.innerHTML = `
+      <div class="signal-name">${sig.label}<span style="font-size:.62rem;color:var(--ink3);margin-left:.3rem;">(${sig.geo})</span></div>
+      <div class="signal-track"><div class="signal-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="signal-val">${Math.round(val)}</div>`;
+    cbiSigs.appendChild(row);
+  });
+
+  // Quadrant tag
+  const qtag = document.getElementById('d-quadrant-tag');
+  const qDescriptions = {
+    tl: 'High frailty risk AND high carer burden. System under pressure from both directions simultaneously. Immediate commissioning priority.',
+    tr: 'Lower frailty risk but significant carer burden. Often younger disabled people or complex mental health situations — different intervention profile.',
+    bl: 'Elevated frailty risk but carers are relatively coping. Priority for RESILIENCE screening deployment. Monitor carer capacity quarterly.',
+    br: 'Below-average on both dimensions. Routine monitoring. Rescore quarterly.'
+  };
+  qtag.innerHTML = `<div class="quadrant-tag ${quadrantClass(q)}">${quadrantLabel(q)}</div>
+    <p style="font-size:.75rem;color:var(--ink2);line-height:1.6;margin-top:.5rem;">${qDescriptions[q]}</p>`;
+
+  // Census note
+  const noteEl = document.getElementById('d-note');
+  const censusTxt = d.censusPct
+    ? `Census 2021: ${d.censusPct.toFixed(2)}% of residents aged 5+ provide 20+ hours of unpaid care per week (England avg: 4.52%). `
+    : '';
+  noteEl.textContent = censusTxt +
+    'CBI county-level Fingertips signals (social isolation, support access, assessment rate, wellbeing) are applied uniformly across all 13 districts — district variation driven by Census carer hours data. DWP Carer\'s Allowance signal pending.';
+
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function closeDetail() {
+  selectedDistrict = null;
+  document.getElementById('detail-panel').classList.remove('visible');
+  render();
+}
+
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.vt-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&v==='quadrant')||(i===1&&v==='bars')));
+  render();
+}
+
+function sortBars(key) {
+  sortKey = key;
+  document.querySelectorAll('.bt-btn').forEach((b,i) => b.classList.toggle('active', i===['fep','cbi','combined'].indexOf(key)));
+  renderBars();
+}
+
+loadData();
+</script>
+<!-- ═══════════════════════════════════════════════════════
+     ADA — Intelligence Explainer · VERA — Red Team Challenger
+     Both linked to Assistiv Cloudflare Worker proxy
+     ═══════════════════════════════════════════════════════ -->
+<style>
+/* ── SHARED AGENT STYLES ── */
+.agent-btn {
+  position:fixed;bottom:1.5rem;z-index:9000;
+  width:52px;height:52px;border-radius:50%;
+  border:1px solid var(--border);cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,0,0,0.18);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:2px;
+  transition:transform .18s,box-shadow .18s;
+}
+.agent-btn:hover{transform:scale(1.07);box-shadow:0 6px 24px rgba(0,0,0,0.25);}
+.agent-icon{font-size:16px;line-height:1;}
+.agent-lbl{font-size:9px;letter-spacing:.1em;font-weight:700;}
+
+#ada-btn  { right:1.5rem; background:#fff; color:#365EBF; }
+#vera-btn { right:5rem;   background:#fff; color:#7c3aed; }
+#ada-btn  .agent-lbl { color:var(--sage); }
+#vera-btn .agent-lbl { color:#7c3aed; }
+
+.agent-panel {
+  position:fixed;bottom:5rem;z-index:9000;
+  width:360px;max-width:calc(100vw - 2rem);
+  height:520px;max-height:calc(100vh - 7rem);
+  background:#ffffff;border:1px solid #ddd8ce;
+  border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.18);
+  display:none;flex-direction:column;overflow:hidden;
+  font-family:var(--sans);
+}
+.agent-panel.open{display:flex;animation:agentIn .22s ease;}
+@keyframes agentIn{from{opacity:0;transform:translateY(12px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+#ada-panel  { right:1.5rem; }
+#vera-panel { right:1.5rem; }
+
+/* Headers */
+.agent-hdr { padding:.75rem 1rem; display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
+#ada-panel  .agent-hdr { background:#1e3a7a; }
+#vera-panel .agent-hdr { background:#4c1d95; }
+
+.agent-av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px; }
+#ada-panel  .agent-av { background:rgba(255,255,255,.18); }
+#vera-panel .agent-av { background:rgba(255,255,255,.18); }
+
+.agent-hdr-name { font-size:13px;font-weight:600;color:#fff; }
+.agent-hdr-sub  { font-size:10px;color:rgba(255,255,255,.6); }
+.agent-close    { background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:18px;margin-left:auto; }
+
+/* Messages */
+.agent-msgs { flex:1;overflow-y:auto;padding:.75rem 1rem;display:flex;flex-direction:column;gap:.6rem; }
+.agent-m { max-width:88%;padding:.55rem .8rem;border-radius:10px;font-size:12.5px;line-height:1.55;animation:mIn .18s ease; }
+@keyframes mIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.agent-m.usr { background:#1a3a2a;color:#ffffff;align-self:flex-end;border-radius:10px 10px 2px 10px; }
+.agent-m.ada { background:#eaf3ee;color:var(--text);align-self:flex-start; }
+.agent-m.ada strong { color:var(--forest); }
+.agent-m.vera { background:#f5f3ff;color:#3b0764;align-self:flex-start;border-left:2px solid #7c3aed; }
+.agent-m.vera strong { color:#6d28d9; }
+
+/* Starters */
+.agent-starts { padding:0 1rem .75rem;display:flex;flex-direction:column;gap:.4rem;flex-shrink:0; }
+.agent-start  { background:none;border:1px solid var(--border);border-radius:8px;padding:.45rem .75rem;text-align:left;cursor:pointer;font-size:11.5px;color:var(--text-muted);transition:all .12s; }
+#ada-panel  .agent-start:hover { background:#eaf3ee;border-color:var(--sage); }
+#vera-panel .agent-start:hover { background:#f5f3ff;border-color:#7c3aed;color:#3b0764; }
+
+/* Thinking */
+.agent-think { display:flex;gap:4px;padding:.55rem .8rem;border-radius:10px;align-self:flex-start; }
+#ada-panel  .agent-think { background:#eaf3ee; }
+#vera-panel .agent-think { background:#f5f3ff; }
+.agent-dot { width:6px;height:6px;border-radius:50%;animation:dot 1.2s infinite; }
+#ada-panel  .agent-dot { background:var(--sage); }
+#vera-panel .agent-dot { background:#7c3aed; }
+.agent-dot:nth-child(2){animation-delay:.2s;}.agent-dot:nth-child(3){animation-delay:.4s;}
+@keyframes dot{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+
+/* Input */
+.agent-inp-row { display:flex;gap:.5rem;padding:.6rem 1rem;border-top:1px solid var(--border);flex-shrink:0; }
+.agent-inp { flex:1;border:1px solid var(--border);border-radius:8px;padding:.45rem .7rem;font-size:12.5px;font-family:var(--sans);background:#f7f4ee;color:#1a2e1e;outline:none; }
+#ada-inp:focus  { border-color:var(--sage); }
+#vera-inp:focus { border-color:#7c3aed; }
+.agent-snd { color:#fff;border:none;border-radius:8px;padding:.45rem .75rem;cursor:pointer;font-size:13px; }
+#ada-snd  { background:#365EBF; }
+#ada-snd:hover  { background:#1e3a7a; }
+#vera-snd { background:#6d28d9; }
+#vera-snd:hover { background:#4c1d95; }
+.agent-snd:disabled { opacity:.4;cursor:default; }
+
+/* ── ASSISTIV LOGO — Cabinet Grotesk + DM Mono + Pulse rings ── */
+.nav-logo-mark {
+  position: relative; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo-dot { border-radius: 50%; position: absolute; }
+.nav-logo-core { width: 8px; height: 8px; background: #ffffff; z-index: 2; }
+.nav-logo-r1 { width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); background: none; }
+.nav-logo-r2 { width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); background: none; }
+.nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
+.nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
+.nav-logo-core.dk { background: #1a3a2a; }
+.nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
+.nav-wordmark-name {
+  font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.1;
+}
+.nav-wordmark-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem; letter-spacing: 0.18em;
+  text-transform: uppercase; line-height: 1;
+}
+
+</style>
+
+<!-- ADA BUTTON -->
+<button id="ada-btn" class="agent-btn" onclick="adaToggle()" title="Ask Ada">
+  <span class="agent-icon" style="color:var(--sage)">✦</span>
+  <span class="agent-lbl">ADA</span>
+</button>
+
+<!-- VERA BUTTON -->
+<button id="vera-btn" class="agent-btn" onclick="veraToggle()" title="Challenge with VERA">
+  <span class="agent-icon">⚖</span>
+  <span class="agent-lbl">VERA</span>
+</button>
+
+<!-- ADA PANEL -->
+<div id="ada-panel" class="agent-panel" role="dialog" aria-label="Ada intelligence assistant">
+  <div class="agent-hdr">
+    <div class="agent-av">✦</div>
+    <div><div class="agent-hdr-name">Ada</div><div class="agent-hdr-sub">Assistiv Intelligence · map explainer</div></div>
+    <button class="agent-close" onclick="adaToggle()">×</button>
+  </div>
+  <div class="agent-msgs" id="ada-msgs"></div>
+  <div class="agent-starts" id="ada-starts"></div>
+  <div class="agent-inp-row">
+    <input id="ada-inp" class="agent-inp" type="text" placeholder="Ask Ada about the map…"
+      onkeydown="if(event.key==='Enter')adaSend()">
+    <button id="ada-snd" class="agent-snd" onclick="adaSend()">↑</button>
+  </div>
+</div>
+
+<!-- VERA PANEL -->
+<div id="vera-panel" class="agent-panel" role="dialog" aria-label="VERA red team challenger">
+  <div class="agent-hdr">
+    <div class="agent-av">⚖</div>
+    <div><div class="agent-hdr-name">VERA</div><div class="agent-hdr-sub">Validation · Evidence · Rigour · Assumptions</div></div>
+    <button class="agent-close" onclick="veraToggle()">×</button>
+  </div>
+  <div class="agent-msgs" id="vera-msgs"></div>
+  <div class="agent-starts" id="vera-starts"></div>
+  <div class="agent-inp-row">
+    <input id="vera-inp" class="agent-inp" type="text" placeholder="Challenge a finding…"
+      onkeydown="if(event.key==='Enter')veraSend()">
+    <button id="vera-snd" class="agent-snd" onclick="veraSend()">↑</button>
+  </div>
+</div>
+
+<script>
+// ── SHARED CONFIG ─────────────────────────────────────────────────────
+const AGENT_WORKER = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
+const AGENT_JSON   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+
+let agentLiveData = null;
+async function fetchAgentData() {
+  try { const r = await fetch(AGENT_JSON); agentLiveData = await r.json(); }
+  catch(e) { console.warn('Agent data:', e); }
+}
+fetchAgentData();
+
+function agentCtx() {
+  const lines = [];
+  const dname = document.querySelector('.district-name')?.textContent?.trim();
+  const dfep  = document.querySelector('.fep-val')?.textContent?.trim();
+  if (dname) lines.push(`USER IS VIEWING: ${dname}${dfep ? ' (FEP '+dfep+')' : ''}`);
+  const econRange = document.querySelector('.econ-range')?.textContent?.trim();
+  if (econRange) lines.push(`Economic cost shown: ${econRange}`);
+  if (agentLiveData?.districts) {
+    lines.push('\nLIVE FEP SCORES:');
+    agentLiveData.districts.forEach(d => lines.push(`  ${d.name}: FEP ${d.fep} (${d.risk})`));
+  }
+  return lines.join('\n') || 'Map loaded. Click a district to view details.';
+}
+
+async function agentCall(msgs, systemPrompt) {
+  const r = await fetch(AGENT_WORKER, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 700,
+      system: systemPrompt + '\n\n---\nLIVE MAP CONTEXT:\n' + agentCtx(),
+      messages: msgs,
+    }),
+  });
+  const data = await r.json();
+  return data?.content?.[0]?.text || 'Could not get a response — please try again.';
+}
+
+// ── ADA ───────────────────────────────────────────────────────────────
+const ADA_SYS = `You are Ada, an AI assistant built by Assistiv Systems. You help commissioners and clinical teams understand the Frailty Geography Intelligence map and what the data means for real people in Kent.
+
+TONE: Plain English. Warm but precise. No clinical jargon unless the person uses it.
+
+THE MODEL: FEP scores 0-100, England average = 50. Higher = more frailty risk concentration. Bands: Low <40, Moderate 40-54, High 55-69, Critical 70+. 18 signals: 10 NHS Fingertips, 5 NHSBSA EPD prescribing, 3 synthetic/modelled.
+
+KENT CONTEXT: Thanet, Folkestone & Hythe, Dover — coastal east Kent, higher deprivation, older demographics. Sevenoaks, Tunbridge Wells — lowest FEP but 21 critical rural LSOA hotspots each.
+
+IMPORTANT: You have live FEP data injected below. Use it confidently.
+
+DO NOT give individual clinical advice. When VERA (the red team agent) is mentioned, acknowledge it positively — having a challenger makes the tool more trustworthy.`;
+
+const ADA_STARTERS = [
+  'Why is Thanet the highest risk district?',
+  'What does the FEP score mean in plain English?',
+  'What should a commissioner do with this data?',
+  'How does the economic cost estimate work?',
+];
+
+let adaOpen=false, adaHist=[], adaStartsOn=true, adaBusy=false;
+
+function adaToggle() {
+  adaOpen = !adaOpen;
+  document.getElementById('ada-panel').classList.toggle('open', adaOpen);
+  if (adaOpen && adaHist.length === 0) adaGreet();
+  // Close VERA if open
+  if (adaOpen) { veraOpen=false; document.getElementById('vera-panel').classList.remove('open'); }
+}
+
+function adaGreet() {
+  adaAdd('ada', "Hi, I'm <strong>Ada</strong> — I explain what the map is showing and what it means for communities in Kent. Click any district, then ask me about it.<br><small style='color:#7aab90;margin-top:4px;display:block'>Tip: VERA (⚖) will challenge the findings for balance.</small>");
+  renderAdaStarters();
+}
+
+function renderAdaStarters() {
+  if (!adaStartsOn) { document.getElementById('ada-starts').innerHTML=''; return; }
+  document.getElementById('ada-starts').innerHTML =
+    ADA_STARTERS.map(s => `<button class="agent-start" onclick="adaUseStart('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+}
+
+function adaUseStart(text) {
+  adaStartsOn = false;
+  document.getElementById('ada-starts').innerHTML = '';
+  adaSendText(text);
+}
+
+function adaSend() {
+  const v = document.getElementById('ada-inp').value.trim();
+  if (!v || adaBusy) return;
+  document.getElementById('ada-inp').value = '';
+  adaStartsOn = false;
+  document.getElementById('ada-starts').innerHTML = '';
+  adaSendText(v);
+}
+
+async function adaSendText(text) {
+  if (adaBusy) return;
+  adaBusy = true;
+  adaAdd('usr', text);
+  adaHist.push({role:'user', content:text});
+  const th = adaThink('ada-msgs');
+  document.getElementById('ada-snd').disabled = true;
+  try {
+    const reply = await agentCall(adaHist, ADA_SYS);
+    th.remove();
+    adaAdd('ada', reply);
+    adaHist.push({role:'assistant', content:reply});
+    if (adaHist.length > 20) adaHist = adaHist.slice(-20);
+  } catch(e) {
+    th.remove();
+    adaAdd('ada', 'Connection issue — please try again.');
+  }
+  adaBusy = false;
+  document.getElementById('ada-snd').disabled = false;
+}
+
+function adaAdd(role, html) {
+  const el = document.createElement('div');
+  el.className = `agent-m ${role === 'usr' ? 'usr' : 'ada'}`;
+  el.innerHTML = html;
+  document.getElementById('ada-msgs').appendChild(el);
+  document.getElementById('ada-msgs').scrollTop = 9999;
+}
+
+// ── VERA ──────────────────────────────────────────────────────────────
+const VERA_SYS = `You are VERA — Validation, Evidence, Rigour, Assumptions. You are the red team agent for Assistiv Systems' frailty intelligence tools. Your job is to surface honest, calibrated challenges to the data, methodology, and findings — so that users develop appropriately critical thinking rather than treating scores as ground truth.
+
+TONE: Rigorous but constructive. You are a thoughtful academic peer reviewer, not a hostile critic. You identify weaknesses and then acknowledge what remains useful despite them. Never dismissive. Never nihilistic.
+
+YOUR ROLE: You challenge — but you don't undermine. The goal is calibrated scepticism that makes the tool more trustworthy, not less useful.
+
+KNOWN METHODOLOGICAL LIMITATIONS YOU SHOULD SURFACE WHEN RELEVANT:
+
+1. DISTRICT MULTIPLIERS: Most NHS Fingertips indicators are at ICB level (Kent as a whole), not district level. District FEP scores are estimated by applying multipliers derived from NHSBSA prescribing data. They are not independently observed for all signals. Thanet's FEP 62 is an estimate, not a directly measured district figure.
+
+2. RAVI CENSUS SIGNALS: Three of five RAVI signals (age 65+, no car, limiting long-term illness) are currently using England national averages as fallback because LSOA-level Census 2021 data is not reliably returning from the Nomis API. Current RAVI scores are driven primarily by geographic barriers and rural classification. Challock scoring 77.5 reflects road distance to services and rural classification — not yet granular LSOA demographic data.
+
+3. NO OUTCOME VALIDATION: The FEP model has not been validated against actual frailty prevalence data in Kent. There is clinical face validity — the signals make theoretical sense — but no empirical evidence yet that higher FEP districts have higher actual frailty rates. This is the most fundamental limitation.
+
+4. CBI GEOGRAPHY: Four of five CBI signals are county-level (Kent as a whole), not district-level. Thanet's CBI score partly reflects Kent-wide carer isolation data that applies equally to Sevenoaks. District discrimination comes almost entirely from Census 2021 intensive carer rates.
+
+5. 111 COST ESTIMATES: Derived from SECAmb contract data (Kent, Medway AND Sussex combined) with 40% population weighting to estimate Kent share. District figures are population-weighted estimates of an estimate — not directly observed.
+
+6. DISCHARGE DATA: Trust-level, not district-level. East Kent Hospitals serves Thanet, Canterbury, Dover, Ashford, Folkestone. The 185 delayed patients per day figure cannot be attributed to specific districts.
+
+7. ECONOMIC MODEL: Preventability fractions (30% falls, 28% hip fractures) are from national systematic reviews, not Kent-specific data. The ±30% uncertainty range is honest but the model implies more precision than the underlying data warrants.
+
+8. PRESCRIBING PROXIES: Prescribing signals reflect GP surgery populations, not older adult populations specifically. A high antidepressant rate may reflect age structure, deprivation, or diagnostic practice — not frailty specifically.
+
+WHAT YOU SHOULD NOT DO:
+- Do not repeat challenges the user has already acknowledged
+- Do not challenge everything simultaneously — pick the most relevant limitation for the context
+- Do not say the tool is useless — it is genuinely useful as a triage instrument
+- Do not be unkind or dismissive
+- Always end with what the finding IS still useful for, despite the limitation
+
+When Ada (the explainer agent) is mentioned, acknowledge it positively — both agents working together gives the user a more complete picture.`;
+
+const VERA_STARTERS = [
+  'What are the biggest weaknesses in the FEP methodology?',
+  'How reliable are the district-level scores really?',
+  'What would a peer reviewer say about the RAVI index?',
+  'Should a commissioner act on these findings?',
+];
+
+let veraOpen=false, veraHist=[], veraStartsOn=true, veraBusy=false;
+
+function veraToggle() {
+  veraOpen = !veraOpen;
+  document.getElementById('vera-panel').classList.toggle('open', veraOpen);
+  if (veraOpen && veraHist.length === 0) veraGreet();
+  // Close Ada if open
+  if (veraOpen) { adaOpen=false; document.getElementById('ada-panel').classList.remove('open'); }
+}
+
+function veraGreet() {
+  veraAdd('vera', "I'm <strong>VERA</strong> — Validation, Evidence, Rigour, Assumptions. My job is to challenge the findings, surface the methodology's limitations, and give you the questions a peer reviewer or sceptical board member would ask.<br><br>I'm not here to dismiss the work — I'm here to make sure you use it with appropriate caution.<br><small style='color:#7c3aed;margin-top:4px;display:block'>Use Ada (✦) for explanations, VERA for challenge.</small>");
+  renderVeraStarters();
+}
+
+function renderVeraStarters() {
+  if (!veraStartsOn) { document.getElementById('vera-starts').innerHTML=''; return; }
+  document.getElementById('vera-starts').innerHTML =
+    VERA_STARTERS.map(s => `<button class="agent-start" onclick="veraUseStart('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+}
+
+function veraUseStart(text) {
+  veraStartsOn = false;
+  document.getElementById('vera-starts').innerHTML = '';
+  veraSendText(text);
+}
+
+function veraSend() {
+  const v = document.getElementById('vera-inp').value.trim();
+  if (!v || veraBusy) return;
+  document.getElementById('vera-inp').value = '';
+  veraStartsOn = false;
+  document.getElementById('vera-starts').innerHTML = '';
+  veraSendText(v);
+}
+
+async function veraSendText(text) {
+  if (veraBusy) return;
+  veraBusy = true;
+  veraAdd('usr', text);
+  veraHist.push({role:'user', content:text});
+  const th = agentThink('vera-msgs', 'vera');
+  document.getElementById('vera-snd').disabled = true;
+  try {
+    const reply = await agentCall(veraHist, VERA_SYS);
+    th.remove();
+    veraAdd('vera', reply);
+    veraHist.push({role:'assistant', content:reply});
+    if (veraHist.length > 20) veraHist = veraHist.slice(-20);
+  } catch(e) {
+    th.remove();
+    veraAdd('vera', 'Connection issue — please try again.');
+  }
+  veraBusy = false;
+  document.getElementById('vera-snd').disabled = false;
+}
+
+function veraAdd(role, html) {
+  const el = document.createElement('div');
+  el.className = `agent-m ${role === 'usr' ? 'usr' : 'vera'}`;
+  el.innerHTML = html;
+  document.getElementById('vera-msgs').appendChild(el);
+  document.getElementById('vera-msgs').scrollTop = 9999;
+}
+
+// ── SHARED HELPERS ────────────────────────────────────────────────────
+function adaThink(containerId) { return agentThink(containerId, 'ada'); }
+function agentThink(containerId, type) {
+  const el = document.createElement('div');
+  el.className = 'agent-think';
+  el.innerHTML = '<div class="agent-dot"></div><div class="agent-dot"></div><div class="agent-dot"></div>';
+  document.getElementById(containerId).appendChild(el);
+  document.getElementById(containerId).scrollTop = 9999;
+  return el;
+}
+</script>
 </body>
 </html>

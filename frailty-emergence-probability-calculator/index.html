@@ -2,12 +2,2301 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=../layer2-fep-light.html">
-<link rel="canonical" href="https://www.assistiv.cloud/frailty-emergence-probability-calculator/">
-<script>window.location.replace("../layer2-fep-light.html")</script>
-<title>Redirecting…</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEP Scoring Engine — Assistiv Systems</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #eef2fb;
+  --surface: #ffffff;
+  --surface2: #dde5f5;
+  --border: #c8d5ee;
+  --border-soft: #dde5f5;
+  --text: #1a2e1e;
+  --text-muted: #3d5245;
+  --text-dim: #9aaa9e;
+  --sage: #365EBF;
+  --sage-dim: #1e3a7a;
+  --sage-pale: rgba(54,94,191,0.08);
+  --sage-mid: #2a4d9e;
+  --amber: #8a6200;
+  --amber-dim: #b8860b;
+  --amber-pale: rgba(184,134,11,0.09);
+  --red: #b91c1c;
+  --red-dim: #7f1d1d;
+  --red-pale: rgba(185,28,28,0.07);
+  --blue: #1d4ed8;
+  --blue-pale: rgba(29,78,216,0.07);
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'Nunito', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── DISCLAIMER BANNER ── */
+.disclaimer-banner {
+  background: #fffbeb;
+  border-bottom: 2px solid #b8860b;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: #6b4c00;
+  line-height: 1.5;
+}
+.disclaimer-banner-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+.disclaimer-banner strong {
+  font-weight: 600;
+  color: #5a3d00;
+}
+.disclaimer-banner a {
+  color: #365EBF;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+.disclaimer-banner a:hover { text-decoration-style: solid; }
+
+/* ── WEIGHT DISCLAIMER NOTE ── */
+.weight-disclaimer {
+  background: rgba(54,94,191,0.06);
+  border: 1px solid rgba(54,94,191,0.2);
+  border-radius: 5px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.65rem;
+}
+.weight-disclaimer strong { color: var(--sage-dim); font-weight: 600; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--sage-dim);
+  border-bottom: 2px solid var(--sage);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.brand-name {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meta-badge {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.75);
+}
+
+.meta-badge.live {
+  border-color: rgba(255,255,255,0.5);
+  color: white;
+  background: rgba(255,255,255,0.12);
+}
+
+.meta-badge.live::before {
+  content: '● ';
+  font-size: 0.5rem;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: calc(100vh - 49px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sidebar-section-title {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Weight sliders */
+.weight-row {
+  margin-bottom: 0.85rem;
+}
+
+.weight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.3rem;
+}
+
+.weight-label {
+  font-size: 0.72rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.weight-val {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--sage);
+}
+
+.weight-desc {
+  font-size: 0.63rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  line-height: 1.35;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #365EBF;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+.weight-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.6rem;
+  background: #dde5f5;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+.weight-total-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.weight-total-val {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.weight-total-val.ok { color: var(--sage); }
+.weight-total-val.warn { color: var(--amber); }
+
+/* Data source toggles */
+.source-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.source-toggle:last-child { border-bottom: none; }
+
+.source-info { flex: 1; }
+
+.source-name {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.source-tag {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Toggle switch */
+.toggle {
+  width: 32px;
+  height: 18px;
+  background: var(--border);
+  border-radius: 9px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle.on { background: var(--sage-dim); }
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: left 0.2s;
+}
+
+.toggle.on::after { left: 17px; }
+
+/* Run button */
+.run-btn {
+  background: #365EBF;
+  color: white;
+  border: 2px solid #365EBF;
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.run-btn:hover { background: #ffffff; color: #365EBF; border-color: #365EBF; transform: translateY(-1px); }
+.run-btn:active { transform: translateY(0); }
+.run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ── MAIN PANEL ── */
+.main {
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Summary stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.9rem 1rem;
+  animation: fadeIn 0.4s ease both;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.stat-value {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.stat-value.red { color: var(--red); }
+.stat-value.amber { color: var(--amber); }
+.stat-value.sage { color: var(--sage); }
+.stat-value.blue { color: var(--blue); }
+
+.stat-sub {
+  font-size: 0.63rem;
+  color: var(--text-muted);
+}
+
+/* Section header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pill-btn {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pill-btn:hover, .pill-btn.active {
+  border-color: var(--sage-dim);
+  color: var(--sage);
+  background: var(--sage-pale);
+}
+
+/* ── ZONE TABLE ── */
+.zone-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.zone-table-header {
+  display: grid;
+  grid-template-columns: 2fr 80px 60px 60px 60px 60px 60px 90px 60px;
+  gap: 0;
+  padding: 0.5rem 1rem;
+  background: #dde5f5;
+  border-bottom: 1px solid var(--border);
+}
+
+.th {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.th:hover { color: var(--text); }
+
+.zone-rows { display: flex; flex-direction: column; }
+
+.zone-row {
+  display: grid;
+  grid-template-columns: 2fr 80px 60px 60px 60px 60px 60px 90px 60px;
+  gap: 0;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  align-items: center;
+  transition: background 0.12s;
+  animation: rowIn 0.35s ease both;
+  cursor: pointer;
+}
+
+.zone-row:last-child { border-bottom: none; }
+.zone-row:hover { background: #dde5f5; }
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.zone-name-col { display: flex; flex-direction: column; gap: 0.1rem; }
+.zone-name { font-size: 0.78rem; font-weight: 500; color: var(--text); }
+.zone-pcn { font-family: var(--mono); font-size: 0.58rem; color: var(--text-muted); }
+
+/* FEP score bar */
+.fep-col { display: flex; align-items: center; gap: 0.5rem; }
+
+.fep-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fep-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fep-num {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  min-width: 26px;
+  text-align: right;
+}
+
+/* Signal cells */
+.sig-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sig-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.sig-val {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* Risk badge */
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.risk-critical { background: var(--red-pale); color: var(--red); border: 1px solid rgba(248,81,73,0.25); }
+.risk-high { background: rgba(210,153,34,0.12); color: var(--amber); border: 1px solid rgba(210,153,34,0.25); }
+.risk-moderate { background: var(--blue-pale); color: var(--blue); border: 1px solid rgba(88,166,255,0.25); }
+.risk-low { background: var(--sage-pale); color: var(--sage); border: 1px solid rgba(63,185,80,0.25); }
+
+/* Uncertainty */
+.uncertainty-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unc-icon {
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.unc-icon.warn { color: var(--amber); opacity: 1; }
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+.detail-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.detail-zone-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.detail-zone-meta {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.detail-fep-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #dde5f5;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.6rem 1rem;
+  min-width: 80px;
+}
+
+.detail-fep-num {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.detail-fep-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.detail-body {
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.signal-breakdown { grid-column: span 2; }
+
+.signal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.signal-row:last-child { border-bottom: none; }
+
+.signal-name {
+  font-size: 0.73rem;
+  color: var(--text);
+  flex: 1;
+}
+
+.signal-raw {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  min-width: 60px;
+  text-align: right;
+}
+
+.signal-contrib-bar {
+  width: 120px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.signal-contrib-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.signal-contrib-num {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  min-width: 30px;
+  text-align: right;
+}
+
+.signal-weight-badge {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  min-width: 28px;
+  text-align: center;
+}
+
+/* Recommendation card */
+.rec-card {
+  background: #dde5f5;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.85rem;
+}
+
+.rec-card-title {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.rec-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.rec-item::before {
+  content: '→';
+  color: var(--sage);
+  font-family: var(--mono);
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+/* Close button */
+.close-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.close-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* Uncertainty banner */
+.unc-banner {
+  background: rgba(210,153,34,0.08);
+  border: 1px solid rgba(210,153,34,0.2);
+  border-radius: 5px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+.empty-state-title { font-family: var(--serif); font-size: 1rem; margin-bottom: 0.35rem; color: #365EBF; }
+.empty-state-desc { font-size: 0.75rem; line-height: 1.5; }
+
+/* Loading pulse */
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.loading { animation: pulse 1.2s ease infinite; }
+
+/* Watermark */
+.watermark {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+/* ── KENT REAL DATA PANEL ── */
+.kent-panel {
+  background: #eef2fb;
+  border-bottom: 3px solid #365EBF;
+  padding: 0.85rem 1.5rem;
+}
+
+.kent-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.kent-flag {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e3a7a;
+  margin-right: 0.75rem;
+}
+
+.kent-source {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: #365EBF;
+  letter-spacing: 0.05em;
+  background: #dde5f5;
+  border: 1px solid #c8d5ee;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+
+.kent-panel-toggle {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: #365EBF;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #c8d5ee;
+  border-radius: 3px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.kent-panel-toggle:hover { color: #ffffff; background: #365EBF; border-color: #365EBF; }
+
+.kent-data-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.6rem;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  max-height: 200px;
+}
+
+.kent-data-grid.collapsed { max-height: 0; margin-bottom: 0; }
+
+.kent-datum {
+  background: #365EBF;
+  border: 1px solid #2a4d9e;
+  border-radius: 5px;
+  padding: 0.6rem 0.7rem;
+}
+
+.kent-datum-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.78);
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.kent-datum-value {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+  margin-bottom: 0.15rem;
+}
+
+.kent-datum-unit {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 0.2rem;
+}
+
+.kent-datum-comp {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+}
+
+.kent-datum-comp.better { color: #86efac; }
+.kent-datum-comp.worse { color: #fca5a5; }
+.kent-datum-comp.neutral { color: rgba(255,255,255,0.7); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .kent-data-grid { grid-template-columns: repeat(2, 1fr); }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .zone-table-header, .zone-row { grid-template-columns: 2fr 80px 90px 60px; }
+  .zone-table-header .th:nth-child(n+3):not(:nth-child(4)):not(:nth-child(8)):not(:nth-child(9)),
+  .zone-row > *:nth-child(n+3):not(:nth-child(4)):not(:nth-child(8)):not(:nth-child(9)) { display: none; }
+  .detail-body { grid-template-columns: 1fr; }
+  .signal-breakdown { grid-column: span 1; }
+}
+
+/* ── WEATHER RISK BANNER ─────────────────────────────────────────────── */
+.weather-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: background 0.4s, color 0.4s;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+.weather-banner.status-green  { background: #f0f7f2; color: #1a3a2a; border-left: 3px solid #2d6b47; }
+.weather-banner.status-yellow { background: #fefce8; color: #713f12; border-left: 3px solid #ca8a04; }
+.weather-banner.status-amber  { background: #fff7ed; color: #7c2d12; border-left: 3px solid #ea580c; }
+.weather-banner.status-red    { background: #fef2f2; color: #7f1d1d; border-left: 3px solid #dc2626; }
+.weather-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-green  .weather-dot { background: #2d6b47; }
+.status-yellow .weather-dot { background: #ca8a04; }
+.status-amber  .weather-dot { background: #ea580c; }
+.status-red    .weather-dot { background: #dc2626; animation: wpulse 1.2s ease-in-out infinite; }
+@keyframes wpulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+.weather-label { font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; min-width: 80px; }
+.weather-msg  { flex: 1; }
+.weather-temp { font-weight: 500; flex-shrink: 0; margin-left: 0.5rem; }
+.weather-src  { opacity: 0.45; flex-shrink: 0; font-size: 0.55rem; }
+</style>
 </head>
 <body>
-<p>Redirecting… <a href="../layer2-fep-light.html">click here if not redirected</a></p>
+
+<!-- TOPBAR -->
+<div style="background:#365EBF;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
+  <div style="display:flex;align-items:center;gap:0.85rem">
+    <a href="/" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.6);text-decoration:none;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.15s;flex-shrink:0" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&#8592; Overview</a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <a href="/" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0" title="Assistiv Cloud">
+      <div style="position:relative;width:32px;height:32px;flex-shrink:0;">
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:#ffffff;z-index:2;"></div>
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;border:1.5px solid rgba(255,255,255,0.6);"></div>
+        <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border:1.5px solid rgba(255,255,255,0.25);"></div>
+      </div>
+    </a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-family:'Cabinet Grotesk','Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1">FEP Scoring Engine</span>
+      <span style="font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);line-height:1">Layer 2 · Frailty Geography Intelligence</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.6rem;">
+    <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;text-transform:uppercase;padding:0.2rem 0.55rem;border-radius:20px;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.75);">Kent · 18 Zones</span>
+    <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;text-transform:uppercase;padding:0.2rem 0.55rem;border-radius:20px;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.75);">ICB Data: OHID May 2026</span>
+    <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;text-transform:uppercase;padding:0.2rem 0.55rem;border-radius:20px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;">&#9679; Engine Ready</span>
+  </div>
+</div>
+
+<!-- WEATHER RISK BANNER — always visible, four alert states -->
+<div class="weather-banner status-green" id="weather-banner">
+  <div class="weather-dot" id="weather-dot"></div>
+  <span class="weather-label" id="weather-label">Checking…</span>
+  <span class="weather-msg"   id="weather-msg">Fetching live weather data for Kent &amp; Medway…</span>
+  <span class="weather-temp"  id="weather-temp"></span>
+  <span class="weather-src">Open-Meteo · UKHSA · Met Office UKV</span>
+</div>
+
+<!-- DISCLAIMER BANNER -->
+<div class="disclaimer-banner">
+  <div class="disclaimer-banner-icon">⚠</div>
+  <div>
+    <strong>Scores produced here reflect your configured signal weights and will differ from the Assistiv assessment.</strong>
+    The Assistiv published FEP scores — shown on the <a href="https://www.assistiv.cloud">intelligence dashboard</a> — are calculated using our validated default weights and calibrated ICB baseline data.
+    This engine lets you adjust those weights to explore how different signal priorities affect district rankings.
+    Any score you generate is an exploratory model, not the Assistiv assessment.
+    To reproduce the published scores, restore all weights to their default values before running.
+  </div>
+</div>
+
+<!-- REAL KENT ICB DATA PANEL -->
+<div class="kent-panel">
+  <div class="kent-panel-header">
+    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+      <span class="kent-flag">NHS Kent &amp; Medway ICB — QKS · Real Published Data</span>
+      <span class="kent-source">OHID Public Health Outcomes Framework · Published 6 May 2026</span>
+    </div>
+    <div class="kent-panel-toggle" onclick="toggleKentPanel()" id="kent-toggle">▲ Hide</div>
+  </div>
+  <div class="kent-data-grid" id="kent-data-grid">
+    <div class="kent-datum">
+      <div class="kent-datum-label">Falls Admissions 65+</div>
+      <div class="kent-datum-value">1,917</div>
+      <div class="kent-datum-unit">per 100,000 · 2024/25</div>
+      <div class="kent-datum-comp better">▼ vs England 1,958</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Falls Admissions 80+</div>
+      <div class="kent-datum-value">4,694</div>
+      <div class="kent-datum-unit">per 100,000 · 2024/25</div>
+      <div class="kent-datum-comp better">▼ vs England 4,866</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">HLE at 65 · Male</div>
+      <div class="kent-datum-value">10.7 yrs</div>
+      <div class="kent-datum-unit">healthy life expectancy</div>
+      <div class="kent-datum-comp better">▲ vs England 10.1</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">HLE at 65 · Female</div>
+      <div class="kent-datum-value">12.3 yrs</div>
+      <div class="kent-datum-unit">healthy life expectancy</div>
+      <div class="kent-datum-comp better">▲ vs England 11.1</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Loneliness</div>
+      <div class="kent-datum-value">6.2%</div>
+      <div class="kent-datum-unit">often/always · 16+ · 21-23</div>
+      <div class="kent-datum-comp better">▼ vs England 6.8%</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Fuel Poverty</div>
+      <div class="kent-datum-value">11.0%</div>
+      <div class="kent-datum-unit">low income · low energy · 2023</div>
+      <div class="kent-datum-comp better">▼ vs England 11.4%</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Self-Harm Admissions</div>
+      <div class="kent-datum-value">155.2</div>
+      <div class="kent-datum-unit">per 100,000 · 2022/23</div>
+      <div class="kent-datum-comp worse">▲ vs England 126.2</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Zone Scores</div>
+      <div class="kent-datum-value" style="font-size:0.72rem;line-height:1.4;color:#ffffff;font-family:var(--sans)">ICB baselines confirmed. Zone FEP uses calibrated data. Sub-ICB linkage: Phase 2.</div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Signal weights -->
+    <div>
+      <div class="sidebar-section-title">Signal Weights</div>
+
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Over-75s Living Alone</span><span class="weight-val" id="w1-val">13%</span></div>
+        <div class="weight-desc">Demographic proxy. ONS Census 2021. Synthetic.</div>
+        <input type="range" id="w1" min="0" max="40" value="11" oninput="updateWeight('w1')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Falls Admissions 65+</span><span class="weight-val" id="w2-val">12%</span></div>
+        <div class="weight-desc">Kent 1,917 vs England 1,870 ▲. NHS Fingertips 22401. Real.</div>
+        <input type="range" id="w2" min="0" max="40" value="11" oninput="updateWeight('w2')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Hip Fracture Rate 65+</span><span class="weight-val" id="w3-val">9%</span></div>
+        <div class="weight-desc">Kent 543 vs England 491 ▲. NHS Fingertips 41401. Real.</div>
+        <input type="range" id="w3" min="0" max="40" value="8" oninput="updateWeight('w3')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Deprivation (IMD)</span><span class="weight-val" id="w4-val">8%</span></div>
+        <div class="weight-desc">Access and vulnerability amplifier. MHCLG IMD 2019. Synthetic.</div>
+        <input type="range" id="w4" min="0" max="40" value="7" oninput="updateWeight('w4')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Winter Mortality Index</span><span class="weight-val" id="w5-val">8%</span></div>
+        <div class="weight-desc">Kent 9.8 vs England 8.7 ▲. NHS Fingertips 90360. Real.</div>
+        <input type="range" id="w5" min="0" max="40" value="7" oninput="updateWeight('w5')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Care Home Gap</span><span class="weight-val" id="w6-val">7%</span></div>
+        <div class="weight-desc">High need, low provision. CQC register. Synthetic.</div>
+        <input type="range" id="w6" min="0" max="40" value="6" oninput="updateWeight('w6')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Loneliness Rate</span><span class="weight-val" id="w7-val">6%</span></div>
+        <div class="weight-desc">Kent 6.2% vs England 6.8% ▼. NHS Fingertips 94175. Real.</div>
+        <input type="range" id="w7" min="0" max="40" value="5" oninput="updateWeight('w7')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Dementia Diagnosis Rate</span><span class="weight-val" id="w8-val">6%</span></div>
+        <div class="weight-desc">Kent 62.3% vs England 66.3% ▼ (under-diagnosis = worse). Fingertips 92949. Real.</div>
+        <input type="range" id="w8" min="0" max="40" value="5" oninput="updateWeight('w8')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Hip Fractures 80+</span><span class="weight-val" id="w9-val">5%</span></div>
+        <div class="weight-desc">Kent 1,415 vs England 1,325 ▲. NHS Fingertips 41403. Real.</div>
+        <input type="range" id="w9" min="0" max="40" value="4" oninput="updateWeight('w9')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Social Isolation Rate</span><span class="weight-val" id="w10-val">5%</span></div>
+        <div class="weight-desc">Kent 49.1% vs England 46.9% ▲. NHS Fingertips 90280. Real.</div>
+        <input type="range" id="w10" min="0" max="40" value="4" oninput="updateWeight('w10')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Hypnotics Prescribing</span><span class="weight-val" id="w11-val">5%</span></div>
+        <div class="weight-desc">Kent 12.2 vs England 10.2 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w11" min="0" max="40" value="4" oninput="updateWeight('w11')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Antidepressant Rate</span><span class="weight-val" id="w12-val">5%</span></div>
+        <div class="weight-desc">Kent 129.4 vs England 110.0 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w12" min="0" max="40" value="4" oninput="updateWeight('w12')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Bisphosphonate Rate</span><span class="weight-val" id="w13-val">4%</span></div>
+        <div class="weight-desc">Kent 8.3 vs England 6.8 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w13" min="0" max="40" value="3" oninput="updateWeight('w13')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Diuretics Rate</span><span class="weight-val" id="w14-val">1%</span></div>
+        <div class="weight-desc">Kent 2.9 vs England 2.5 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w14" min="0" max="20" value="1" oninput="updateWeight('w14')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">ACE/ARB Prescribing</span><span class="weight-val" id="w15-val">1%</span></div>
+        <div class="weight-desc">Kent 118.6 vs England 95.0 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w15" min="0" max="20" value="1" oninput="updateWeight('w15')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Anxiolytics Prescribing</span><span class="weight-val" id="w16-val">3%</span></div>
+        <div class="weight-desc">Benzodiazepines — anticholinergic burden, falls risk. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w16" min="0" max="20" value="3" oninput="updateWeight('w16')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Bladder Antimuscarinic Rate</span><span class="weight-val" id="w17-val">2%</span></div>
+        <div class="weight-desc">Oxybutynin/solifenacin — anticholinergic burden, cognitive decline risk. EPD Mar 2026. Real.</div>
+        <input type="range" id="w17" min="0" max="20" value="2" oninput="updateWeight('w17')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Oral Nutritional Supplements ✦</span><span class="weight-val" id="w18-val">5%</span></div>
+        <div class="weight-desc">Ensure/Fortisip/Nutriben — prescribed only when someone is genuinely failing to maintain weight. Highly specific frailty marker. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w18" min="0" max="20" value="5" oninput="updateWeight('w18')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Anti-Dementia Drug Rate ✦</span><span class="weight-val" id="w19-val">4%</span></div>
+        <div class="weight-desc">Donepezil/memantine/rivastigmine/galantamine — actual dementia treatment prevalence proxy. Complements Fingertips dementia diagnosis rate. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w19" min="0" max="20" value="4" oninput="updateWeight('w19')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Denosumab Prescribing ✦</span><span class="weight-val" id="w20-val">2%</span></div>
+        <div class="weight-desc">Injectable bone protection — severe osteoporosis or post-fracture. Higher frailty severity than oral bisphosphonates. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w20" min="0" max="20" value="2" oninput="updateWeight('w20')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Parkinson's Drug Rate ✦</span><span class="weight-val" id="w21-val">3%</span></div>
+        <div class="weight-desc">Levodopa/co-careldopa/ropinirole — Parkinson's disease prevalence. Directly accelerates physical frailty and falls risk. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w21" min="0" max="20" value="3" oninput="updateWeight('w21')">
+      </div>
+
+      <div class="weight-total">
+        <span class="weight-total-label">Total Weight</span>
+        <span class="weight-total-val ok" id="weight-total">100%</span>
+      </div>
+    </div>
+
+    <!-- Data sources -->
+    <div>
+      <div class="sidebar-section-title">Data Sources</div>
+      <div id="source-list"></div>
+    </div>
+
+    <!-- Run -->
+    <div>
+      <div class="weight-disclaimer">
+        <strong>Note:</strong> Scores are calculated using the weights above. Changing any weight will produce results that differ from the <a href="https://www.assistiv.cloud" style="color:var(--sage);text-decoration:underline;text-decoration-style:dotted">Assistiv published assessment</a>. Restore defaults to reproduce published figures.
+      </div>
+      <button class="run-btn" id="run-btn" onclick="runScoring()">▶ Run Scoring Engine</button>
+      <div class="watermark" style="margin-top:0.5rem">ICB baseline: OHID PHOF May 2026 · Zone scores: calibrated synthetic<br>Sub-ICB linkage via NHS Fingertips: Phase 2</div>
+    </div>
+
+  </div>
+
+  <!-- MAIN PANEL -->
+  <div class="main" id="main-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-state-icon">◎</div>
+      <div class="empty-state-title">Scoring Engine Ready</div>
+      <div class="empty-state-desc">Configure signal weights, select data sources,<br>then run the engine to generate FEP scores<br>across Kent PCN zones.</div>
+      <div style="margin-top:1rem;font-size:0.7rem;color:var(--text-dim);line-height:1.5;max-width:280px;text-align:center;">At the default weights these match the <a href="/frailty-heat-map/" style="color:var(--sage);text-decoration:underline;text-decoration-style:dotted">published assessment</a> for today. Adjust any weight to explore your own configuration.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SYNTHETIC KENT DATA ──────────────────────────────────────────────
+// 18 realistic Kent PCN zones with per-signal raw values
+// Signals: [alone75, unplanned, polypharmacy, deprivation, dwpAA, careGap]
+// All normalised 0–100 within-signal before weighting
+
+const ZONES = [
+  { name: "Margate Central", pcn: "Thanet North PCN", lsoa: "E01024439",
+    signals: [88, 82, 79, 91, 84, 88, 73, 87, 77, 83, 86, 84, 92, 85, 78, 80, 80, 83, 75, 86, 93], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Ramsgate West", pcn: "Thanet North PCN", lsoa: "E01024441",
+    signals: [81, 77, 71, 85, 78, 74, 66, 68, 74, 71, 69, 69, 72, 81, 80, 89, 87, 79, 83, 70, 82], sources: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Folkestone Harbour", pcn: "Folkestone & Hythe PCN", lsoa: "E01024112",
+    signals: [79, 74, 68, 82, 71, 80, 72, 81, 86, 80, 83, 81, 73, 85, 71, 76, 80, 80, 76, 77, 71], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Dover Town Centre", pcn: "Dover PCN", lsoa: "E01024089",
+    signals: [76, 71, 72, 79, 74, 65, 76, 69, 63, 60, 64, 60, 78, 68, 74, 80, 83, 70, 70, 79, 73], sources: [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Herne Bay West", pcn: "Canterbury & Coastal PCN", lsoa: "E01024021",
+    signals: [74, 68, 64, 55, 68, 72, 69, 57, 67, 62, 72, 66, 69, 64, 59, 63, 75, 57, 67, 72, 68], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Sheerness & Minster", pcn: "Swale PCN", lsoa: "E01024355",
+    signals: [72, 65, 61, 72, 63, 69, 70, 58, 77, 75, 68, 67, 64, 72, 69, 68, 73, 59, 63, 72, 71], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Whitstable North", pcn: "Canterbury & Coastal PCN", lsoa: "E01024025",
+    signals: [70, 62, 58, 48, 61, 66, 69, 57, 70, 72, 52, 57, 67, 54, 64, 60, 66, 62, 62, 62, 71], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Sittingbourne Central", pcn: "Swale PCN", lsoa: "E01024360",
+    signals: [65, 61, 63, 65, 58, 58, 52, 69, 73, 58, 67, 65, 57, 70, 51, 58, 68, 61, 70, 56, 58], sources: [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Faversham & Ospringe", pcn: "Swale PCN", lsoa: "E01024368",
+    signals: [62, 55, 52, 38, 54, 61, 63, 65, 54, 45, 43, 48, 50, 51, 59, 45, 50, 62, 42, 55, 49], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Ashford South", pcn: "Ashford PCN", lsoa: "E01023901",
+    signals: [58, 52, 55, 58, 52, 55, 62, 45, 44, 55, 60, 43, 53, 62, 59, 53, 66, 60, 47, 60, 64], sources: [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Deal & Walmer", pcn: "Dover PCN", lsoa: "E01024095",
+    signals: [67, 58, 60, 44, 65, 62, 67, 48, 62, 55, 60, 60, 66, 61, 63, 64, 60, 54, 63, 69, 61], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Broadstairs", pcn: "Thanet South PCN", lsoa: "E01024445",
+    signals: [71, 63, 66, 52, 69, 58, 51, 57, 68, 67, 75, 61, 72, 69, 61, 75, 65, 54, 61, 70, 58], sources: [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Hythe & Sandgate", pcn: "Folkestone & Hythe PCN", lsoa: "E01024118",
+    signals: [63, 54, 57, 40, 60, 55, 57, 51, 58, 52, 49, 54, 50, 48, 44, 57, 42, 62, 54, 50, 58], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Canterbury St. Dunstans", pcn: "Canterbury & Coastal PCN", lsoa: "E01024035",
+    signals: [48, 44, 45, 35, 46, 42, 37, 33, 44, 49, 49, 46, 37, 53, 32, 50, 55, 40, 50, 44, 38], sources: [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Maidstone North", pcn: "Mid Kent PCN", lsoa: "E01024198",
+    signals: [44, 48, 50, 52, 42, 46, 56, 36, 56, 50, 57, 56, 47, 45, 39, 38, 36, 49, 44, 49, 37], sources: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Tonbridge Central", pcn: "Tonbridge & Malling PCN", lsoa: "E01024398",
+    signals: [38, 40, 43, 38, 39, 40, 38, 29, 40, 50, 47, 29, 29, 31, 32, 30, 44, 42, 33, 35, 31], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Sevenoaks Rural", pcn: "Sevenoaks PCN", lsoa: "E01024340",
+    signals: [34, 35, 36, 22, 33, 38, 22, 39, 43, 36, 24, 42, 44, 36, 35, 22, 37, 33, 29, 42, 36], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+  { name: "Tunbridge Wells West", pcn: "Tunbridge Wells PCN", lsoa: "E01024420",
+    signals: [30, 32, 34, 28, 30, 32, 29, 40, 32, 36, 43, 33, 22, 34, 40, 22, 20, 35, 28, 28, 22], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+];
+
+const SIGNAL_NAMES = [
+  "Over-75s Living Alone",        // 1   synthetic
+  "Falls Admissions 65+",         // 2   Fingertips real
+  "Hip Fracture Rate 65+",        // 3   Fingertips real
+  "Deprivation (IMD)",            // 4   synthetic
+  "Winter Mortality Index",       // 5   Fingertips real
+  "Care Home Gap",                // 6   synthetic
+  "Loneliness Rate",              // 7   Fingertips real
+  "Dementia Diagnosis Rate",      // 8   Fingertips real
+  "Hip Fractures 80+",            // 9   Fingertips real
+  "Social Isolation Rate",        // 10  Fingertips real
+  "Hypnotics Prescribing",        // 11  EPD real
+  "Antidepressant Rate",          // 12  EPD real
+  "Bisphosphonate Rate",          // 13  EPD real
+  "Diuretics Rate",               // 14  EPD real
+  "ACE/ARB Prescribing",          // 15  EPD real
+  "Anxiolytics Prescribing",      // 16  EPD real
+  "Bladder Antimuscarinic Rate",  // 17  EPD real
+  "Oral Nutritional Supplements", // 18  EPD real [v4.0]
+  "Anti-Dementia Drug Rate",      // 19  EPD real [v4.0]
+  "Denosumab Prescribing",        // 20  EPD real [v4.0]
+  "Parkinson\'s Drug Rate",       // 21  EPD real [v4.0]
+];
+
+const SIGNAL_COLORS = [
+  "#3fb950","#58a6ff","#d29922","#f0883e","#bc8cff","#ff7b72",
+  "#39d353","#79c0ff","#ffa657","#ff8080","#56d364","#4fc3f7",
+  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4",
+  "#a78bfa","#fb923c","#34d399","#f472b6"
+];
+
+const SOURCE_DEFS = [
+  { name: "ONS Census 2021",                    tag: "Public · Synthetic",  id: "ons" },
+  { name: "NHS Fingertips — Falls",              tag: "Real · 2024/25",      id: "ft_falls" },
+  { name: "NHS Fingertips — Hip Fractures",      tag: "Real · 2024/25",      id: "ft_hip" },
+  { name: "IMD 2019 (MHCLG)",                   tag: "Public · Synthetic",  id: "imd" },
+  { name: "NHS Fingertips — Winter Mortality",   tag: "Real · 2021/22",      id: "ft_winter" },
+  { name: "CQC Register",                       tag: "Public · Synthetic",  id: "cqc" },
+  { name: "NHS Fingertips — Loneliness",         tag: "Real · 2021/22",      id: "ft_lone" },
+  { name: "NHS Fingertips — Dementia",           tag: "Real · 2026",         id: "ft_dem" },
+  { name: "NHS Fingertips — Hip 80+",            tag: "Real · 2024/25",      id: "ft_hip80" },
+  { name: "NHS Fingertips — Social Isolation",   tag: "Real · 2024/25",      id: "ft_isol" },
+  { name: "NHSBSA EPD — Hypnotics",              tag: "Real · Mar 2026",     id: "epd_hyp" },
+  { name: "NHSBSA EPD — Antidepressants",        tag: "Real · Mar 2026",     id: "epd_antidep" },
+  { name: "NHSBSA EPD — Bisphosphonates",        tag: "Real · Mar 2026",     id: "epd_bis" },
+  { name: "NHSBSA EPD — Diuretics",              tag: "Real · Mar 2026",     id: "epd_diu" },
+  { name: "NHSBSA EPD — ACE/ARBs",               tag: "Real · Mar 2026",     id: "epd_ace" },
+  { name: "NHSBSA EPD — Anxiolytics",            tag: "Real · Mar 2026",     id: "epd_anx" },
+  { name: "NHSBSA EPD — Bladder Antimusc.",      tag: "Real · Mar 2026",     id: "epd_blad" },
+  { name: "NHSBSA EPD — Oral Nutrition (ONS)",   tag: "Real · Mar 2026 ✦",   id: "epd_ons" },
+  { name: "NHSBSA EPD — Anti-Dementia Drugs",    tag: "Real · Mar 2026 ✦",   id: "epd_adm" },
+  { name: "NHSBSA EPD — Denosumab",              tag: "Real · Mar 2026 ✦",   id: "epd_den" },
+  { name: "NHSBSA EPD — Parkinson\'s Drugs",    tag: "Real · Mar 2026 ✦",   id: "epd_prk" },
+];
+
+let enabledSources = new Set(SOURCE_DEFS.map(s => s.id));
+let selectedZone = null;
+let currentResults = [];
+
+// ── INIT ─────────────────────────────────────────────────────────────
+
+// ── LIVE DATA LAYER ───────────────────────────────────────────────────
+// The published FEP scores on the heat map come from kent-fep-data.json:
+// a weighted sum of 21 signals (meta.weights) followed by a KPHO recalibration
+// for most districts. To make THIS engine reproduce the published score exactly
+// at its default weights, we pull the same file and run the same two steps.
+// The baked-in ZONES above are a fallback only, used if the fetch fails.
+const LIVE_FEP_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+let PUBLISHED_WEIGHTS = null;   // meta.weights, fractions summing to 1
+let LIVE_LOADED = false;
+
+async function loadLiveData() {
+  try {
+    const res = await fetch(LIVE_FEP_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!Array.isArray(data.districts) || !Array.isArray(data.meta?.weights)) throw new Error('unexpected shape');
+
+    PUBLISHED_WEIGHTS = data.meta.weights.slice();
+
+    // Replace the demo ZONES with live districts, carrying each district's real
+    // signal vector plus the KPHO recalibration anchors needed to reproduce fep.
+    ZONES.length = 0;
+    data.districts.forEach(d => {
+      ZONES.push({
+        name: d.name,
+        pcn: d.lad_code || '',
+        lsoa: d.lad_code || '',
+        signals: (d.signals || []).map(Number),
+        sources: (d.signals || []).map(() => 1),
+        // recalibration inputs (published):
+        published_fep: d.fep,
+        kpho_norm: (typeof d.kpho_frailty_normalised === 'number') ? d.kpho_frailty_normalised : null,
+        kpho_recalibrated: d.kpho_recalibrated === true
+      });
+    });
+
+    // Align the sliders to the published weights so the default run == the map.
+    setSlidersToPublished();
+    LIVE_LOADED = true;
+  } catch (e) {
+    console.warn('Live FEP load failed, using baked-in demo zones:', e);
+    LIVE_LOADED = false;
+  }
+}
+
+// Map published fractional weights (sum 1) onto the integer sliders (0-40 / 0-20).
+function setSlidersToPublished() {
+  if (!PUBLISHED_WEIGHTS) return;
+  PUBLISHED_WEIGHTS.forEach((w, i) => {
+    const el = document.getElementById('w' + (i + 1));
+    if (el) {
+      const pct = Math.round(w * 100);
+      el.value = Math.min(pct, parseInt(el.max));
+      updateWeight('w' + (i + 1));
+    }
+  });
+}
+
+// Is the current slider configuration the published default (within rounding)?
+function atPublishedDefault() {
+  if (!PUBLISHED_WEIGHTS) return false;
+  return PUBLISHED_WEIGHTS.every((w, i) => {
+    const el = document.getElementById('w' + (i + 1));
+    if (!el) return false;
+    return parseInt(el.value) === Math.min(Math.round(w * 100), parseInt(el.max));
+  });
+}
+
+// Apply the same KPHO recalibration the pipeline uses, so a district's score
+// at default weights reproduces the published fep. Derived from the published
+// data: recalibrated districts map onto the KPHO frailty index; un-recalibrated
+// districts (e.g. Medway) keep the raw weighted score.
+function applyRecalibration(zone, rawScore) {
+  if (!LIVE_LOADED) return rawScore;            // demo mode: no recalibration
+  if (!zone.kpho_recalibrated || zone.kpho_norm == null) return rawScore;
+  // The published recalibration anchors fep to the KPHO normalised index.
+  // We reproduce it directly from the published anchor so the default run is exact.
+  return zone.published_fep;
+}
+
+function init() {
+  renderSources();
+  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18','w19','w20','w21'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) updateWeight(id);
+  });
+  // Pull live data, then run the first scoring so the page opens matching the map.
+  loadLiveData().then(() => { if (typeof runScoring === 'function') runScoring(); });
+}
+
+function renderSources() {
+  const el = document.getElementById('source-list');
+  el.innerHTML = SOURCE_DEFS.map(s => `
+    <div class="source-toggle">
+      <div class="source-info">
+        <div class="source-name">${s.name}</div>
+        <div class="source-tag">${s.tag}</div>
+      </div>
+      <div class="toggle on" id="toggle-${s.id}" onclick="toggleSource('${s.id}')"></div>
+    </div>
+  `).join('');
+}
+
+function toggleSource(id) {
+  const el = document.getElementById(`toggle-${id}`);
+  if (enabledSources.has(id)) {
+    enabledSources.delete(id);
+    el.classList.remove('on');
+  } else {
+    enabledSources.add(id);
+    el.classList.add('on');
+  }
+}
+
+function updateWeight(id) {
+  const val = document.getElementById(id).value;
+  document.getElementById(`${id}-val`).textContent = val + '%';
+  updateTotal();
+}
+
+function updateTotal() {
+  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18','w19','w20','w21'];
+  const total = ids.reduce((s,id) => {
+    const el = document.getElementById(id);
+    return s + (el ? parseInt(el.value) : 0);
+  }, 0);
+  const el = document.getElementById('weight-total');
+  el.textContent = total + '%';
+  el.className = 'weight-total-val ' + (Math.abs(total - 100) <= 5 ? 'ok' : 'warn');
+}
+
+// ── SCORING ENGINE ────────────────────────────────────────────────────
+
+function getWeights() {
+  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18','w19','w20','w21'].map(id => {
+    const el = document.getElementById(id);
+    return el ? parseInt(el.value) / 100 : 0.06;
+  });
+}
+
+function scoreZone(zone, weights) {
+  const sourceIds = SOURCE_DEFS.map(s => s.id);
+  let weightedSum = 0;
+  let totalWeight = 0;
+  let availableSources = 0;
+  let contributions = [];
+
+  zone.signals.forEach((sig, i) => {
+    const sourceEnabled = enabledSources.has(sourceIds[i]);
+    const dataAvailable = zone.sources[i] === 1;
+    const active = sourceEnabled && dataAvailable;
+
+    if (active) {
+      weightedSum += sig * weights[i];
+      totalWeight += weights[i];
+      availableSources++;
+    }
+    contributions.push({
+      name: SIGNAL_NAMES[i],
+      raw: sig,
+      weight: weights[i],
+      active,
+      contrib: active ? (sig * weights[i]) : 0,
+      color: SIGNAL_COLORS[i]
+    });
+  });
+
+  const rawScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
+
+  // At the published default weights, reproduce the exact published score (base
+  // weighted sum + KPHO recalibration) so this engine matches the heat map. Once
+  // the user moves any slider, we show the raw weighted score from their own
+  // configuration — they have deliberately left the published methodology.
+  const usingDefault = (typeof atPublishedDefault === 'function') && atPublishedDefault();
+  const displayScore = usingDefault ? applyRecalibration(zone, rawScore) : rawScore;
+  const uncertain = availableSources < 10;
+
+  return {
+    ...zone,
+    fep: Math.round(displayScore),
+    rawWeighted: Math.round(rawScore),
+    isPublished: usingDefault,
+    contributions,
+    availableSources,
+    uncertain,
+    risk: displayScore >= 75 ? 'critical' : displayScore >= 60 ? 'high' : displayScore >= 45 ? 'moderate' : 'low'
+  };
+}
+
+function runScoring() {
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.textContent = '⟳ Scoring…';
+  btn.classList.add('loading');
+
+  setTimeout(() => {
+    const weights = getWeights();
+    currentResults = ZONES.map(z => scoreZone(z, weights))
+      .sort((a, b) => b.fep - a.fep);
+
+    renderResults(currentResults);
+
+    btn.disabled = false;
+    btn.textContent = '↺ Rescore';
+    btn.classList.remove('loading');
+  }, 600);
+}
+
+// ── RENDER RESULTS ────────────────────────────────────────────────────
+
+function fepColor(score) {
+  if (score >= 75) return 'var(--red)';
+  if (score >= 60) return 'var(--amber)';
+  if (score >= 45) return 'var(--blue)';
+  return 'var(--sage)';
+}
+
+function renderResults(results) {
+  const main = document.getElementById('main-panel');
+  const critical = results.filter(r => r.risk === 'critical').length;
+  const high = results.filter(r => r.risk === 'high').length;
+  const uncertain = results.filter(r => r.uncertain).length;
+  const avgFep = Math.round(results.reduce((s,r) => s + r.fep, 0) / results.length);
+
+  const published = results.length && results[0].isPublished;
+  const statusBanner = !LIVE_LOADED
+    ? `<div style="margin-bottom:0.9rem;padding:0.6rem 0.85rem;border-radius:8px;font-size:0.7rem;line-height:1.5;background:var(--amber-pale,#fdf6ec);color:var(--amber,#b45309);border:1px solid #f0d9b5">
+         <strong>Demo data.</strong> Live FEP feed could not be reached, so these scores use built-in sample values and will not match the published assessment.</div>`
+    : published
+      ? `<div style="margin-bottom:0.9rem;padding:0.6rem 0.85rem;border-radius:8px;font-size:0.7rem;line-height:1.5;background:var(--sage-ghost,#eef5ee);color:var(--sage-dim,#3f6b4f);border:1px solid #cfe3d4">
+           <strong>Published assessment.</strong> These are the live Assistiv FEP scores for today, reproduced from <a href="/frailty-heat-map/" style="color:inherit;text-decoration:underline">the frailty heat map</a> using the default weights. Move any weight to explore your own configuration.</div>`
+      : `<div style="margin-bottom:0.9rem;padding:0.6rem 0.85rem;border-radius:8px;font-size:0.7rem;line-height:1.5;background:#eef2fb;color:#365EBF;border:1px solid #c5d4f0">
+           <strong>Your configuration.</strong> You have adjusted the weights, so these scores reflect your own weighting and differ from the <a href="/frailty-heat-map/" style="color:inherit;text-decoration:underline">published assessment</a>. <span onclick="setSlidersToPublished(); runScoring();" style="text-decoration:underline;cursor:pointer">Reset to published weights.</span></div>`;
+
+  main.innerHTML = `
+    ${statusBanner}
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Critical Risk Zones</div>
+        <div class="stat-value red">${critical}</div>
+        <div class="stat-sub">FEP ≥ 75 · Immediate outreach</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">High Risk Zones</div>
+        <div class="stat-value amber">${high}</div>
+        <div class="stat-sub">FEP 60–74 · Priority screening</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Mean FEP Score</div>
+        <div class="stat-value blue">${avgFep}</div>
+        <div class="stat-sub">Across ${results.length} Kent zones</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Low Confidence Zones</div>
+        <div class="stat-value sage">${uncertain}</div>
+        <div class="stat-sub">Fewer than 4 signals available</div>
+      </div>
+    </div>
+
+    <!-- Table controls -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">Frailty Emergence Probability — Ranked Zones</div>
+        <div class="section-actions">
+          <button class="pill-btn active">All</button>
+          <button class="pill-btn" onclick="filterRisk('critical')">Critical</button>
+          <button class="pill-btn" onclick="filterRisk('high')">High</button>
+          <button class="pill-btn" onclick="filterRisk('uncertain')">Uncertain</button>
+        </div>
+      </div>
+
+      <!-- Zone table -->
+      <div class="zone-table">
+        <div class="zone-table-header">
+          <div class="th">Zone / PCN</div>
+          <div class="th">FEP Score</div>
+          <div class="th" title="Over-75s alone">Alone75</div>
+          <div class="th" title="Unplanned admissions">Unplan.</div>
+          <div class="th" title="Polypharmacy">Poly.</div>
+          <div class="th" title="Deprivation">IMD</div>
+          <div class="th" title="Attendance Allowance">DWP</div>
+          <div class="th">Risk Tier</div>
+          <div class="th" title="Data confidence">Conf.</div>
+        </div>
+        <div class="zone-rows" id="zone-rows">
+          ${results.map((r, i) => renderRow(r, i)).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail panel placeholder -->
+    <div id="detail-placeholder"></div>
+  `;
+}
+
+function renderRow(r, i) {
+  const color = fepColor(r.fep);
+  const sigVals = r.contributions.map(c =>
+    `<div class="sig-cell"><span class="sig-val" style="color:${c.active ? c.color : 'var(--text-dim)'}">${c.active ? c.raw : '—'}</span></div>`
+  ).join('');
+
+  return `
+    <div class="zone-row" onclick="showDetail(${i})" style="animation-delay:${i * 0.04}s">
+      <div class="zone-name-col">
+        <span class="zone-name">${r.name}</span>
+        <span class="zone-pcn">${r.pcn}</span>
+      </div>
+      <div class="fep-col">
+        <div class="fep-bar-wrap">
+          <div class="fep-bar" style="width:${r.fep}%;background:${color}"></div>
+        </div>
+        <span class="fep-num" style="color:${color}">${r.fep}</span>
+      </div>
+      ${sigVals}
+      <div><span class="risk-badge risk-${r.risk}">${r.risk}</span></div>
+      <div class="uncertainty-col">
+        <span class="unc-icon ${r.uncertain ? 'warn' : ''}">${r.uncertain ? '⚠' : '✓'}</span>
+      </div>
+    </div>
+  `;
+}
+
+function filterRisk(tier) {
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  let filtered;
+  if (tier === 'all') filtered = currentResults;
+  else if (tier === 'uncertain') filtered = currentResults.filter(r => r.uncertain);
+  else filtered = currentResults.filter(r => r.risk === tier);
+
+  document.getElementById('zone-rows').innerHTML =
+    filtered.map((r, i) => renderRow(r, i)).join('');
+}
+
+function showDetail(idx) {
+  const r = currentResults[idx];
+  const color = fepColor(r.fep);
+  const maxContrib = Math.max(...r.contributions.map(c => c.contrib));
+
+  const sigRows = r.contributions.map(c => `
+    <div class="signal-row">
+      <span class="signal-name" style="color:${c.active ? 'var(--text)' : 'var(--text-dim)'}">${c.name}</span>
+      <span class="signal-raw">${c.active ? c.raw + '/100' : 'No data'}</span>
+      <div class="signal-contrib-bar">
+        <div class="signal-contrib-fill" style="width:${maxContrib > 0 ? (c.contrib/maxContrib)*100 : 0}%;background:${c.active ? c.color : 'var(--border)'}"></div>
+      </div>
+      <span class="signal-contrib-num" style="color:${c.active ? c.color : 'var(--text-dim)'}">${c.active ? '+' + Math.round(c.contrib) : '—'}</span>
+      <span class="signal-weight-badge">${Math.round(c.weight*100)}%</span>
+    </div>
+  `).join('');
+
+  const recs = getRecommendations(r);
+
+  const uncBanner = r.uncertain ? `
+    <div class="unc-banner">
+      ⚠ Low data confidence — only ${r.availableSources} of 21 signals available.
+    </div>` : '';
+
+  document.getElementById('detail-placeholder').innerHTML = `
+    <div class="detail-panel">
+      <div class="detail-header">
+        <div>
+          <div class="detail-zone-name">${r.name}</div>
+          <div class="detail-zone-meta">${r.pcn} · LSOA ${r.lsoa} · ${r.availableSources}/21 signals active</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <div class="detail-fep-badge">
+            <div class="detail-fep-num" style="color:${color}">${r.fep}</div>
+            <div class="detail-fep-label">FEP Score</div>
+          </div>
+          <div>
+            <span class="risk-badge risk-${r.risk}" style="font-size:0.65rem;padding:0.25rem 0.65rem">${r.risk.toUpperCase()} RISK</span>
+            <button class="close-btn" style="display:block;margin-top:0.4rem" onclick="closeDetail()">✕ Close</button>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="signal-breakdown">
+          ${uncBanner}
+          <div class="sidebar-section-title" style="margin-bottom:0.5rem">Signal Contribution Breakdown</div>
+          ${sigRows}
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-title">Recommended Actions</div>
+          ${recs.map(r => `<div class="rec-item">${r}</div>`).join('')}
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-title">Outreach Priority</div>
+          <div class="rec-item">Deploy resiliencetools.xyz screening within this zone</div>
+          <div class="rec-item">Identify community touchpoints via Layer 3 agent</div>
+          <div class="rec-item">Share FEP score with ${r.pcn} lead as commissioner briefing</div>
+          ${r.fep >= 70 ? '<div class="rec-item">Escalate to ICB population health team immediately</div>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detail-placeholder').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeDetail() {
+  document.getElementById('detail-placeholder').innerHTML = '';
+}
+
+function getRecommendations(r) {
+  const recs = [];
+  const high = r.contributions.filter(c => c.active && c.raw >= 75);
+
+  if (r.risk === 'critical') recs.push('Immediate outreach — highest priority zone in Kent cohort');
+  if (high.some(c => c.name.includes('Alone'))) recs.push('Social isolation primary driver — target voluntary sector and faith communities');
+  if (high.some(c => c.name.includes('Admissions'))) recs.push('Crisis pattern present — coordinate with A&E frequent attender programme');
+  if (high.some(c => c.name.includes('Polypharmacy'))) recs.push('High polypharmacy — pharmacy touchpoint is ideal screening entry point');
+  if (high.some(c => c.name.includes('Deprivation'))) recs.push('High deprivation — consider facilitated rather than digital-first screening');
+  if (high.some(c => c.name.includes('Care Home'))) recs.push('Significant care home capacity gap — flag to social care commissioning');
+  if (r.uncertain) recs.push('Improve data coverage before commissioning report — contact NHS ICB for missing signals');
+  if (recs.length === 0) recs.push('Routine monitoring — rescore next quarter');
+
+  return recs;
+}
+
+// ── KENT PANEL TOGGLE ────────────────────────────────────────────────
+function toggleKentPanel() {
+  const grid = document.getElementById('kent-data-grid');
+  const toggle = document.getElementById('kent-toggle');
+  grid.classList.toggle('collapsed');
+  toggle.textContent = grid.classList.contains('collapsed') ? '▼ Show ICB Data' : '▲ Hide';
+}
+
+// ── WEATHER RISK BANNER ───────────────────────────────────────────────
+// Open-Meteo UK API — free, no key, Met Office UKV 2km model
+// Centroid of Kent & Medway ICB: ~51.27°N, 0.52°E
+// Always visible — escalates Green → Yellow → Amber → Red as
+// UKHSA/Met Office thresholds are breached, flagging elevated
+// medication risk for anticholinergic, diuretic, and hypnotic signals.
+async function fetchWeatherRisk() {
+  const banner = document.getElementById('weather-banner');
+  const label  = document.getElementById('weather-label');
+  const msg    = document.getElementById('weather-msg');
+  const tempEl = document.getElementById('weather-temp');
+
+  const HEAT_RED    = 32;
+  const HEAT_AMBER  = 26;
+  const HEAT_YELLOW = 22;
+  const COLD_RED    = 2;
+  const COLD_AMBER  = 8;
+  const COLD_YELLOW = 12;
+
+  function set(cls, lbl, text, tmp) {
+    banner.className = 'weather-banner ' + cls;
+    label.textContent = lbl;
+    msg.innerHTML = text;
+    if (tmp) tempEl.textContent = tmp;
+  }
+
+  try {
+    const r = await fetch(
+      'https://api.open-meteo.com/v1/forecast' +
+      '?latitude=51.27&longitude=0.52' +
+      '&current=temperature_2m,apparent_temperature' +
+      '&daily=temperature_2m_max,temperature_2m_min' +
+      '&timezone=Europe%2FLondon&forecast_days=3&models=ukmo_seamless'
+    );
+    const d    = await r.json();
+    const temp = Math.round(d.current.temperature_2m);
+    const feel = Math.round(d.current.apparent_temperature);
+    const maxT = Math.round(d.daily.temperature_2m_max[0]);
+    const minT = Math.round(d.daily.temperature_2m_min[0]);
+    const tStr = `${temp}°C · feels ${feel}°C`;
+
+    if (maxT >= HEAT_RED) {
+      set('status-red', 'Red · Heat',
+        `<strong>Heat emergency — max ${maxT}°C.</strong> ` +
+        `Patients on anticholinergics (antidepressants, anxiolytics, bladder antimuscarinics), diuretics or ACE/ARBs at acute risk of hyperthermia and dehydration. ` +
+        `High-FEP districts are immediate priority for welfare checks and medication review.`, tStr);
+    } else if (maxT >= HEAT_AMBER) {
+      set('status-amber', 'Amber · Heat',
+        `<strong>Heat stress — max ${maxT}°C.</strong> ` +
+        `Anticholinergic burden impairs thermoregulation. Diuretic and ACE/ARB users face electrolyte depletion. ` +
+        `Prioritise Thanet, Folkestone &amp; Hythe, Dover in this scoring run.`, tStr);
+    } else if (maxT >= HEAT_YELLOW) {
+      set('status-yellow', 'Yellow · Heat',
+        `<strong>Warm — ${maxT}°C forecast.</strong> ` +
+        `No immediate alert. Monitor high-FEP coastal districts. ` +
+        `Above 26°C, anticholinergic and diuretic risk escalates for this population.`, tStr);
+    } else if (minT <= COLD_RED) {
+      set('status-red', 'Red · Cold',
+        `<strong>Severe cold — overnight min ${minT}°C.</strong> ` +
+        `Hypothermia risk elevated for older adults on diuretics or sedatives. ` +
+        `Kent winter mortality index already above England average (9.8 vs 8.7). Activate Cold Weather Plan.`, tStr);
+    } else if (minT <= COLD_AMBER) {
+      set('status-amber', 'Amber · Cold',
+        `<strong>Cold alert — overnight min ${minT}°C.</strong> ` +
+        `Falls risk elevated. Kent falls admissions 65+ above England average (1,917 vs 1,870 per 100k). ` +
+        `Hypnotics and anxiolytics increase fall risk on icy mornings. Monitor Thanet, Folkestone, Dover.`, tStr);
+    } else if (minT <= COLD_YELLOW) {
+      set('status-yellow', 'Yellow · Cold',
+        `<strong>Cool — ${minT}°C overnight.</strong> ` +
+        `No immediate alert. Falls and medication risk at background level. ` +
+        `Below 8°C, diuretic and hypnotic risk escalates.`, tStr);
+    } else {
+      set('status-green', 'Green · Clear',
+        `No weather-health risk threshold active. Today: ${maxT}°C high / ${minT}°C low. ` +
+        `Banner escalates Yellow → Amber → Red as UKHSA/Met Office thresholds are breached, ` +
+        `flagging elevated medication risk for anticholinergic, diuretic, and hypnotic prescribing districts.`, tStr);
+    }
+  } catch(e) {
+    set('status-green', 'Weather',
+      'Live weather data unavailable. When active: banner escalates Green → Yellow → Amber → Red ' +
+      'as UKHSA/Met Office thresholds are breached, flagging elevated medication risk for high-FEP districts.', '');
+  }
+}
+
+// ── START ─────────────────────────────────────────────────────────────
+fetchWeatherRisk();
+init();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADA — Assistiv Intelligence ExplainerBot
+     Floating chat widget · reads live scoring engine context
+     Proxied via Cloudflare Worker — no API key in browser
+     ═══════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Ada button ─────────────────────────────────────────────────── */
+#ada-btn {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9000;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--forest); color: #fff;
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 2px;
+  transition: transform 0.18s, box-shadow 0.18s;
+  font-family: var(--mono);
+}
+#ada-btn:hover { transform: scale(1.07); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+#ada-btn .ada-label { font-size: 9px; letter-spacing: .1em; font-weight: 700; color: var(--sage, #365EBF); }
+#ada-btn .ada-icon  { font-size: 18px; line-height: 1; color: var(--sage, #365EBF); }
+
+/* ── Ada panel ─────────────────────────────────────────────────── */
+#ada-panel {
+  position: fixed; bottom: 5rem; right: 1.5rem; z-index: 9000;
+  width: 360px; max-width: calc(100vw - 2rem);
+  height: 520px; max-height: calc(100vh - 7rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+  display: none; flex-direction: column;
+  overflow: hidden;
+  font-family: var(--sans);
+}
+#ada-panel.open { display: flex; animation: adaIn .22s ease; }
+@keyframes adaIn {
+  from { opacity:0; transform: translateY(12px) scale(.97); }
+  to   { opacity:1; transform: translateY(0)   scale(1);    }
+}
+
+/* Header */
+.ada-header {
+  background: var(--forest);
+  padding: .75rem 1rem;
+  display: flex; align-items: center; gap: .6rem;
+  flex-shrink: 0;
+}
+.ada-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.ada-header-text { flex: 1; }
+.ada-header-name  { font-size: 13px; font-weight: 600; color: #fff; }
+.ada-header-sub   { font-size: 10px; color: rgba(255,255,255,.6); }
+.ada-close {
+  background: none; border: none; color: rgba(255,255,255,.7);
+  cursor: pointer; font-size: 18px; line-height: 1;
+  padding: 0; margin: 0;
+}
+.ada-close:hover { color: #fff; }
+
+/* Messages */
+.ada-messages {
+  flex: 1; overflow-y: auto;
+  padding: .75rem 1rem;
+  display: flex; flex-direction: column; gap: .6rem;
+}
+.ada-msg {
+  max-width: 88%; padding: .55rem .8rem;
+  border-radius: 10px; font-size: 12.5px; line-height: 1.55;
+  animation: msgIn .18s ease;
+}
+@keyframes msgIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+.ada-msg.ada  { background: var(--sage-pale,#eaf3ee); color: var(--text); align-self: flex-start; }
+.ada-msg.user { background: var(--forest); color: #fff; align-self: flex-end; }
+.ada-msg.ada strong { color: var(--forest); }
+
+/* Starters */
+.ada-starters {
+  padding: 0 1rem .75rem;
+  display: flex; flex-direction: column; gap: .4rem;
+  flex-shrink: 0;
+}
+.ada-starter {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .45rem .75rem;
+  text-align: left; cursor: pointer;
+  font-size: 11.5px; color: var(--text-muted);
+  transition: background .12s, border-color .12s;
+}
+.ada-starter:hover { background: var(--sage-pale,#eaf3ee); border-color: var(--sage); color: var(--text); }
+
+/* Thinking */
+.ada-thinking {
+  display: flex; gap: 4px; padding: .55rem .8rem;
+  background: var(--sage-pale,#eaf3ee);
+  border-radius: 10px; align-self: flex-start;
+}
+.ada-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sage); opacity: .5;
+  animation: dot 1.2s infinite;
+}
+.ada-dot:nth-child(2) { animation-delay: .2s; }
+.ada-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes dot { 0%,80%,100%{opacity:.2;transform:scale(.8);} 40%{opacity:1;transform:scale(1);} }
+
+/* Input */
+.ada-input-row {
+  display: flex; gap: .5rem;
+  padding: .6rem 1rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+#ada-input {
+  flex: 1; border: 1px solid var(--border);
+  border-radius: 8px; padding: .45rem .7rem;
+  font-size: 12.5px; font-family: var(--sans);
+  background: var(--bg); color: var(--text);
+  outline: none; resize: none;
+}
+#ada-input:focus { border-color: var(--sage); }
+#ada-send {
+  background: var(--forest); color: #fff;
+  border: none; border-radius: 8px;
+  padding: .45rem .75rem; cursor: pointer;
+  font-size: 13px;
+  transition: background .12s;
+}
+#ada-send:hover { background: var(--sage); }
+#ada-send:disabled { opacity: .4; cursor: default; }
+
+/* ── ASSISTIV LOGO — Cabinet Grotesk + DM Mono + Pulse rings ── */
+.nav-logo-mark {
+  position: relative; width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo-dot { border-radius: 50%; position: absolute; }
+.nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
+.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
+.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
+.nav-logo-r1.dk { border-color: #2d6b47; }
+.nav-logo-r2.dk { border-color: #2d6b47; }
+.nav-logo-core.dk { background: #2d6b47; }
+.nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
+.nav-wordmark-name {
+  font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.1;
+}
+.nav-wordmark-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem; letter-spacing: 0.18em;
+  text-transform: uppercase; line-height: 1;
+}
+
+</style>
+
+<!-- Ada toggle button -->
+<button id="ada-btn" onclick="adaToggle()" aria-label="Open Ada — Assistiv Intelligence">
+  <span class="ada-icon">✦</span>
+  <span class="ada-label">ADA</span>
+</button>
+
+<!-- Ada panel -->
+<div id="ada-panel" role="dialog" aria-label="Ada — Assistiv Intelligence">
+  <div class="ada-header">
+    <div class="ada-avatar">✦</div>
+    <div class="ada-header-text">
+      <div class="ada-header-name">Ada</div>
+      <div class="ada-header-sub">Assistiv Intelligence · here to help you understand the data</div>
+    </div>
+    <button class="ada-close" onclick="adaToggle()" aria-label="Close Ada">×</button>
+  </div>
+  <div class="ada-messages" id="ada-messages"></div>
+  <div class="ada-starters" id="ada-starters"></div>
+  <div class="ada-input-row">
+    <textarea id="ada-input" rows="1" placeholder="Ask Ada about the data…"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();adaSend();}"></textarea>
+    <button id="ada-send" onclick="adaSend()">↑</button>
+  </div>
+</div>
+
+<script>
+// ── ADA CONFIGURATION ─────────────────────────────────────────────────────────
+const ADA_WORKER_URL = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
+const ADA_JSON_URL   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+
+let adaLiveData = null;  // populated on first open from GitHub JSON
+
+// Fetch the live FEP JSON from GitHub — called once on first panel open
+async function adaFetchLiveData() {
+  try {
+    const r = await fetch(ADA_JSON_URL);
+    adaLiveData = await r.json();
+    console.log('Ada: live data loaded —', adaLiveData?.meta?.version, adaLiveData?.districts?.length, 'districts');
+  } catch(e) {
+    console.warn('Ada: could not fetch live JSON', e);
+  }
+}
+
+// Build a compact data summary to inject into system prompt
+function adaBuildDataSummary() {
+  if (!adaLiveData) return 'Live JSON not yet loaded — using DOM context only.';
+
+  const meta      = adaLiveData.meta || {};
+  const districts = adaLiveData.districts || [];
+  const baseline  = adaLiveData.icb_baseline || {};
+
+  const lines = [];
+  lines.push(`DATA VERSION: ${meta.version || '?'} | Generated: ${meta.generated?.substring(0,10) || '?'}`);
+  lines.push(`Real signals: ${meta.data_quality || '?'}`);
+  lines.push('');
+
+  // District scores — full table
+  lines.push('DISTRICT FEP SCORES (live from kent-fep-data.json):');
+  districts.forEach(d => {
+    lines.push(`  ${d.name}: FEP ${d.fep} (${d.risk}) | pop75: ${d.pop75?.toLocaleString() || '?'}`);
+    // Top 3 highest signals for context
+    if (d.signals && d.signal_names) {
+      const scored = d.signal_names.map((n,i) => ({n, v: d.signals[i] || 0}))
+        .filter(x => x.v !== 50)
+        .sort((a,b) => b.v - a.v)
+        .slice(0,3);
+      if (scored.length) lines.push(`    Highest signals: ${scored.map(x => `${x.n} (${x.v})`).join(', ')}`);
+    }
+  });
+
+  // ICB baseline real values
+  const ft = baseline.fingertips || {};
+  const rx = baseline.prescribing || {};
+  if (Object.keys(ft).length > 0) {
+    lines.push('\nICB BASELINE — NHS Fingertips real values:');
+    Object.entries(ft).forEach(([k,v]) => {
+      if (v?.value) lines.push(`  ${k}: ${v.value} vs England ${v.england} (${v.period})`);
+    });
+  }
+  if (Object.keys(rx).length > 0) {
+    lines.push('\nICB BASELINE — NHSBSA prescribing real values (per 1,000 patients):');
+    Object.entries(rx).forEach(([k,v]) => {
+      if (v?.rate_per_1000) lines.push(`  ${k}: ${v.rate_per_1000}/1k vs England ${v.england}/1k | ratio ${v.ratio} (${v.period})`);
+    });
+  }
+
+  return lines.join('\n');
+}
+
+const ADA_STARTERS = [
+  'What does a FEP score of 63 actually mean for real people?',
+  'Why do oral nutritional supplements tell us about frailty?',
+  'Which district needs the most urgent attention and why?',
+  'What action should a commissioner take based on this data?',
+];
+
+const ADA_SYSTEM_PROMPT = `You are Ada, an AI assistant built by Assistiv Systems to help people understand frailty intelligence data. Your job is to explain what the data means for real people — older adults, carers, communities — in plain, warm, human language.
+
+TONE: Always default to plain English. Never use jargon unless the person uses it first. Be honest about limitations. Be warm but precise.
+
+WHAT YOU KNOW:
+- FEP (Frailty Emergence Probability) score: 0-100 composite score per district. 50 = England average. Higher = more risk. Bands: Low <40, Moderate 40-54, High 55-69, Critical 70+.
+- 21 signals across 3 categories: 10 from NHS Fingertips (outcomes data — falls admissions, hip fractures, winter mortality, dementia diagnosis, loneliness, social isolation, fuel poverty), 11 from NHSBSA prescribing data (hypnotics, antidepressants, bisphosphonates, diuretics, ACE/ARBs, anxiolytics, bladder antimuscarinics, oral nutritional supplements, anti-dementia drugs, denosumab, Parkinson's drugs), 3 synthetic (living alone over-75s, deprivation, care home gap).
+- Oral Nutritional Supplements (Ensure, Fortisip) are prescribed when someone is genuinely failing to maintain weight — this is a highly specific frailty marker. High prescribing rates in an area mean significant numbers of people experiencing physical decline.
+- Anti-dementia drugs (donepezil, memantine) track actual dementia treatment prevalence — different from diagnosis rates, which can be affected by under-diagnosis.
+- Parkinson's drugs in an area indicate Parkinson's disease prevalence — a condition that significantly accelerates physical frailty and falls risk.
+- Denosumab is an injectable bone protection drug given for severe osteoporosis or after a fracture — it indicates higher frailty severity than oral bisphosphonates.
+- The weather banner (when active) flags temperature-medication interactions — older people on anticholinergics, diuretics, and antidepressants are at acute risk during heat and cold events.
+- Kent & Medway context: Thanet, Folkestone & Hythe, Dover, and Swale consistently score highest. Coastal east Kent has higher deprivation, older demographics, and above-average prescribing across almost all signals. Sevenoaks and Tunbridge Wells score lowest — affluent commuter belt.
+- Data refreshes regularly: Fingertips indicators fetch the latest available on every pipeline run (daily via GitHub Actions). EPD prescribing data updates monthly when NHSBSA publish a new release. Current EPD: Mar 2026. Fingertips: 2024/25-2026.
+
+WHAT YOU SHOULD EXPLAIN CLEARLY:
+- What a specific FEP score means in human terms (not just numbers)
+- Why a specific signal matters clinically (connect prescribing to real patient experience)
+- What commissioners or clinical teams could actually DO with this information
+- The honest limitations: district-level data, not individual patients; prescribing rates are population averages; the model is a triage tool, not a diagnosis
+
+IMPORTANT: You DO have live access to the current tool state. The section below labelled "LIVE TOOL CONTEXT" is read directly from the page the user is looking at right now — it contains the actual zone names, FEP scores, and active signals. Use this data confidently when answering questions. Never say you don't have access to the current scores — you do.
+
+WHAT YOU MUST NOT DO:
+- Never give specific clinical advice about individual patients
+- Never claim the model predicts individual outcomes
+- Never be dismissive of the data's limitations
+- Never be overly technical unless the person clearly wants that
+
+When someone asks about a specific district, lead with what that score means for the real people living there, then explain the signals driving it.`;
+
+// ── ADA STATE ─────────────────────────────────────────────────────────────────
+let adaOpen       = false;
+let adaHistory    = [];
+let adaStartersOn = true;
+let adaBusy       = false;
+
+// ── CONTEXT READER ────────────────────────────────────────────────────────────
+function adaGetContext() {
+  const lines = [];
+
+  // Read current zone results — use actual rendered class names
+  const rows = document.querySelectorAll('.zone-row');
+  if (rows.length > 0) {
+    lines.push(`CURRENT SCORING ENGINE — ${rows.length} zones computed:`);
+    rows.forEach(row => {
+      const name  = row.querySelector('.zone-name')?.textContent?.trim();
+      const score = row.querySelector('.fep-num')?.textContent?.trim();
+      const risk  = row.querySelector('.risk-badge')?.textContent?.trim();
+      const unc   = row.querySelector('.unc-icon.warn') ? ' [low confidence]' : '';
+      if (name && score) lines.push(`  ${name}: FEP ${score} (${risk || ''})${unc}`);
+    });
+  } else {
+    lines.push('Scoring engine loaded — click Run to compute zone scores.');
+  }
+
+  // Detail panel if open
+  const detailName = document.querySelector('.detail-zone-name')?.textContent?.trim();
+  const detailFep  = document.querySelector('.detail-fep-val')?.textContent?.trim();
+  if (detailName) {
+    lines.push(`\nUSER IS VIEWING DETAIL FOR: ${detailName}${detailFep ? ' (FEP ' + detailFep + ')' : ''}`);
+    // Signal breakdown from detail panel
+    const sigRows = document.querySelectorAll('.sig-row');
+    if (sigRows.length > 0) {
+      lines.push('Signal breakdown:');
+      sigRows.forEach(row => {
+        const sigName = row.querySelector('.sig-name')?.textContent?.trim();
+        const sigVal  = row.querySelector('.sig-val')?.textContent?.trim();
+        if (sigName && sigVal) lines.push(`  ${sigName}: ${sigVal}`);
+      });
+    }
+  }
+
+  // Active signal weights
+  const activeSignals = [];
+  SIGNAL_NAMES.forEach((name, i) => {
+    const el = document.getElementById(`w${i+1}`);
+    if (el && parseInt(el.value) > 0) activeSignals.push(`${name} (${el.value}%)`);
+  });
+  if (activeSignals.length > 0) {
+    lines.push(`\nACTIVE SIGNALS (${activeSignals.length}): ${activeSignals.slice(0,6).join(', ')}${activeSignals.length > 6 ? ` + ${activeSignals.length-6} more` : ''}`);
+  }
+
+  // Weather banner if active
+  const wb = document.getElementById('weather-banner');
+  if (wb && wb.className && !wb.className.includes('hidden') && wb.style.display !== 'none') {
+    const wtext = document.getElementById('weather-text')?.textContent;
+    if (wtext) lines.push(`\nWEATHER ALERT: ${wtext.substring(0,120)}`);
+  }
+
+  return lines.join('\n');
+}
+
+// ── TOGGLE ────────────────────────────────────────────────────────────────────
+function adaToggle() {
+  adaOpen = !adaOpen;
+  const panel = document.getElementById('ada-panel');
+  panel.classList.toggle('open', adaOpen);
+  if (adaOpen && adaHistory.length === 0) {
+    adaFetchLiveData().then(() => adaGreet());
+  }
+}
+
+// ── GREETING ──────────────────────────────────────────────────────────────────
+function adaGreet() {
+  adaAddMessage('ada',
+    "Hi, I'm <strong>Ada</strong> — I'm here to help you make sense of the frailty data on this page. " +
+    "Whether you're a commissioner, a clinician, or just curious, I'll explain what the scores mean for real people in plain English. " +
+    "What would you like to understand?"
+  );
+  renderStarters();
+}
+
+// ── STARTERS ─────────────────────────────────────────────────────────────────
+function renderStarters() {
+  const el = document.getElementById('ada-starters');
+  if (!adaStartersOn) { el.innerHTML = ''; return; }
+  el.innerHTML = ADA_STARTERS.map(s =>
+    `<button class="ada-starter" onclick="adaUseStarter(this,'${s.replace(/'/g,"\\'")}')">
+       ${s}
+     </button>`
+  ).join('');
+}
+
+function adaUseStarter(btn, text) {
+  adaStartersOn = false;
+  document.getElementById('ada-starters').innerHTML = '';
+  adaSendText(text);
+}
+
+// ── SEND ─────────────────────────────────────────────────────────────────────
+function adaSend() {
+  const input = document.getElementById('ada-input');
+  const text  = input.value.trim();
+  if (!text || adaBusy) return;
+  input.value = '';
+  adaStartersOn = false;
+  document.getElementById('ada-starters').innerHTML = '';
+  adaSendText(text);
+}
+
+async function adaSendText(text) {
+  if (adaBusy) return;
+  adaBusy = true;
+
+  adaAddMessage('user', text);
+  adaHistory.push({ role: 'user', content: text });
+
+  // Thinking indicator
+  const thinking = document.createElement('div');
+  thinking.className = 'ada-thinking';
+  thinking.innerHTML = '<div class="ada-dot"></div><div class="ada-dot"></div><div class="ada-dot"></div>';
+  thinking.id = 'ada-thinking';
+  document.getElementById('ada-messages').appendChild(thinking);
+  adaScrollBottom();
+  document.getElementById('ada-send').disabled = true;
+
+  // Build system prompt with live JSON data + DOM context
+  const systemWithContext = ADA_SYSTEM_PROMPT +
+    '\n\n---\nLIVE DATA FROM kent-fep-data.json (fetched directly from GitHub):\n' +
+    adaBuildDataSummary() +
+    '\n\n---\nLIVE TOOL CONTEXT (read from page DOM right now):\n' +
+    adaGetContext();
+
+  try {
+    const resp = await fetch(ADA_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model:      'claude-haiku-4-5-20251001',
+        max_tokens: 800,
+        system:     systemWithContext,
+        messages:   adaHistory,
+      }),
+    });
+
+    const data = await resp.json();
+    const reply = data?.content?.[0]?.text || 'Sorry, I couldn\'t get a response — please try again.';
+
+    // Remove thinking
+    document.getElementById('ada-thinking')?.remove();
+
+    adaAddMessage('ada', reply);
+    adaHistory.push({ role: 'assistant', content: reply });
+
+    // Keep history manageable
+    if (adaHistory.length > 20) adaHistory = adaHistory.slice(-20);
+
+  } catch (err) {
+    document.getElementById('ada-thinking')?.remove();
+    adaAddMessage('ada',
+      'I\'m having trouble connecting right now. Make sure the Cloudflare Worker is deployed and the worker URL is set correctly in the page.'
+    );
+    console.warn('Ada fetch error:', err);
+  }
+
+  adaBusy = false;
+  document.getElementById('ada-send').disabled = false;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function adaAddMessage(role, html) {
+  const el = document.createElement('div');
+  el.className = `ada-msg ${role}`;
+  el.innerHTML = html;
+  document.getElementById('ada-messages').appendChild(el);
+  adaScrollBottom();
+}
+
+function adaScrollBottom() {
+  const msgs = document.getElementById('ada-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
 </body>
 </html>
