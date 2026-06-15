@@ -1203,7 +1203,7 @@ const AGENT_JSON   = 'https://raw.githubusercontent.com/silegrand/assistivagents
 
 let agentLiveData = null;
 async function fetchAgentData() {
-  try { const r = await fetch(AGENT_JSON); agentLiveData = await r.json(); }
+  try { const r = await fetch(AGENT_JSON + '?t=' + Date.now(), { cache: 'no-store' }); agentLiveData = await r.json(); }
   catch(e) { console.warn('Agent data:', e); }
 }
 fetchAgentData();
