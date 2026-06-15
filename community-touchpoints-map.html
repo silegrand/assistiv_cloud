@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Outreach Map | Assistiv</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Nunito:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --brand: #365EBF;
+      --navy: #1e3a7a;
+      --cream: #eef2fb;
+      --sage: #365EBF;
+      --text: #1a2340;
+      --muted: #64748b;
+      --border: #d1daf0;
+      --white: #ffffff;
+      --risk-high: #c0392b;
+      --risk-med: #e67e22;
+      --risk-low: #27ae60;
+      --panel-w: 380px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      background: var(--navy);
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 1000;
+    }
+    .header-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .header-brand h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .header-brand span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      opacity: 0.6;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .header-note {
+      font-size: 0.7rem;
+      opacity: 0.55;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Layout ──────────────────────────────────────────── */
+    .app-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Map ─────────────────────────────────────────────── */
+    #map {
+      flex: 1;
+      z-index: 1;
+    }
+
+    /* ── Side panel ──────────────────────────────────────── */
+    .side-panel {
+      width: var(--panel-w);
+      background: var(--white);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .panel-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--cream);
+    }
+    .panel-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 3px;
+    }
+    .panel-header p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    /* ── Empty state ─────────────────────────────────────── */
+    .empty-state {
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .empty-state .icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .empty-state h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .empty-state p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Venue card ──────────────────────────────────────── */
+    .venue-card {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .venue-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      font-family: 'DM Mono', monospace;
+    }
+    .venue-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 2px;
+    }
+    .venue-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* ── Risk chips ──────────────────────────────────────── */
+    .risks-section {
+      margin-bottom: 12px;
+    }
+    .risks-label {
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+      font-family: 'DM Mono', monospace;
+    }
+    .risk-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .risk-chip {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .risk-chip.high { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .risk-chip.med  { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+    .risk-chip.low  { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+
+    /* ── Generate button ─────────────────────────────────── */
+    .generate-btn {
+      width: 100%;
+      padding: 10px 16px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: background 0.15s;
+    }
+    .generate-btn:hover { background: var(--navy); }
+    .generate-btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+    /* ── Ideas section ───────────────────────────────────── */
+    .ideas-section {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      background: #f8faff;
+    }
+    .ideas-section h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .idea-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .idea-card:last-child { margin-bottom: 0; }
+    .idea-type {
+      font-size: 0.63rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 4px;
+    }
+    .idea-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .idea-desc {
+      font-size: 0.76rem;
+      color: #4b5563;
+      line-height: 1.55;
+    }
+
+    /* ── Loading state ───────────────────────────────────── */
+    .loading-ideas {
+      padding: 20px;
+      text-align: center;
+    }
+    .loading-spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-ideas p {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── Error ───────────────────────────────────────────── */
+    .error-msg {
+      padding: 12px 14px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #b91c1c;
+      margin-top: 10px;
+    }
+
+    /* ── Legend ──────────────────────────────────────────── */
+    .map-legend {
+      background: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.72rem;
+      min-width: 160px;
+    }
+    .map-legend h4 {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-family: 'DM Mono', monospace;
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 5px;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Export strip ────────────────────────────────────── */
+    .export-strip {
+      padding: 10px 20px;
+      background: var(--cream);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .export-btn {
+      flex: 1;
+      padding: 7px 0;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--white);
+      color: var(--navy);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .export-btn:hover { background: var(--cream); }
+
+    /* ── Leaflet popup override ───────────────────────────── */
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      font-family: 'Nunito', sans-serif;
+    }
+    .leaflet-popup-content {
+      margin: 12px 14px;
+      font-size: 0.8rem;
+    }
+    .popup-title { font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .popup-type { font-size: 0.68rem; color: var(--muted); margin-bottom: 6px; }
+    .popup-btn {
+      display: inline-block;
+      padding: 5px 12px;
+      background: var(--brand);
+      color: white;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    /* ── Scrollbar ───────────────────────────────────────── */
+    .panel-body::-webkit-scrollbar { width: 5px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <h1>Assistiv</h1>
+    <span>Community Outreach Intelligence</span>
+  </div>
+  <div class="header-note">Population data · No identifiers · OGL v3</div>
+</header>
+
+<div class="app-body">
+  <div id="map"></div>
+
+  <div class="side-panel">
+    <div class="panel-header">
+      <h2>Outreach Action Planner</h2>
+      <p>Select a community touchpoint on the map to see neighbourhood risk profile and generate tailored outreach ideas.</p>
+    </div>
+
+    <div class="panel-body" id="panel-body">
+      <div class="empty-state">
+        <span class="icon">📍</span>
+        <h3>Select a venue</h3>
+        <p>Click any marker on the map to explore outreach opportunities for that neighbourhood.</p>
+      </div>
+    </div>
+
+    <div class="export-strip" id="export-strip" style="display:none;">
+      <button class="export-btn" onclick="copyIdeas()">Copy ideas</button>
+      <button class="export-btn" onclick="printPanel()">Print / Save PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+
+const DATA_URL = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/community-touchpoints-data.json?t=' + Date.now();
+
+// Fallback inline data (used if GitHub fetch fails — full seed dataset embedded)
+const FALLBACK_DATA = {"version":"1.0","generated":"2026-06-15","note":"Seed data for Assistiv community touchpoints. Coordinates are representative. Replace with verified OS/NHSPD data before production use.","touchpoints":[{"id":"tp001","name":"Margate Library","type":"library","district":"Thanet","lsoa_approx":"E01024179","lat":51.3851,"lng":1.3838,"address":"Cecil Square, Margate CT9 1RE","risks_dominant":["isolation","fuel_poverty","falls"]},{"id":"tp002","name":"Ramsgate Boots Pharmacy","type":"pharmacy","district":"Thanet","lsoa_approx":"E01024182","lat":51.336,"lng":1.416,"address":"Queen Street, Ramsgate CT11 9EE","risks_dominant":["polypharmacy","falls","mobility"]},{"id":"tp003","name":"Broadstairs Community Centre","type":"community_hall","district":"Thanet","lsoa_approx":"E01024195","lat":51.3588,"lng":1.4406,"address":"Pierremont Avenue, Broadstairs CT10 1NR","risks_dominant":["isolation","cognitive_decline","falls"]},{"id":"tp004","name":"Faversham Recreation Centre","type":"leisure_centre","district":"Swale","lsoa_approx":"E01024051","lat":51.3157,"lng":0.8906,"address":"Leslie Smith Drive, Faversham ME13 8PE","risks_dominant":["mobility","falls","isolation"]},{"id":"tp005","name":"Sittingbourne Library","type":"library","district":"Swale","lsoa_approx":"E01024055","lat":51.3405,"lng":0.737,"address":"Central Avenue, Sittingbourne ME10 4AH","risks_dominant":["isolation","digital_exclusion","fuel_poverty"]},{"id":"tp006","name":"Sheerness Health Centre Pharmacy","type":"pharmacy","district":"Swale","lsoa_approx":"E01024032","lat":51.4434,"lng":0.7603,"address":"Rose Street, Sheerness ME12 1AJ","risks_dominant":["polypharmacy","fuel_poverty","falls"]},{"id":"tp007","name":"Maidstone Museum","type":"community_hall","district":"Maidstone","lsoa_approx":"E01024302","lat":51.2724,"lng":0.5229,"address":"St Faith's Street, Maidstone ME14 1LH","risks_dominant":["isolation","cognitive_decline","mobility"]},{"id":"tp008","name":"Maidstone Superdrug Pharmacy","type":"pharmacy","district":"Maidstone","lsoa_approx":"E01024298","lat":51.271,"lng":0.5214,"address":"Week Street, Maidstone ME14 1RF","risks_dominant":["polypharmacy","falls","fuel_poverty"]},{"id":"tp009","name":"Shepway Leisure Centre","type":"leisure_centre","district":"Maidstone","lsoa_approx":"E01024325","lat":51.2544,"lng":0.5074,"address":"Maidstone Road, Maidstone ME15 7RN","risks_dominant":["mobility","falls","isolation"]},{"id":"tp010","name":"All Saints Church Maidstone","type":"faith_venue","district":"Maidstone","lsoa_approx":"E01024300","lat":51.2698,"lng":0.5218,"address":"Week Street, Maidstone ME14 1RH","risks_dominant":["isolation","bereavement","fuel_poverty"]},{"id":"tp011","name":"Dartford Library","type":"library","district":"Dartford","lsoa_approx":"E01015901","lat":51.4436,"lng":0.2176,"address":"Market Street, Dartford DA1 1EU","risks_dominant":["isolation","digital_exclusion","cognitive_decline"]},{"id":"tp012","name":"Dartford Boots Pharmacy","type":"pharmacy","district":"Dartford","lsoa_approx":"E01015902","lat":51.4441,"lng":0.219,"address":"Lowfield Street, Dartford DA1 1HH","risks_dominant":["polypharmacy","falls","mobility"]},{"id":"tp013","name":"Swanscombe Community Hall","type":"community_hall","district":"Dartford","lsoa_approx":"E01015912","lat":51.4478,"lng":0.3013,"address":"London Road, Swanscombe DA10 0LQ","risks_dominant":["isolation","fuel_poverty","falls"]},{"id":"tp014","name":"Canterbury Christ Church GP Surgery","type":"gp_surgery","district":"Canterbury","lsoa_approx":"E01024410","lat":51.2802,"lng":1.0789,"address":"Old Dover Road, Canterbury CT1 3JH","risks_dominant":["polypharmacy","cognitive_decline","falls"]},{"id":"tp015","name":"Canterbury Westgate Library","type":"library","district":"Canterbury","lsoa_approx":"E01024401","lat":51.2786,"lng":1.0755,"address":"Military Road, Canterbury CT1 1YW","risks_dominant":["isolation","digital_exclusion","mobility"]},{"id":"tp016","name":"Herne Bay Leisure Centre","type":"leisure_centre","district":"Canterbury","lsoa_approx":"E01024430","lat":51.3726,"lng":1.1282,"address":"Thornden Wood Road, Herne Bay CT6 6RJ","risks_dominant":["falls","mobility","isolation"]},{"id":"tp017","name":"Deal Community Centre","type":"community_hall","district":"Dover","lsoa_approx":"E01015978","lat":51.2218,"lng":1.4027,"address":"St Richard's Road, Deal CT14 9LR","risks_dominant":["isolation","fuel_poverty","cognitive_decline"]},{"id":"tp018","name":"Folkestone Boots Pharmacy","type":"pharmacy","district":"Folkestone & Hythe","lsoa_approx":"E01016050","lat":51.0813,"lng":1.1788,"address":"Sandgate Road, Folkestone CT20 2BJ","risks_dominant":["polypharmacy","falls","fuel_poverty"]},{"id":"tp019","name":"Hythe Sports Centre","type":"leisure_centre","district":"Folkestone & Hythe","lsoa_approx":"E01016055","lat":51.0704,"lng":1.0847,"address":"Reachfields, Hythe CT21 4BH","risks_dominant":["falls","mobility","isolation"]},{"id":"tp020","name":"St Augustine's Church Folkestone","type":"faith_venue","district":"Folkestone & Hythe","lsoa_approx":"E01016048","lat":51.0787,"lng":1.1835,"address":"Guildhall Street, Folkestone CT20 1DY","risks_dominant":["isolation","bereavement","fuel_poverty"]},{"id":"tp021","name":"Tonbridge Library","type":"library","district":"Tonbridge & Malling","lsoa_approx":"E01024550","lat":51.196,"lng":0.274,"address":"Avebury Avenue, Tonbridge TN9 1TG","risks_dominant":["isolation","digital_exclusion","cognitive_decline"]},{"id":"tp022","name":"Sevenoaks Leisure Centre","type":"leisure_centre","district":"Sevenoaks","lsoa_approx":"E01024660","lat":51.2723,"lng":0.1896,"address":"Bradbourne Vale Road, Sevenoaks TN13 3QO","risks_dominant":["falls","mobility","rural_access"]},{"id":"tp023","name":"Cranbrook Community Centre","type":"community_hall","district":"Tunbridge Wells","lsoa_approx":"E01024710","lat":51.0937,"lng":0.5387,"address":"Stone Street, Cranbrook TN17 3HF","risks_dominant":["rural_access","isolation","fuel_poverty"]},{"id":"tp024","name":"Gravesend Clock Tower Pharmacy","type":"pharmacy","district":"Gravesham","lsoa_approx":"E01015850","lat":51.4418,"lng":0.3689,"address":"New Road, Gravesend DA11 0AJ","risks_dominant":["polypharmacy","fuel_poverty","falls"]},{"id":"tp025","name":"Gravesham Civic Centre","type":"community_hall","district":"Gravesham","lsoa_approx":"E01015848","lat":51.4426,"lng":0.3701,"address":"Windmill Street, Gravesend DA12 1AU","risks_dominant":["isolation","cognitive_decline","falls"]}],"venue_types":{"pharmacy":{"label":"Pharmacy","icon":"💊","colour":"#2563eb"},"library":{"label":"Library","icon":"📚","colour":"#7c3aed"},"community_hall":{"label":"Community Hall","icon":"🏛️","colour":"#059669"},"leisure_centre":{"label":"Leisure Centre","icon":"🏃","colour":"#d97706"},"gp_surgery":{"label":"GP Surgery","icon":"🩺","colour":"#dc2626"},"faith_venue":{"label":"Faith Venue","icon":"🕊️","colour":"#0891b2"}},"risk_labels":{"isolation":"Social Isolation","falls":"Falls Risk","fuel_poverty":"Fuel Poverty","polypharmacy":"Polypharmacy","mobility":"Mobility Decline","cognitive_decline":"Cognitive Decline","digital_exclusion":"Digital Exclusion","rural_access":"Rural Access","bereavement":"Bereavement","dementia":"Dementia Risk"}};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let mapData = null;
+let selectedVenue = null;
+let generatedIdeas = [];
+
+// ── Map init ──────────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [51.28, 0.52],
+  zoom: 9,
+  zoomControl: true
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+// ── Legend ────────────────────────────────────────────────────────────────────
+const legend = L.control({ position: 'bottomleft' });
+legend.onAdd = () => {
+  const div = L.DomUtil.create('div', 'map-legend');
+  div.innerHTML = `
+    <h4>Venue type</h4>
+    <div class="legend-row"><div class="legend-dot" style="background:#2563eb"></div>Pharmacy</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#7c3aed"></div>Library</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#059669"></div>Community Hall</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#d97706"></div>Leisure Centre</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#dc2626"></div>GP Surgery</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#0891b2"></div>Faith Venue</div>
+  `;
+  return div;
+};
+legend.addTo(map);
+
+// ── Load and render markers ───────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch(DATA_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('fetch failed');
+    mapData = await res.json();
+  } catch {
+    // Use bundled fallback — page will still work with manually embedded data
+    mapData = FALLBACK_DATA;
+    console.warn('Using bundled touchpoints data (GitHub fetch failed)');
+  }
+  renderMarkers();
+}
+
+function renderMarkers() {
+  if (!mapData || !mapData.touchpoints.length) return;
+  mapData.touchpoints.forEach(tp => {
+    const vtype = mapData.venue_types[tp.type] || { label: tp.type, icon: '📍', colour: '#64748b' };
+    const marker = L.circleMarker([tp.lat, tp.lng], {
+      radius: 9,
+      fillColor: vtype.colour,
+      color: '#fff',
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.88
+    }).addTo(map);
+
+    const popupContent = `
+      <div class="popup-title">${vtype.icon} ${tp.name}</div>
+      <div class="popup-type">${vtype.label} · ${tp.district}</div>
+      <button class="popup-btn" onclick="selectVenue('${tp.id}')">View outreach ideas</button>
+    `;
+    marker.bindPopup(popupContent, { maxWidth: 220 });
+    marker.on('click', () => marker.openPopup());
+  });
+}
+
+// ── Select venue ──────────────────────────────────────────────────────────────
+function selectVenue(id) {
+  map.closePopup();
+  if (!mapData) return;
+  selectedVenue = mapData.touchpoints.find(t => t.id === id);
+  if (!selectedVenue) return;
+  generatedIdeas = [];
+  renderVenuePanel(selectedVenue);
+  document.getElementById('export-strip').style.display = 'none';
+}
+
+function renderVenuePanel(tp) {
+  const vtype = mapData.venue_types[tp.type] || { label: tp.type, icon: '📍', colour: '#64748b' };
+  const riskLabels = mapData.risk_labels || {};
+
+  const riskColors = ['high', 'med', 'low'];
+  const riskChips = tp.risks_dominant.map((r, i) =>
+    `<span class="risk-chip ${riskColors[i] || 'low'}">${riskLabels[r] || r}</span>`
+  ).join('');
+
+  document.getElementById('panel-body').innerHTML = `
+    <div class="venue-card">
+      <div class="venue-badge" style="background:${vtype.colour}20; color:${vtype.colour}; border: 1px solid ${vtype.colour}40">
+        ${vtype.icon} ${vtype.label}
+      </div>
+      <h3>${tp.name}</h3>
+      <div class="venue-meta">${tp.address} · ${tp.district}</div>
+      <div class="risks-section">
+        <div class="risks-label">Dominant neighbourhood risks</div>
+        <div class="risk-chips">${riskChips}</div>
+      </div>
+      <button class="generate-btn" id="gen-btn" onclick="generateIdeas()">
+        ✦ Generate outreach ideas
+      </button>
+      <div id="ideas-container"></div>
+    </div>
+  `;
+}
+
+// ── Generate ideas via Claude API ─────────────────────────────────────────────
+async function generateIdeas() {
+  if (!selectedVenue) return;
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+
+  const container = document.getElementById('ideas-container');
+  container.innerHTML = `
+    <div class="loading-ideas">
+      <div class="loading-spinner"></div>
+      <p>Matching outreach ideas to this neighbourhood…</p>
+    </div>
+  `;
+
+  const vtype = mapData.venue_types[selectedVenue.type] || { label: selectedVenue.type };
+  const riskLabels = mapData.risk_labels || {};
+  const riskList = selectedVenue.risks_dominant.map(r => riskLabels[r] || r).join(', ');
+
+  const prompt = `You are an outreach planning assistant for a UK population health intelligence platform focused on older adults (75+) in Kent. 
+
+A community worker or commissioner is looking at: 
+- Venue: ${selectedVenue.name} (${vtype.label})
+- District: ${selectedVenue.district}
+- Dominant neighbourhood risks for older adults in this area: ${riskList}
+
+Generate exactly 4 outreach action ideas. Each should be practical, creative, and specific to both the venue type and the risks present. Actions should be non-clinical and could be run by community workers, social prescribers, voluntary organisations, or local services. Think beyond generic ideas — make each one feel genuinely possible in this specific setting.
+
+Respond ONLY with a JSON array of 4 objects, no markdown, no preamble:
+[
+  {
+    "type": "one of: Awareness Raising | Exercise & Movement | Social Connection | Digital Inclusion | Home Safety | Social Prescribing | Community Partnership | Creative Engagement",
+    "title": "Short punchy name for the action (max 8 words)",
+    "description": "2-3 sentences describing what happens, who runs it, and why it works for this location and these risks."
+  }
+]`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content?.find(b => b.type === 'text')?.text || '[]';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    generatedIdeas = JSON.parse(clean);
+    renderIdeas(container);
+    document.getElementById('export-strip').style.display = 'flex';
+  } catch (err) {
+    container.innerHTML = `<div class="error-msg">Could not generate ideas. Check your connection and try again.<br><small>${err.message}</small></div>`;
+    btn.disabled = false;
+    btn.textContent = '✦ Generate outreach ideas';
+    return;
+  }
+
+  btn.textContent = '↻ Regenerate ideas';
+  btn.disabled = false;
+}
+
+function renderIdeas(container) {
+  if (!generatedIdeas.length) return;
+
+  const typeColors = {
+    'Awareness Raising': '#7c3aed',
+    'Exercise & Movement': '#d97706',
+    'Social Connection': '#059669',
+    'Digital Inclusion': '#2563eb',
+    'Home Safety': '#dc2626',
+    'Social Prescribing': '#0891b2',
+    'Community Partnership': '#365EBF',
+    'Creative Engagement': '#be185d'
+  };
+
+  const html = `
+    <div class="ideas-section">
+      <h4>✦ Outreach ideas</h4>
+      ${generatedIdeas.map(idea => {
+        const col = typeColors[idea.type] || '#365EBF';
+        return `
+          <div class="idea-card">
+            <div class="idea-type" style="color:${col}">${idea.type}</div>
+            <div class="idea-title">${idea.title}</div>
+            <div class="idea-desc">${idea.description}</div>
+          </div>
+        `;
+      }).join('')}
+      <p style="font-size:0.65rem;color:#94a3b8;margin-top:10px;font-family:'DM Mono',monospace;">
+        AI-generated · Review before use · Population-level only
+      </p>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+// ── Export ────────────────────────────────────────────────────────────────────
+function copyIdeas() {
+  if (!selectedVenue || !generatedIdeas.length) return;
+  const vtype = mapData.venue_types[selectedVenue.type] || { label: selectedVenue.type };
+  const riskLabels = mapData.risk_labels || {};
+  const lines = [
+    `ASSISTIV — Community Outreach Ideas`,
+    `Venue: ${selectedVenue.name} (${vtype.label}) · ${selectedVenue.district}`,
+    `Neighbourhood risks: ${selectedVenue.risks_dominant.map(r => riskLabels[r] || r).join(', ')}`,
+    `Generated: ${new Date().toLocaleDateString('en-GB')}`,
+    '',
+    ...generatedIdeas.map((idea, i) =>
+      `${i+1}. ${idea.title} [${idea.type}]\n   ${idea.description}`
+    ),
+    '',
+    'Population-level intelligence only. No individual identifiers. Assistiv Systems © 2026.'
+  ];
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy ideas', 1500);
+  });
+}
+
+function printPanel() {
+  window.print();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadData();
+</script>
+
+<style media="print">
+  header, #map, .export-strip { display: none !important; }
+  .app-body { display: block; }
+  .side-panel { width: 100%; border: none; }
+  .panel-body { overflow: visible; }
+</style>
+
+</body>
+</html>
