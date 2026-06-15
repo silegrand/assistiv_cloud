@@ -585,6 +585,41 @@ TOOLS.append({
 })
 
 
+TOOLS.append({
+  "slug": "kent-carers",
+  "short": "Carers Intensity Map",
+  "layer": "Layer 2 \u00b7 informal care",
+  "badge": ("live", "Live"),
+  "url": "kent-carers-map.html",
+  "geo": "13 Kent & Medway districts",
+  "refresh": "Census 2021 (via KPHO HSCM)",
+  "title_html": 'The carers holding the system <em>together.</em>',
+  "meta": "Why mapping unpaid carers, and especially the heaviest care, shows commissioners where the system is one breakdown away from crisis.",
+  "lede": "Unpaid carers are the largest part of the care workforce and the least visible. When a carer reaches breakdown, the person they support is often the next emergency admission. This map makes that hidden workforce visible at district level, and foregrounds the heaviest care, 50 or more hours a week, because that is where breakdown risk concentrates.",
+  "sections": [
+    {"kicker":"What it claims","h":"What this tool does, and what it does not",
+     "body":"<p>The map shows, for each of the thirteen Kent and Medway districts, how many people provide unpaid care, what share of the population that represents, and in particular how many provide 50 or more hours a week. It is a direct count from the 2021 Census, not a model, so the figures are interpretable on their own terms.</p>"
+       "<p>It does not identify individual carers, predict who will break down, or score clinical need. It is a planning lens: where is informal care most concentrated, and where is the heaviest, highest-risk care falling.</p>"},
+    {"kicker":"Rationale","h":"Why unpaid care is a system-critical signal","body":"<p>Informal carers are the invisible infrastructure of community health. They save the system more than the entire NHS budget, yet they are almost absent from the data commissioners plan with. The risk this creates is specific: heavy unpaid care is a load-bearing pillar that holds frail and disabled people out of hospital and residential care, and it is invisible until it collapses. A carer who reaches exhaustion, falls ill, or ages into their own frailty can convert the person they support from stable to crisis within days. Making heavy care visible by district is the first step to resourcing it before that happens.</p>"},
+    {"kicker":"Data and proxies","h":"The data, and what it can and cannot carry","body":"<p>The counts are a direct Census measure, not a proxy: the 2021 Census asked every household about unpaid care provided per week, banded into under-50 hours and 50 or more. The map reads three published indicators, total unpaid carers, unpaid care of more than 50 hours, and unpaid carers who are themselves aged 50 or over, sourced through the Kent Public Health Observatory Health and Social Care Maps. Rates are expressed per 1,000 population so districts of different sizes compare fairly.</p>"},
+    {"kicker":"Method","h":"How the map is built","body":"<p>Each district is shaded by its rate of heavy carers (50+ hours per week) per 1,000 people, the band most predictive of breakdown. Selecting a district reveals the full picture: total carers and their share of the population, the heavy-care count, the under-50-hour count, and the number of carers who are themselves aged 50 or over, a double-vulnerability group providing care while at higher health risk of their own.</p>"},
+    {"kicker":"Strengths","h":"What this tool does well","body":"<p><strong>A direct measure, not a model.</strong> Unlike the proxy-based frailty indices, this is a counted Census figure, so it carries less methodological uncertainty.</p>"
+       "<p><strong>It surfaces an underserved group.</strong> Carers are less understood and less resourced than almost any group in the system; simply making them visible to commissioners is a contribution.</p>"
+       "<p><strong>It corroborates the frailty picture.</strong> The heaviest-care districts, Thanet, Folkestone & Hythe, Swale, Dover, track the coastal-deprivation pattern seen in the frailty scores, which strengthens confidence in both.</p>"},
+    {"kicker":"Honesty","h":"Weaknesses and honest caveats","body":"<div class=\"callout warn\"><div class=\"section-kicker\">Stated limitations</div>"
+       "<p><strong>The Census undercounts carers, badly.</strong> Many people who provide substantial care, especially spouses caring for a partner and parents caring for an adult child, do not think of themselves as a carer and do not record it. Every figure here is a floor, not the true number, and the real demand is higher.</p>"
+       "<p><strong>2021 is the latest, but it is ageing.</strong> These are 2021 Census counts. The Census is the authoritative source for unpaid care, but the next refresh will not come until the 2031 Census, so the figures will drift from reality over time.</p>"
+       "<p><strong>Concentration, not absolute counts, is the safest reading.</strong> Because of the undercount, the map is most reliable for comparing relative intensity between districts rather than for the precise number in any one.</p></div>"},
+  ],
+  "refs": [
+    "ONS. Census 2021, provision of unpaid care (total carers; 50+ hours; carers aged 50+).",
+    "Kent Public Health Observatory. Health & Social Care Maps V1.6, March 2026.",
+    "Carers UK. State of Caring (on systematic under-identification of informal carers).",
+    "NICE NG150. Supporting adult carers.",
+  ],
+})
+
+
 def build_hub():
     cards = "".join(
         f'<a class="hub-card" href="method-{t["slug"]}.html">'
