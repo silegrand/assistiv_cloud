@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-13T09:35:24.085596+00:00",
+    "generated": "2026-06-15T10:13:35.947743+00:00",
     "description": "Kent NHS Trust SHMI \u2014 Assistiv Systems",
     "version": "1.1",
     "refresh_type": "monthly \u2014 NHS Digital SHMI",
@@ -61,7 +61,7 @@
   "history": [
     {
       "period": "February 2025 - January 2026",
-      "fetched": "2026-06-13",
+      "fetched": "2026-06-15",
       "trusts": {
         "RVV": {
           "shmi_value": 1.1451,
