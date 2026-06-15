@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carers Intensity Map · Kent &amp; Medway · Assistiv Systems</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Nunito:wght@300;400;500;600;700&display=swap');
+:root{
+  --brand:#365EBF; --navy:#1e3a7a; --cream:#eef2fb; --ink:#1a2332; --ink-dim:#5a6678;
+  --line:#dbe2f0; --paper:#ffffff;
+  --c-low:#cfe0d4; --c-mid:#f3d9a8; --c-high:#e8a87c; --c-crit:#cf6a52;
+  --mono:'DM Mono',monospace; --serif:'Cormorant Garamond',serif; --body:'Source Serif 4',serif; --sans:'Nunito',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--cream);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 1.4rem}
+
+/* header */
+.masthead{background:var(--navy);color:#fff;padding:1.5rem 0 1.7rem}
+.eyebrow{font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:#aec2ec;margin-bottom:.5rem}
+.masthead h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.05;letter-spacing:-.01em}
+.masthead h1 em{font-style:italic;color:#cdd9f3}
+.masthead p{font-family:var(--body);color:#c8d3ec;max-width:62ch;margin-top:.7rem;font-size:.98rem}
+
+/* status strip */
+.status-strip{background:#eef2fb;border-bottom:1px solid #d7e0f2;color:#3a4a6b;font-family:var(--mono);font-size:.66rem;letter-spacing:.02em;padding:.5rem 0}
+.status-strip .wrap{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#365EBF;display:inline-block;flex-shrink:0}
+
+/* layout */
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:1.6rem;padding:1.8rem 0 2.4rem}
+@media(max-width:880px){.grid{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.card-h{padding:.85rem 1.1rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+.card-h .t{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim)}
+.card-h .n{font-family:var(--mono);font-size:.6rem;color:var(--brand)}
+
+#map{height:520px;width:100%;background:#dde6f4}
+.leaflet-container{font-family:var(--body)}
+
+/* legend */
+.legend{padding:.8rem 1.1rem;border-top:1px solid var(--line);display:flex;gap:1.2rem;flex-wrap:wrap;font-family:var(--mono);font-size:.62rem;color:var(--ink-dim)}
+.legend .key{display:flex;align-items:center;gap:.4rem}
+.legend .sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.12)}
+
+/* detail panel */
+.panel{padding:1.1rem}
+.panel-empty{color:var(--ink-dim);font-family:var(--body);font-size:.92rem;padding:1.6rem 1.1rem;text-align:center}
+.d-name{font-family:var(--serif);font-size:1.65rem;font-weight:600;line-height:1.05}
+.d-sub{font-family:var(--mono);font-size:.62rem;color:var(--ink-dim);letter-spacing:.04em;margin-top:.25rem;text-transform:uppercase}
+.headline{display:flex;align-items:baseline;gap:.6rem;margin:1rem 0 .2rem}
+.headline .big{font-family:var(--serif);font-size:3rem;font-weight:700;line-height:1}
+.headline .unit{font-family:var(--mono);font-size:.66rem;color:var(--ink-dim);letter-spacing:.04em}
+.rankpill{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .5rem;border-radius:20px;margin-top:.5rem}
+
+.bands{margin-top:1.1rem;border-top:1px solid var(--line);padding-top:.9rem}
+.band-row{display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:center;margin-bottom:.7rem}
+.band-label{font-family:var(--body);font-size:.86rem}
+.band-label small{display:block;font-family:var(--mono);font-size:.56rem;color:var(--ink-dim);letter-spacing:.03em;margin-top:.05rem}
+.band-val{font-family:var(--mono);font-size:.9rem;font-weight:500}
+.band-bar{grid-column:1/3;height:6px;border-radius:4px;background:#eef1f6;overflow:hidden}
+.band-fill{height:100%;border-radius:4px}
+
+.note{font-family:var(--body);font-size:.82rem;color:var(--ink-dim);line-height:1.5;margin-top:1rem;padding:.7rem .8rem;background:var(--cream);border-radius:8px;border:1px solid var(--line)}
+
+/* ranked list */
+.ranked{padding:.4rem 0}
+.r-row{display:grid;grid-template-columns:1.2rem 1fr auto;gap:.6rem;align-items:center;padding:.5rem 1.1rem;cursor:pointer;border-bottom:1px solid #f0f3f9;transition:background .12s}
+.r-row:hover{background:var(--cream)}
+.r-rank{font-family:var(--mono);font-size:.66rem;color:var(--ink-dim)}
+.r-name{font-family:var(--body);font-size:.9rem}
+.r-bar-wrap{display:flex;align-items:center;gap:.5rem}
+.r-bar{width:74px;height:6px;border-radius:4px;background:#eef1f6;overflow:hidden}
+.r-fill{height:100%;border-radius:4px}
+.r-val{font-family:var(--mono);font-size:.78rem;min-width:2.6rem;text-align:right}
+
+/* method footer */
+.method{padding:1.6rem 0 2.6rem}
+.method h2{font-family:var(--serif);font-size:1.5rem;font-weight:600;margin-bottom:.6rem}
+.method p{font-family:var(--body);font-size:.92rem;color:#39424f;max-width:74ch;margin-bottom:.7rem}
+.method .src{font-family:var(--mono);font-size:.62rem;color:var(--ink-dim);letter-spacing:.02em;line-height:1.8;margin-top:.6rem}
+.footer{border-top:1px solid var(--line);padding:1.2rem 0 2.4rem;font-family:var(--mono);font-size:.6rem;color:var(--ink-dim);letter-spacing:.04em}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Kent &amp; Medway · Population Intelligence · Layer 2</div>
+    <h1>The carers holding the system <em>together.</em></h1>
+    <p>Unpaid carers are the largest part of the care workforce and the least visible. This map shows where unpaid care is most concentrated across Kent and Medway, and in particular where the heaviest care, 50 hours a week or more, falls. Heavy care is the early-warning signal: when a carer reaches breakdown, the person they support is the next emergency admission.</p>
+  </div>
+</div>
+
+<div class="status-strip">
+  <div class="wrap">
+    <span class="status-dot"></span>
+    <span id="status-text">Census 2021 figures via Kent Public Health Observatory HSCM V1.6 (March 2026). Census undercounts carers, so figures are a floor.</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+    <div class="card">
+      <div class="card-h"><span class="t">Heavy care intensity (50+ hrs/week)</span><span class="n" id="map-status">loading…</span></div>
+      <div id="map"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:1.2rem">
+        <div class="card-h"><span class="t">District detail</span></div>
+        <div id="detail" class="panel-empty">Select a district on the map to see its carer profile.</div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="t">Ranked by heavy-care rate</span><span class="n">per 1,000 people</span></div>
+        <div class="ranked" id="ranked"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="method">
+    <h2>Why this map, and what it can and cannot tell you</h2>
+    <p>Unpaid carers save the health and care system more than the entire NHS budget, yet they are almost invisible to the commissioners who plan services. This map makes that workforce visible at district level, and foregrounds the band that matters most for risk: people providing 50 or more hours of care a week. That group is doing near-full-time care, usually alongside their own health needs, and is the most likely to reach the point of breakdown that pushes the person they care for into hospital or residential care.</p>
+    <p>It is built on one direct source, not a model. The 2021 Census asked every household about unpaid care provided per week, banded into 0&ndash;19 hours, 20&ndash;49 hours, and 50 or more. The map reads those counts by district. Because it is a direct count rather than a proxy, the figures are interpretable on their own terms.</p>
+    <p><strong>The honest limitation:</strong> the Census undercounts carers, and badly. Many people who provide substantial care, especially spouses caring for a partner and parents caring for an adult child, do not think of themselves as a &ldquo;carer&rdquo; and do not record it. Every figure here should be read as a floor, not the true number. The real demand is higher, and the map is most useful for showing relative concentration between districts rather than absolute counts.</p>
+    <p class="src">Source: 2021 Census (Provision of unpaid care), Office for National Statistics, via Kent Public Health Observatory Health &amp; Social Care Maps V1.6 (March 2026). Indicators: Unpaid carers; Unpaid care of more than 50 hours; Unpaid carers aged 50+. Geography: local authority district. Licence: Open Government Licence v3.0.</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="footer">Assistiv Systems · Population Frailty Intelligence · Powered by Anthropic technologies</div>
+</div>
+
+<script>
+const DATA_URL = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-carers-data.json';
+const GEOJSON_URL = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-districts.geojson';
+
+// name-tolerant lookup: GeoJSON spells "Tonbridge and Malling", data uses "Tonbridge & Malling"
+function normName(s){return (s||'').toLowerCase().replace(/\s*&\s*/g,' and ').replace(/\s+/g,' ').trim();}
+
+let CARERS = {};        // normName -> district record
+let RANKED = [];
+let geojsonLayer = null;
+let selected = null;
+
+// colour scale on heavy-care rate per 1,000 (real Census 2021 range ~20–36)
+function heavyColor(rate){
+  if(rate>=32) return 'var(--c-crit)';
+  if(rate>=26) return 'var(--c-high)';
+  if(rate>=23) return 'var(--c-mid)';
+  return 'var(--c-low)';
+}
+function heavyColorHex(rate){
+  if(rate>=32) return '#cf6a52';
+  if(rate>=26) return '#e8a87c';
+  if(rate>=23) return '#f3d9a8';
+  return '#cfe0d4';
+}
+function lookup(name){ return CARERS[normName(name)]; }
+
+function fmt(n){ return n==null?'–':n.toLocaleString('en-GB'); }
+
+function renderLegend(){
+  const el=document.getElementById('legend');
+  const keys=[['Highest','#cf6a52','32+'],['High','#e8a87c','26–32'],['Moderate','#f3d9a8','23–26'],['Lower','#cfe0d4','<23']];
+  el.innerHTML = keys.map(k=>`<span class="key"><span class="sw" style="background:${k[1]}"></span>${k[0]} · ${k[2]} per 1,000</span>`).join('');
+}
+
+function districtStyle(feature){
+  const d=lookup(feature.properties.name);
+  const rate=d?d.heavy_care_rate_per_1000:null;
+  return {
+    fillColor: rate!=null?heavyColorHex(rate):'#e4e9f2',
+    weight: selected===feature.properties.name?2.5:1,
+    color: selected===feature.properties.name?'#1e3a7a':'#ffffff',
+    fillOpacity: rate!=null?0.82:0.4
+  };
+}
+
+function renderDetail(name){
+  const d=lookup(name);
+  const el=document.getElementById('detail');
+  if(!d){el.className='panel-empty';el.textContent='No data for this district.';return;}
+  el.className='panel';
+  const total=d.carers_total, hi=d.carers_high_50plus;
+  const under=Math.max(total-hi,0);                 // carers providing under 50 hrs/week
+  const aged=d.carers_aged_50plus;                   // carers who are themselves 50+
+  const maxBand=Math.max(hi,under)||1;
+  const rateColor=heavyColorHex(d.heavy_care_rate_per_1000);
+  el.innerHTML=`
+    <div class="d-name">${d.name}</div>
+    <div class="d-sub">${d.lad_code} · pop ${fmt(d.population_2021)} (2021 Census)</div>
+    <div class="headline">
+      <span class="big" style="color:${rateColor}">${d.heavy_care_rate_per_1000}</span>
+      <span class="unit">heavy carers (50+ hrs)<br>per 1,000 people</span>
+    </div>
+    <span class="rankpill" style="background:${rateColor}22;color:${rateColor}">#${d.heavy_care_rank} of 13 for heavy care</span>
+    <div class="bands">
+      <div class="band-row"><div class="band-label">50+ hours / week <small>near full-time care · highest breakdown risk</small></div><div class="band-val">${fmt(hi)}</div>
+        <div class="band-bar"><div class="band-fill" style="width:${hi/maxBand*100}%;background:#cf6a52"></div></div></div>
+      <div class="band-row"><div class="band-label">Under 50 hours / week <small>lighter and substantial care combined</small></div><div class="band-val">${fmt(under)}</div>
+        <div class="band-bar"><div class="band-fill" style="width:${under/maxBand*100}%;background:#cfe0d4"></div></div></div>
+    </div>
+    ${aged?`<div class="note" style="background:#fff;border-color:#ecd9b0"><strong>${fmt(aged)} carers are themselves aged 50 or over.</strong> Older carers are a double-vulnerability group: providing care while at higher health risk of their own.</div>`:''}
+    <div class="note"><strong>${fmt(total)} unpaid carers</strong> recorded here, ${d.carer_pct}% of the population. Remember this is a Census floor: the true figure is higher, because many carers, especially spouses, never identify as one.</div>
+  `;
+}
+
+function renderRanked(){
+  const el=document.getElementById('ranked');
+  const max=Math.max(...RANKED.map(d=>d.heavy_care_rate_per_1000));
+  el.innerHTML=RANKED.map(d=>`
+    <div class="r-row" onclick="selectDistrict('${d.name.replace(/'/g,"\\'")}')">
+      <span class="r-rank">${d.heavy_care_rank}</span>
+      <span class="r-name">${d.name}</span>
+      <span class="r-bar-wrap">
+        <span class="r-bar"><span class="r-fill" style="width:${d.heavy_care_rate_per_1000/max*100}%;background:${heavyColorHex(d.heavy_care_rate_per_1000)}"></span></span>
+        <span class="r-val">${d.heavy_care_rate_per_1000}</span>
+      </span>
+    </div>`).join('');
+}
+
+function selectDistrict(name){
+  selected=name;
+  renderDetail(name);
+  if(geojsonLayer) geojsonLayer.eachLayer(l=>l.setStyle(districtStyle(l.feature)));
+}
+
+const map=L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([51.22,0.75],9);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:14
+}).addTo(map);
+
+async function init(){
+  renderLegend();
+  try{
+    const [cRes,gRes]=await Promise.all([
+      fetch(DATA_URL+'?t='+Date.now(),{cache:'no-store'}),
+      fetch(GEOJSON_URL+'?t='+Date.now(),{cache:'no-store'})
+    ]);
+    const cData=await cRes.json();
+    const geo=await gRes.json();
+
+    (cData.districts||[]).forEach(d=>{CARERS[normName(d.name)]=d;});
+    RANKED=(cData.districts||[]).slice().sort((a,b)=>a.heavy_care_rank-b.heavy_care_rank);
+
+    geojsonLayer=L.geoJSON(geo,{
+      style:districtStyle,
+      onEachFeature:(f,layer)=>{
+        const name=f.properties.name;
+        layer.on('click',()=>selectDistrict(name));
+        layer.on('mouseover',()=>{if(selected!==name)layer.setStyle({weight:2,color:'#1e3a7a'});});
+        layer.on('mouseout',()=>{if(selected!==name)layer.setStyle(districtStyle(f));});
+        const d=lookup(name);
+        if(d) layer.bindTooltip(`<strong>${name}</strong><br>${d.heavy_care_rate_per_1000}/1,000 heavy carers`,{sticky:true});
+      }
+    }).addTo(map);
+
+    renderRanked();
+    document.getElementById('map-status').textContent='13 districts';
+  }catch(e){
+    console.error(e);
+    document.getElementById('map-status').textContent='data unavailable';
+    document.getElementById('detail').innerHTML='<div class="panel-empty">Could not load carer data. Check kent-carers-data.json is published to the repo.</div>';
+  }
+}
+init();
+</script>
+</body>
+</html>
