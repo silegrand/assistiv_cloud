@@ -588,6 +588,20 @@ const DISTRICT_TRUST = {
   'Gravesham':           'RN7',
 };
 
+// Resolve a district name to its trust code, tolerant of "&" vs "and" and spacing.
+// The GeoJSON spells one district "Tonbridge and Malling" while DISTRICT_TRUST keys
+// it "Tonbridge & Malling"; a direct lookup misses and silently falls back to the
+// wrong default trust (RVV / East Kent). This normalises before falling back.
+function _normTrustName(s) {
+  return (s || '').toLowerCase().replace(/\s*&\s*/g, ' and ').replace(/\s+/g, ' ').trim();
+}
+const _DISTRICT_TRUST_NORM = {};
+Object.keys(DISTRICT_TRUST).forEach(k => { _DISTRICT_TRUST_NORM[_normTrustName(k)] = DISTRICT_TRUST[k]; });
+function trustForDistrict(name) {
+  if (DISTRICT_TRUST[name]) return DISTRICT_TRUST[name];
+  return _DISTRICT_TRUST_NORM[_normTrustName(name)] || 'RVV';
+}
+
 const TRUST_NAMES = {
   RVV: 'East Kent Hospitals',
   RWF: 'Maidstone & Tunbridge Wells',
@@ -903,10 +917,10 @@ function renderMap(geojson) {
 
       layer.on('mouseover', () => {
         if (mapMode === 'hospital') {
-          const code = DISTRICT_TRUST[name] || 'RVV';
+          const code = trustForDistrict(name);
           if (selectedTrust !== code) {
             geojsonLayer.eachLayer(l => {
-              const lc = DISTRICT_TRUST[getDistrictName(l.feature)] || 'RVV';
+              const lc = trustForDistrict(getDistrictName(l.feature));
               if (lc === code) l.setStyle({ fillOpacity: 0.8, weight: 1.8, color: '#003087' });
             });
           }
@@ -923,7 +937,7 @@ function renderMap(geojson) {
       });
       layer.on('click', () => {
         if (mapMode === 'hospital') {
-          const code = DISTRICT_TRUST[name] || 'RVV';
+          const code = trustForDistrict(name);
           selectedTrust = code;
           geojsonLayer.eachLayer(l => l.setStyle(districtStyle(l.feature, false)));
           showTrustDetail(code);
@@ -950,7 +964,7 @@ function getDistrictName(feature) {
 }
 
 function getDistrictTier(districtName) {
-  const trustCode = DISTRICT_TRUST[districtName] || 'RVV';
+  const trustCode = trustForDistrict(districtName);
   const fepDistrict = DATA.fep?.districts?.find?.(d => d.name === districtName);
   const fepScore    = fepDistrict?.fep ?? 50;
   const corridorT   = DATA.corridor?.trusts?.[trustCode]?.corridor_total ?? null;
@@ -961,7 +975,7 @@ function getDistrictTier(districtName) {
 function districtStyle(feature, selected) {
   const name = getDistrictName(feature);
   if (mapMode === 'hospital') {
-    const code = DISTRICT_TRUST[name] || 'RVV';
+    const code = trustForDistrict(name);
     const tier = getTrustTier(code);
     const isSel = selectedTrust === code;
     return {
@@ -1086,7 +1100,7 @@ function showTrustDetail(code) {
 
 // ── DISTRICT DETAIL PANEL ─────────────────────────────────────────────
 function showDistrictDetail(name) {
-  const trustCode    = DISTRICT_TRUST[name] || 'RVV';
+  const trustCode    = trustForDistrict(name);
   const trustShort   = TRUST_NAMES[trustCode];
   const fepDistrict  = DATA.fep?.districts?.find?.(d => d.name === name);
   const fepScore     = fepDistrict?.fep ?? null;
@@ -1644,7 +1658,7 @@ function renderDualCrisis() {
   //   unpaid_heavy %    (50+hrs/wk carers = highest carer strain)
   // Falls back to FEP deprivation signal if HSCM not loaded.
   const points = fepDistricts.map(d => {
-    const tc        = DISTRICT_TRUST[d.name] || 'RVV';
+    const tc        = trustForDistrict(d.name);
     const corridor  = DATA.corridor?.trusts?.[tc]?.corridor_total ?? TRUST_CORRIDOR[tc] ?? 1;
     const hscmD     = DATA.hscm?.districts?.[d.name] || {};
     const pop75     = POP75C[d.name] || 13800;
@@ -1854,7 +1868,7 @@ function populateRankedTab() {
   const districts = [];
   if (DATA.fep?.districts) {
     DATA.fep.districts.forEach(d => {
-      const tc   = DISTRICT_TRUST[d.name] || 'RVV';
+      const tc   = trustForDistrict(d.name);
       const corr = DATA.corridor?.trusts?.[tc]?.corridor_total ?? null;
       const shmi = DATA.shmi?.trusts?.[tc]?.banding_code ?? null;
       const tier = computePressureTier(d.fep, corr, shmi);
