@@ -80,6 +80,10 @@ def get_json(path):
         return None
     try:
         return json.loads(content)
+    except json.JSONDecodeError as e:
+        print(f"  ✗ invalid JSON in {path}: {e}")
+        return None
+
 
 def get_fep_json():
     """Fetch kent-fep-data.json from assistivagents — the single source of truth."""
@@ -91,9 +95,6 @@ def get_fep_json():
         return json.loads(base64.b64decode(r.json()["content"]).decode("utf-8"))
     except Exception as e:
         print(f"  ✗ invalid JSON in kent-fep-data.json: {e}")
-        return None
-    except json.JSONDecodeError as e:
-        print(f"  ✗ invalid JSON in {path}: {e}")
         return None
 
 
