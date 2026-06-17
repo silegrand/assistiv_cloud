@@ -22,26 +22,39 @@ KENT_ICB_ONS  = "E54000032"
 KENT_COUNTY   = "E10000016"
 ENGLAND       = "E92000001"
 
-RAW_URL = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/{GITHUB_FILE}"
+RAW_URL  = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/{GITHUB_FILE}"
+API_BASE = f"https://api.github.com/repos/{GITHUB_REPO}/contents"
+
+def fetch_json_from_repo(filename):
+    """Fetch a JSON file from GITHUB_REPO using the authenticated Contents API.
+    Works whether the repo is public or private, as long as GITHUB_TOKEN has
+    repo read access. Falls back to raw URL for public repos."""
+    api_url = f"{API_BASE}/{filename}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+    r = requests.get(api_url, headers=headers, timeout=15)
+    if r.status_code != 200:
+        raise RuntimeError(
+            f"Could not fetch {filename} via GitHub API "
+            f"(HTTP {r.status_code}). "
+            f"Check ASSISTIV_GITHUB_TOKEN has repo read access to {GITHUB_REPO}. "
+            f"Response: {r.text[:300]}"
+        )
+    try:
+        content_b64 = r.json().get("content", "")
+        content_str = base64.b64decode(content_b64).decode("utf-8")
+        return json.loads(content_str)
+    except Exception as e:
+        raise RuntimeError(
+            f"{filename} did not parse correctly from API response. "
+            f"Error: {e}. First 200 chars of response: {r.text[:200]}"
+        ) from e
 
 # ── LOAD LAST COMMITTED JSON (to reuse EPD data) ──────────────────────
 print("Loading last committed kent-fep-data.json...")
-r = requests.get(RAW_URL, timeout=15)
-if r.status_code != 200:
-    raise RuntimeError(
-        f"Could not fetch kent-fep-data.json from {RAW_URL} "
-        f"(HTTP {r.status_code}). "
-        f"Check that silegrand/assistivagents is public and the file exists. "
-        f"Response: {r.text[:200]}"
-    )
-try:
-    last = r.json()
-except Exception as e:
-    raise RuntimeError(
-        f"kent-fep-data.json did not parse as JSON. "
-        f"HTTP {r.status_code}. First 200 chars: {r.text[:200]}"
-    ) from e
-
+last = fetch_json_from_repo(GITHUB_FILE)
 last_epd   = last.get("icb_baseline", {}).get("prescribing", {})
 last_meta  = last.get("meta", {})
 last_epd_d = {d["name"]: d.get("epd_district", {}) for d in last.get("districts", [])}
@@ -52,24 +65,20 @@ print(f"  Last version: {last_meta.get('version','?')} | EPD period: {last_meta.
 # (KPHO Health and Social Care Maps, published quarterly).
 # kpho_frailty_normalised: 0-100, Kent-scaled. Blended at 40% into FEP.
 # Key corrections: Dartford +30 pts (severely underestimated), Maidstone -16 pts.
-HSCM_URL = RAW_URL.replace("kent-fep-data.json", "kent-hscm-data.json")
+HSCM_FILE = "kent-hscm-data.json"
 KPHO_FEP_WEIGHT = 0.40   # 40% clinical signal, 60% proxy-signal FEP
 kpho_district = {}
 try:
-    rh = requests.get(HSCM_URL, timeout=10)
-    if rh.status_code == 200:
-        hscm = rh.json()
-        for name, rec in hscm.get("districts", {}).items():
-            norm_val = rec.get("kpho_frailty_normalised")
-            if norm_val is not None:
-                kpho_district[name] = norm_val
-        print(f"  KPHO frailty loaded: {len(kpho_district)} districts  "
-              f"(version {hscm.get('meta',{}).get('version','?')}, "
-              f"{hscm.get('meta',{}).get('version_date','?')})")
-    else:
-        print(f"  KPHO data unavailable (HTTP {rh.status_code}) — FEP runs without recalibration")
+    hscm = fetch_json_from_repo(HSCM_FILE)
+    for name, rec in hscm.get("districts", {}).items():
+        norm_val = rec.get("kpho_frailty_normalised")
+        if norm_val is not None:
+            kpho_district[name] = norm_val
+    print(f"  KPHO frailty loaded: {len(kpho_district)} districts  "
+          f"(version {hscm.get('meta',{}).get('version','?')}, "
+          f"{hscm.get('meta',{}).get('version_date','?')})")
 except Exception as e:
-    print(f"  KPHO data load error ({e}) — FEP runs without recalibration")
+    print(f"  KPHO data unavailable ({e}) — FEP runs without recalibration")
 
 # ── FINGERTIPS FETCH ──────────────────────────────────────────────────
 # Each indicator is fetched at ICB/county level (for the England-benchmarked
@@ -306,13 +315,9 @@ districts.sort(key=lambda x: x["fep"], reverse=True)
 print("\nComputing FEP deltas vs previous commit...")
 prev_scores = {}
 try:
-    prev_resp = requests.get(RAW_URL, timeout=10)
-    if prev_resp.status_code == 200:
-        prev_data = prev_resp.json()
-        prev_scores = {d["name"]: d["fep"] for d in prev_data.get("districts", [])}
-        print(f"  Previous commit loaded: {prev_data.get('meta',{}).get('generated','?')[:10]}")
-    else:
-        print(f"  Previous commit unavailable (HTTP {prev_resp.status_code}) — deltas will be null")
+    prev_data = fetch_json_from_repo(GITHUB_FILE)
+    prev_scores = {d["name"]: d["fep"] for d in prev_data.get("districts", [])}
+    print(f"  Previous commit loaded: {prev_data.get('meta',{}).get('generated','?')[:10]}")
 except Exception as e:
     print(f"  Could not load previous commit: {e} — deltas will be null")
 
