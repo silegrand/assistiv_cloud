@@ -155,6 +155,7 @@ body {
 /* ── MAP ── */
 #map {
   flex: 1;
+  height: 100%;
   position: relative;
   z-index: 1;
   min-height: 0;
@@ -926,7 +927,7 @@ body {
 <div class="main">
 
   <!-- MAP -->
-  <div style="position:relative;flex:1;display:flex;flex-direction:column;">
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;min-height:0;">
     <div id="map"></div>
     <div class="map-loading" id="map-loading">
       <div class="loader-ring"></div>
