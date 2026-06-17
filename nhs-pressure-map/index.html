@@ -187,7 +187,8 @@ body {
   min-height: 0; }
 
 /* ── MAP ── */
-#map { flex: 1; position: relative; z-index: 1; min-height: 0; }
+#map { flex: 1;
+  height: 100%; position: relative; z-index: 1; min-height: 0; }
 .map-toggle {
   position: absolute; top: 12px; right: 12px; z-index: 1000;
   display: flex; background: #fff; border: 1px solid var(--border);
@@ -535,7 +536,7 @@ body {
 
 <!-- MAIN -->
 <div class="main">
-  <div style="position:relative;flex:1;display:flex;flex-direction:column;">
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;min-height:0;">
     <div id="map"></div>
     <div class="map-toggle" role="group" aria-label="Map view mode">
       <button id="mode-district" class="active" onclick="setMapMode('district')">District pressure</button>
