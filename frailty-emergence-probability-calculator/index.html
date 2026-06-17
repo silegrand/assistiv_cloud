@@ -942,8 +942,37 @@ input[type=range]::-webkit-slider-thumb:hover {
 .weather-temp { font-weight: 500; flex-shrink: 0; margin-left: 0.5rem; }
 .weather-src  { opacity: 0.45; flex-shrink: 0; font-size: 0.55rem; }
 </style>
+  <meta name="description" content="Configure 21 adjustable signal weights for the Frailty Emergence Probability model. Commissioner-configurable and transparent.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FEP Scoring Configurator — Assistiv Cloud">
+  <meta property="og:description" content="Configure 21 adjustable signal weights for the Frailty Emergence Probability model. Commissioner-configurable, transparent, and reproducible.">
+  <meta property="og:url" content="https://www.assistiv.cloud/frailty-emergence-probability-calculator/">
+  <meta property="og:image" content="https://www.assistiv.cloud/og-image.png">
+  <meta property="og:site_name" content="Assistiv Cloud">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FEP Scoring Configurator — Assistiv Cloud">
+  <meta name="twitter:description" content="Configure 21 adjustable signal weights for the Frailty Emergence Probability model. Commissioner-configurable, transparent, and reproducible.">
+  <meta name="twitter:image" content="https://www.assistiv.cloud/og-image.png">
 </head>
 <body>
+<nav style="background:#365EBF;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
+  <div style="display:flex;align-items:center;gap:0.85rem">
+    <a href="/" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.6);text-decoration:none;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.15s;flex-shrink:0" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&#8592; Overview</a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <a href="/" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0" title="Assistiv Cloud">
+      <div class="nav-logo-mark">
+        <div class="nav-logo-dot nav-logo-core"></div>
+        <div class="nav-logo-dot nav-logo-r1"></div>
+        <div class="nav-logo-dot nav-logo-r2"></div>
+      </div>
+    </a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-family:'Cabinet Grotesk','Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1">FEP Configurator</span>
+      <span style="font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);line-height:1">Layer 2 · Scoring Engine</span>
+    </div>
+  </div>
+</nav>
 
 <!-- TOPBAR -->
 <div style="background:#365EBF;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
@@ -2320,5 +2349,64 @@ window.PAGE_CONTEXT = {
 </script>
 <script src="/agents.js"></script>
 
+<footer style="background:#fff;padding:4rem 0 2.25rem;border-top:1px solid var(--cream-dark,#c8d5ee)">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2rem">
+    <div style="display:grid;grid-template-columns:240px 1fr;gap:4rem;padding-bottom:3rem;border-bottom:1px solid var(--cream-dark,#c8d5ee);margin-bottom:2rem">
+      <div>
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+          <div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <div style="border-radius:50%;position:absolute;width:9px;height:9px;background:#365EBF;z-index:2"></div>
+            <div style="border-radius:50%;position:absolute;width:20px;height:20px;border:1.5px solid #365EBF;opacity:.55;background:none"></div>
+            <div style="border-radius:50%;position:absolute;width:33px;height:33px;border:1.5px solid #365EBF;opacity:.22;background:none"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:-.03em;line-height:1.1;color:#1e3a7a">Assistiv</span>
+            <span style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;line-height:1;color:#365EBF;opacity:.85">Cloud</span>
+          </div>
+        </div>
+        <p style="font-size:0.82rem;color:#6b7f71;line-height:1.75;max-width:220px">Frailty intelligence for the NHS. Finding older adults at risk before the system has to respond.</p>
+        <p style="font-size:0.72rem;color:#9aaa9e;margin-top:0.75rem">Powered by Anthropic technologies</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem">
+        <div>
+          <h5 style="font-family:'Nunito',sans-serif;font-size:0.66rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#365EBF;margin-bottom:1rem">Platform</h5>
+          <a href="/#tools" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Tools</a>
+          <a href="/#carers" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Carers</a>
+          <a href="/#how-it-works" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">How it works</a>
+          <a href="/#evidence" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Evidence</a>
+          <a href="/briefing/" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Commissioner Briefing</a>
+          <a href="/datastatus/" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Data status</a>
+          <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Governance &amp; Assurance</a>
+        </div>
+        <div>
+          <h5 style="font-family:'Nunito',sans-serif;font-size:0.66rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#365EBF;margin-bottom:1rem">Methodology</h5>
+          <a href="/methodology/" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Master methodology</a>
+          <a href="/methodology-hub/" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Tool methods</a>
+          <a href="/backtest-monitor/" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Backtest monitor</a>
+          <a href="/history/" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">FEP Trend History</a>
+        </div>
+        <div>
+          <h5 style="font-family:'Nunito',sans-serif;font-size:0.66rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#365EBF;margin-bottom:1rem">Ecosystem</h5>
+          <a href="https://www.assistiv.services" target="_blank" rel="noopener" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">assistiv.services</a>
+          <a href="https://www.assistiv.tools" target="_blank" rel="noopener" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">assistiv.tools</a>
+          <a href="https://www.assistiv.co" target="_blank" rel="noopener" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">assistiv.co</a>
+        </div>
+        <div>
+          <h5 style="font-family:'Nunito',sans-serif;font-size:0.66rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#365EBF;margin-bottom:1rem">Contact</h5>
+          <a href="/#contact" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">Get in touch</a>
+          <a href="mailto:simon@assistiv.co" style="display:block;font-size:0.82rem;color:#3d5245;margin-bottom:0.55rem;text-decoration:none">simon@assistiv.co</a>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <p style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#9aaa9e;line-height:1.6">&copy; 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2025. For research and commissioning intelligence purposes only.</p>
+      <div style="display:flex;gap:1.5rem">
+        <a href="/privacy.html" style="font-size:0.75rem;color:#9aaa9e;text-decoration:none">Privacy</a>
+        <a href="/terms.html" style="font-size:0.75rem;color:#9aaa9e;text-decoration:none">Terms</a>
+        <a href="/accessibility.html" style="font-size:0.75rem;color:#9aaa9e;text-decoration:none">Accessibility</a>
+      </div>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
