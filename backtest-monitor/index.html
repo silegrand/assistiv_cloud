@@ -169,7 +169,7 @@ footer{background:var(--white);padding:4rem 0 2.25rem;border-top:1px solid var(-
           <a href="/#how-it-works">How it works</a>
           <a href="/#evidence">Evidence</a>
           <a href="/datastatus/">Data status</a>
-        <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener">Governance &amp; Assurance</a>
+          <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener">Governance &amp; Assurance</a>
         </div>
         <div class="footer-nav-col">
           <h5>Methodology</h5>
@@ -202,7 +202,7 @@ footer{background:var(--white);padding:4rem 0 2.25rem;border-top:1px solid var(-
 </footer>
 
 <script>
-const BASE = location.href.replace(/[^/]*$/, '');
+const BASE = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/';
 const bust = () => '?cb=' + Date.now();
 
 async function getJSON(path){
@@ -329,11 +329,10 @@ async function loadAll(){
 loadAll();
 </script>
 
-<!-- ADA + VERA AGENTS -->
 <script>
 window.PAGE_CONTEXT = {
   "title": "Backtest Monitor",
-  "description": "Tracks the historical accuracy of FEP score predictions against subsequent observed data \u2014 supporting ongoing model validation and transparency.",
+  "description": "Tracks the historical accuracy of FEP score predictions against subsequent observed data — supporting ongoing model validation and transparency.",
   "adaStarters": [
     "What does the backtest monitor show?",
     "How is FEP prediction accuracy measured?",
