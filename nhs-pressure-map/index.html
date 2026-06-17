@@ -815,10 +815,12 @@ function updateBanner() {
   // Data freshness badge
   const weekEnding = DATA.corridor?.meta?.week_ending || null;
   const badge = document.getElementById('data-freshness-badge');
-  if (weekEnding) {
-    badge.textContent = `Week of ${weekEnding}`;
-  } else {
-    badge.textContent = 'Open NHS Data';
+  if (badge) {
+    if (weekEnding) {
+      badge.textContent = `Week of ${weekEnding}`;
+    } else {
+      badge.textContent = 'Open NHS Data';
+    }
   }
 
   // Corridor total (sum across both Kent trusts)
