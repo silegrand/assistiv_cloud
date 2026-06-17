@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="West Yorkshire Frailty Intelligence — Bradford, Calderdale, Kirklees, Leeds, Wakefield. Population frailty risk mapped by district. Assistiv Systems.">
+<title>West Yorkshire Frailty Intelligence · Assistiv Systems</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg:          #f7f5f0;
+  --surface:     #ffffff;
+  --surface2:    #f0ede6;
+  --border:      #ddd8ce;
+  --text:        #1a2e1e;
+  --text-muted:  #5a7260;
+  --text-dim:    #9aaa9e;
+  --forest:      #0f2d4a;
+  --nhs-blue:    #003087;
+  --nhs-mid:     #1d4ed8;
+  --nhs-pale:    rgba(29,78,216,0.07);
+  --nhs-light:   #eff6ff;
+  --red:         #b91c1c;
+  --amber:       #b45309;
+  --green:       #166534;
+  --mono:        'DM Mono', monospace;
+  --serif:       'Cormorant Garamond', serif;
+  --sans:        'Nunito', sans-serif;
+  --tier-critical: #991b1b;
+  --tier-high:     #c2410c;
+  --tier-moderate: #1d4ed8;
+  --tier-low:      #166534;
+  --wy-purple:     #5b21b6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--nhs-blue);
+  padding: 0 1.25rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.topbar-right { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.badge {
+  font-family: var(--mono); font-size: 0.58rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 0.18rem 0.5rem; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.65);
+}
+.badge.live { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.45); color: white; }
+.badge.live::before { content: '● '; font-size: 0.42rem; }
+.badge.wy { background: rgba(91,33,182,0.4); border-color: rgba(167,139,250,0.5); color: #ddd6fe; }
+.nav-back { color: rgba(255,255,255,0.6); text-decoration: none; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.15s; }
+.nav-back:hover { color: white; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+.logo-ring { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
+.logo-ring .dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; background: #fff; border-radius: 50%; z-index: 2; }
+.logo-ring .r1 { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); border-radius: 50%; }
+.logo-ring .r2 { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50%; }
+.brand-label { display: flex; flex-direction: column; gap: 2px; }
+.brand-title { font-family: var(--sans); font-size: 0.88rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+.brand-sub { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); line-height: 1; }
+
+/* ── SUMMARY BANNER ── */
+.summary-banner {
+  background: #e8edf8;
+  padding: 0.3rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  border-bottom: 1px solid #c9d4ec;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.banner-left { display: flex; align-items: center; gap: 0.6rem; flex-wrap: nowrap; overflow: hidden; }
+.banner-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: #365EBF; white-space: nowrap; flex-shrink: 0; }
+.banner-stat { display: flex; align-items: baseline; gap: 0.3rem; white-space: nowrap; flex-shrink: 0; }
+.banner-val { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: #1e3a7a; }
+.banner-desc { font-family: var(--mono); font-size: 0.58rem; color: #365EBF; letter-spacing: 0.03em; text-transform: uppercase; }
+.banner-sep { color: #b0bcd8; font-size: 0.65rem; flex-shrink: 0; user-select: none; }
+
+/* ── MAIN LAYOUT ── */
+.main { display: flex; flex: 1; overflow: hidden; }
+#map { flex: 1; position: relative; z-index: 1; height: 100%; }
+
+/* ── SIDE PANEL ── */
+.side-panel { width: 480px; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+.panel-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.panel-tab { flex: 1; padding: 0.6rem 0.4rem; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.05em; text-transform: uppercase; text-align: center; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; }
+.panel-tab.active { color: var(--nhs-mid); border-bottom-color: var(--nhs-mid); background: var(--surface); }
+.panel-content { flex: 1; overflow-y: auto; padding: 1rem; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-muted); }
+.empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4; }
+.empty-title { font-family: var(--serif); font-size: 1rem; color: var(--text); margin-bottom: 0.4rem; }
+.empty-desc { font-size: 0.72rem; line-height: 1.55; }
+
+/* ── DISTRICT DETAIL ── */
+.district-header { margin-bottom: 0.85rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--border); }
+.district-name { font-family: var(--serif); font-size: 1.45rem; font-weight: 700; color: var(--text); line-height: 1.1; margin-bottom: 0.2rem; }
+.district-meta { font-family: var(--mono); font-size: 0.58rem; color: var(--text-muted); letter-spacing: 0.04em; }
+
+.fep-display { display: flex; align-items: center; gap: 0.75rem; margin: 0.65rem 0; }
+.fep-circle { width: 58px; height: 58px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid currentColor; }
+.fep-circle-val { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; line-height: 1; }
+.fep-circle-label { font-family: var(--mono); font-size: 0.42rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; }
+
+.tier-pill { display: inline-flex; align-items: center; font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 20px; font-weight: 500; }
+.tier-critical { background: #fef2f2; color: var(--tier-critical); border: 1px solid #fecaca; }
+.tier-high     { background: #fff7ed; color: var(--tier-high);     border: 1px solid #fed7aa; }
+.tier-moderate { background: var(--nhs-light); color: var(--nhs-mid); border: 1px solid #bfdbfe; }
+.tier-low      { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+
+.data-panel { margin-bottom: 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0 8px 8px 0; padding: 0.8rem 0.9rem; }
+.data-panel.frailty  { border-left: 4px solid #c2410c; }
+.data-panel.deprivation { border-left: 4px solid #1d4ed8; }
+.data-panel.clinical { border-left: 4px solid #7c3aed; }
+.data-panel.social   { border-left: 4px solid #059669; }
+.data-panel.narrative-panel { border-left: 4px solid #0f2d4a; background: var(--nhs-light); }
+
+.panel-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.35rem; }
+.frailty   .panel-title { color: #c2410c; }
+.deprivation .panel-title { color: #1d4ed8; }
+.clinical  .panel-title { color: #7c3aed; }
+.social    .panel-title { color: #059669; }
+.narrative-panel .panel-title { color: #0f2d4a; }
+
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-bottom: 0.5rem; }
+.metric-box { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 0.4rem 0.5rem; text-align: center; }
+.metric-val { font-family: var(--mono); font-size: 1.05rem; font-weight: 600; display: block; line-height: 1.1; }
+.metric-val.red    { color: #c2410c; }
+.metric-val.blue   { color: #1d4ed8; }
+.metric-val.purple { color: #7c3aed; }
+.metric-val.green  { color: #059669; }
+.metric-label { font-size: 0.6rem; color: var(--text-muted); line-height: 1.3; margin-top: 2px; }
+.panel-note { font-size: 0.62rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid var(--border); }
+
+/* ── RANKED LIST ── */
+.ranked-item { display: flex; align-items: center; gap: 0.55rem; padding: 0.5rem 1rem; margin: 0 -1rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.ranked-item:hover { background: var(--surface2); }
+.ranked-item:last-child { border-bottom: none; }
+.ranked-num { font-family: var(--mono); font-size: 0.58rem; color: var(--text-dim); min-width: 16px; }
+.ranked-name { font-size: 0.73rem; font-weight: 500; flex: 1; color: var(--text); }
+.ranked-bar-wrap { width: 55px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.ranked-bar { height: 4px; border-radius: 2px; }
+.ranked-val { font-family: var(--mono); font-size: 0.63rem; font-weight: 500; min-width: 28px; text-align: right; }
+
+/* ── LEGEND ── */
+.legend-section { margin-bottom: 1.2rem; }
+.legend-title { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nhs-mid); margin-bottom: 0.55rem; padding-bottom: 0.35rem; border-bottom: 1px solid rgba(29,78,216,0.2); }
+.legend-item { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem; }
+.legend-swatch { width: 28px; height: 14px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
+.legend-text { font-size: 0.7rem; color: var(--text); line-height: 1.4; }
+.legend-sub { font-family: var(--mono); font-size: 0.58rem; color: var(--text-muted); }
+
+.map-loading { position: absolute; inset: 0; background: rgba(247,245,240,0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; font-family: var(--mono); font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; gap: 0.75rem; transition: opacity 0.4s; }
+.map-loading.hidden { opacity: 0; pointer-events: none; }
+.loader-ring { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--nhs-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.leaflet-control-attribution { font-family: var(--mono) !important; font-size: 0.5rem !important; background: rgba(247,245,240,0.9) !important; }
+
+/* ── MISSING MIDDLE CALLOUT ── */
+.mm-callout { background: linear-gradient(135deg, rgba(91,33,182,0.06), rgba(29,78,216,0.04)); border: 1px solid rgba(91,33,182,0.2); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
+.mm-callout-val { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: var(--wy-purple); line-height: 1; }
+.mm-callout-label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; color: #6d28d9; margin-top: 2px; }
+.mm-callout-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.5rem; }
+
+@media (max-width: 768px) {
+  .side-panel { width: 100%; height: 45vh; border-left: none; border-top: 1px solid var(--border); }
+  .main { flex-direction: column; }
+  #map { flex: 1; min-height: 200px; }
+  .topbar-right { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-left">
+    <a href="https://www.assistiv.cloud" class="nav-back">&#8592; assistiv.cloud</a>
+    <div class="divider-v"></div>
+    <a href="https://www.assistiv.cloud" style="text-decoration:none">
+      <div class="logo-ring"><div class="dot"></div><div class="r1"></div><div class="r2"></div></div>
+    </a>
+    <div class="divider-v"></div>
+    <div class="brand-label">
+      <span class="brand-title">West Yorkshire Frailty Intelligence</span>
+      <span class="brand-sub">Population Risk · 5 Districts · West Yorkshire ICB</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge wy">West Yorkshire ICB</span>
+    <span class="badge">5 Districts</span>
+    <span class="badge live" id="data-badge">Loading…</span>
+  </div>
+</nav>
+
+<div class="summary-banner">
+  <div class="banner-left">
+    <span class="banner-label">Frailty Intelligence ·</span>
+    <div class="banner-stat">
+      <span class="banner-val" id="bn-highest-name">Bradford</span>
+      <span class="banner-desc">Highest FEP</span>
+    </div>
+    <span class="banner-sep">·</span>
+    <div class="banner-stat">
+      <span class="banner-val" id="bn-highest-score">81</span>
+      <span class="banner-desc">FEP score</span>
+    </div>
+    <span class="banner-sep">·</span>
+    <div class="banner-stat">
+      <span class="banner-val" id="bn-at-risk">4</span>
+      <span class="banner-desc">Districts high or critical</span>
+    </div>
+    <span class="banner-sep">·</span>
+    <div class="banner-stat">
+      <span class="banner-val" id="bn-missing-middle">38,200</span>
+      <span class="banner-desc">Est. Missing Middle</span>
+    </div>
+    <span class="banner-sep">·</span>
+    <div class="banner-stat">
+      <span class="banner-val" id="bn-pop75">142,800</span>
+      <span class="banner-desc">75+ population</span>
+    </div>
+  </div>
+  <span style="font-family:var(--mono);font-size:0.55rem;color:#6b7fa8;white-space:nowrap">Fingertips · ONS 2021 · NHS Digital</span>
+</div>
+
+<div class="main">
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;">
+    <div id="map"></div>
+    <div class="map-loading" id="map-loading">
+      <div class="loader-ring"></div>
+      Loading West Yorkshire data
+    </div>
+  </div>
+
+  <div class="side-panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tab-detail"  onclick="switchTab('detail')">District</div>
+      <div class="panel-tab"        id="tab-ranked"  onclick="switchTab('ranked')">Ranked</div>
+      <div class="panel-tab"        id="tab-about"   onclick="switchTab('about')">About</div>
+    </div>
+    <div class="panel-content" id="panel-content">
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">🗺</div>
+        <div class="empty-title">Select a district</div>
+        <div class="empty-desc">Click any West Yorkshire district to explore its frailty risk profile.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="border-top:1px solid var(--border);background:var(--surface);padding:0.35rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;flex-shrink:0;">
+  <span style="font-family:var(--mono);font-size:0.52rem;color:var(--text-dim);">© 2026 Assistiv Systems Ltd · Co. 17082597 · Research &amp; commissioning intelligence only · NHS open data under OGL v3</span>
+  <span style="font-family:var(--mono);font-size:0.52rem;color:var(--text-dim);display:flex;gap:0.75rem;">
+    <a href="https://www.assistiv.cloud" style="color:var(--text-muted);text-decoration:none;">assistiv.cloud</a>
+    <a href="https://www.assistiv.cloud/methodology/" style="color:var(--text-muted);text-decoration:none;">Methodology</a>
+  </span>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const BASE = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/';
+
+let FEP_DATA = null;
+let geojsonLayer = null;
+let selectedDistrict = null;
+let currentTab = 'detail';
+
+function tierFill(tier) {
+  return { critical:'rgba(153,27,27,0.58)', high:'rgba(194,65,12,0.48)', moderate:'rgba(29,78,216,0.35)', low:'rgba(22,101,52,0.28)' }[tier] || 'rgba(29,78,216,0.35)';
+}
+function tierBorder(tier) {
+  return { critical:'#991b1b', high:'#c2410c', moderate:'#1d4ed8', low:'#166534' }[tier] || '#1d4ed8';
+}
+function tierColor(tier) {
+  return { critical:'var(--tier-critical)', high:'var(--tier-high)', moderate:'var(--nhs-mid)', low:'var(--green)' }[tier] || 'var(--nhs-mid)';
+}
+function tierLabel(tier) {
+  return { critical:'Critical', high:'High', moderate:'Moderate', low:'Lower' }[tier] || tier;
+}
+
+// ── MAP INIT ──────────────────────────────────────────────────────────
+const map = L.map('map', { center: [53.82, -1.75], zoom: 10, zoomControl: true });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap · © CARTO · ONS Open Geography · NHS England OGL v3',
+  subdomains: 'abcd', maxZoom: 16,
+}).addTo(map);
+
+function getDistrictName(feature) {
+  return feature.properties.CTYUA22NM || feature.properties.name || feature.properties.LAD22NM || '';
+}
+
+function districtStyle(feature, selected) {
+  const name = getDistrictName(feature);
+  const d = FEP_DATA?.districts?.find(x => x.name === name);
+  const tier = d?.tier || 'moderate';
+  return {
+    fillColor:   tierFill(tier),
+    fillOpacity: selected ? 0.85 : 0.55,
+    color:       selected ? '#003087' : tierBorder(tier),
+    weight:      selected ? 3 : 1.5,
+  };
+}
+
+async function loadMap() {
+  try {
+    const [fepRes, geoRes] = await Promise.all([
+      fetch(BASE + 'wy-fep-data.json'),
+      fetch(BASE + 'wy-districts.geojson'),
+    ]);
+    FEP_DATA = await fepRes.json();
+    const geo  = await geoRes.json();
+
+    document.getElementById('map-loading').classList.add('hidden');
+    document.getElementById('data-badge').textContent = 'Live · ' + (FEP_DATA.meta?.generated || 'latest');
+
+    // Update banner
+    const summary = FEP_DATA.summary;
+    if (summary) {
+      document.getElementById('bn-highest-name').textContent  = summary.highest_fep_district;
+      document.getElementById('bn-highest-score').textContent = summary.highest_fep_score;
+      const atRisk = (FEP_DATA.districts || []).filter(d => d.tier === 'critical' || d.tier === 'high').length;
+      document.getElementById('bn-at-risk').textContent       = atRisk;
+      document.getElementById('bn-missing-middle').textContent = (summary.estimated_missing_middle || 0).toLocaleString();
+      document.getElementById('bn-pop75').textContent          = (summary.total_population_75plus || 0).toLocaleString();
+    }
+
+    geojsonLayer = L.geoJSON(geo, {
+      style: f => districtStyle(f, false),
+      onEachFeature: (feature, layer) => {
+        const name = getDistrictName(feature);
+        const d = FEP_DATA?.districts?.find(x => x.name === name);
+        layer.bindTooltip(
+          `<strong style="font-family:Nunito,sans-serif">${name}</strong><br>
+           <span style="font-family:'DM Mono',monospace;font-size:0.75rem">FEP ${d?.fep ?? '–'} · ${tierLabel(d?.tier)}</span>`,
+          { sticky: true, className: 'wy-tooltip' }
+        );
+        layer.on('click', () => clickDistrict(name));
+      }
+    }).addTo(map);
+
+    map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
+    renderRanked();
+
+  } catch(e) {
+    document.getElementById('map-loading').innerHTML = `<div style="color:#b91c1c;font-size:0.72rem">Failed to load data — check console</div>`;
+    console.error('WY map load error:', e);
+  }
+}
+
+function clickDistrict(name) {
+  selectedDistrict = name;
+  geojsonLayer.eachLayer(layer => {
+    const lname = getDistrictName(layer.feature);
+    layer.setStyle(districtStyle(layer.feature, lname === name));
+    if (lname === name) map.fitBounds(layer.getBounds(), { padding: [40, 40] });
+  });
+  showDistrictDetail(name);
+  switchTab('detail');
+}
+
+// ── DISTRICT DETAIL ───────────────────────────────────────────────────
+function showDistrictDetail(name) {
+  const d = FEP_DATA?.districts?.find(x => x.name === name);
+  if (!d) return;
+  const s = d.signals || {};
+  const tc = tierColor(d.tier);
+  const tl = tierLabel(d.tier);
+
+  document.getElementById('panel-content').innerHTML = `
+    <div class="district-header">
+      <div class="district-name">${d.name}</div>
+      <div class="district-meta">West Yorkshire Metropolitan District · ONS ${d.ons_code}</div>
+    </div>
+
+    <div class="fep-display">
+      <div class="fep-circle" style="color:${tc}">
+        <span class="fep-circle-val">${d.fep}</span>
+        <span class="fep-circle-label">FEP</span>
+      </div>
+      <div>
+        <span class="tier-pill tier-${d.tier}">${tl} frailty risk</span>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.4rem;line-height:1.5">
+          Population 75+: <strong>${(d.population_75plus||0).toLocaleString()}</strong> &nbsp;·&nbsp;
+          Est. Missing Middle: <strong>${(d.missing_middle_estimate||0).toLocaleString()}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="mm-callout">
+      <div class="mm-callout-val">${(d.missing_middle_estimate||0).toLocaleString()}</div>
+      <div class="mm-callout-label">Estimated Missing Middle</div>
+      <div class="mm-callout-desc">
+        People with emerging frailty who are not yet eligible for formal care — invisible to the NHS until crisis. One fall, one infection, or one carer breakdown from an avoidable emergency admission.
+      </div>
+    </div>
+
+    <div class="data-panel frailty">
+      <div class="panel-title">🔴 Frailty &amp; Admission Signals</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val red">${s.qof_frailty_prevalence ?? '–'}%</span>
+          <div class="metric-label">QOF frailty prevalence</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val red">${s.emergency_admissions_65plus_rate ?? '–'}</span>
+          <div class="metric-label">Emergency admissions 65+ per 1,000</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val red">${s.hip_fractures_65plus_rate ?? '–'}</span>
+          <div class="metric-label">Hip fractures 65+ per 1,000</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val red">${s.falls_admissions_65plus_rate ?? '–'}</span>
+          <div class="metric-label">Falls admissions 65+ per 1,000</div>
+        </div>
+      </div>
+      <div class="panel-note">Sources: NHS Digital QOF · Provisional Monthly HES · Fingertips OHID</div>
+    </div>
+
+    <div class="data-panel deprivation">
+      <div class="panel-title">🔵 Deprivation &amp; Isolation</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val blue">${s.imd_score ?? '–'}</span>
+          <div class="metric-label">IMD score (higher = more deprived)</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val blue">${s.older_people_living_alone_pct ?? '–'}%</span>
+          <div class="metric-label">Older people living alone</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val blue">${s.fuel_poverty_pct ?? '–'}%</span>
+          <div class="metric-label">Fuel poverty</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val blue">${s.no_car_household_pct ?? '–'}%</span>
+          <div class="metric-label">Households without a car</div>
+        </div>
+      </div>
+      <div class="panel-note">Sources: MHCLG IMD 2019 · ONS Census 2021 · BEIS fuel poverty statistics</div>
+    </div>
+
+    <div class="data-panel clinical">
+      <div class="panel-title">🟣 Clinical Multimorbidity</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val purple">${s.polypharmacy_10plus_pct ?? '–'}%</span>
+          <div class="metric-label">Polypharmacy 10+ meds</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val purple">${s.diabetes_prevalence ?? '–'}%</span>
+          <div class="metric-label">Diabetes prevalence</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val purple">${s.copd_prevalence ?? '–'}%</span>
+          <div class="metric-label">COPD prevalence</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val purple">${s.dementia_prevalence ?? '–'}%</span>
+          <div class="metric-label">Dementia prevalence</div>
+        </div>
+      </div>
+      <div class="panel-note">Sources: NHS Digital QOF · Fingertips OHID · National diabetes audit</div>
+    </div>
+
+    <div class="data-panel social">
+      <div class="panel-title">🟢 Carer &amp; Social Pressure</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val green">${s.unpaid_carers_pct ?? '–'}%</span>
+          <div class="metric-label">Unpaid carers (% population)</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val green">${s.healthy_life_expectancy_65 ?? '–'} yrs</span>
+          <div class="metric-label">Healthy life expectancy at 65</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val green">${s.social_isolation_index ?? '–'}</span>
+          <div class="metric-label">Social isolation index (0–100)</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val green">${s.carer_breakdown_risk ?? '–'}</span>
+          <div class="metric-label">Carer breakdown risk (0–100)</div>
+        </div>
+      </div>
+      <div class="panel-note">Sources: ONS Census 2021 · Fingertips OHID · Office for Health Improvement</div>
+    </div>
+
+    ${d.narrative ? `
+    <div class="data-panel narrative-panel">
+      <div class="panel-title">📍 District Intelligence</div>
+      <div style="font-size:0.76rem;line-height:1.65;color:#1e3a7a">${d.narrative}</div>
+    </div>` : ''}
+  `;
+}
+
+// ── RANKED TAB ────────────────────────────────────────────────────────
+function renderRanked() {
+  if (!FEP_DATA?.districts) return;
+  const sorted = [...FEP_DATA.districts].sort((a,b) => b.fep - a.fep);
+  const html = sorted.map((d, i) => `
+    <div class="ranked-item" onclick="clickDistrict('${d.name}')">
+      <span class="ranked-num">${i+1}</span>
+      <span class="ranked-name">${d.name}</span>
+      <div class="ranked-bar-wrap"><div class="ranked-bar" style="width:${d.fep}%;background:${tierBorder(d.tier)}"></div></div>
+      <span class="ranked-val" style="color:${tierBorder(d.tier)}">${d.fep}</span>
+      <span class="tier-pill tier-${d.tier}" style="font-size:0.52rem;padding:0.15rem 0.4rem">${tierLabel(d.tier)}</span>
+    </div>
+  `).join('');
+  document.getElementById('panel-content').setAttribute('data-ranked-html', html);
+}
+
+// ── ABOUT TAB ─────────────────────────────────────────────────────────
+function renderAbout() {
+  document.getElementById('panel-content').innerHTML = `
+    <div class="legend-section">
+      <div class="legend-title">FEP Risk Tiers</div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(153,27,27,0.58);border:2px solid #991b1b"></div>
+        <div><div class="legend-text">Critical (FEP 70+)</div><div class="legend-sub">Immediate commissioner intervention required</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(194,65,12,0.48);border:2px solid #c2410c"></div>
+        <div><div class="legend-text">High (FEP 55–69)</div><div class="legend-sub">Significant risk — active prevention priority</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(29,78,216,0.35);border:2px solid #1d4ed8"></div>
+        <div><div class="legend-text">Moderate (FEP 40–54)</div><div class="legend-sub">Elevated — monitor and prepare</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(22,101,52,0.28);border:2px solid #166534"></div>
+        <div><div class="legend-text">Lower (FEP &lt;40)</div><div class="legend-sub">Current position — preserve through early intervention</div></div>
+      </div>
+    </div>
+
+    <div class="legend-section">
+      <div class="legend-title">About this tool</div>
+      <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.65">
+        The Frailty Emergence Probability (FEP) score is a 21-signal composite index built on open NHS England and ONS data. It identifies where older adults with emerging frailty are concentrated — before crisis, before formal care eligibility, before the system has to respond reactively.
+        <br><br>
+        This West Yorkshire view applies the same methodology used for Kent &amp; Medway, demonstrating the platform's national scalability. Data is sourced from Fingertips (OHID), NHS Digital, ONS Census 2021, and MHCLG.
+        <br><br>
+        West Yorkshire ICB (QWO) covers 2.4 million people across five metropolitan districts. Bradford's FEP of 81 is among the highest of any metropolitan district in England.
+      </div>
+    </div>
+
+    <div style="background:var(--nhs-light);border:1px solid #bfdbfe;border-radius:7px;padding:0.65rem 0.75rem;margin-top:0.85rem">
+      <div style="font-family:var(--mono);font-size:0.6rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--nhs-mid);margin-bottom:0.35rem">Data Sources</div>
+      <div style="font-size:0.68rem;color:#1e40af;line-height:1.55">
+        Fingertips OHID API · NHS Digital QOF · Provisional Monthly HES · ONS Census 2021 · MHCLG IMD 2019 · BEIS Fuel Poverty Statistics · NHS England OGL v3
+      </div>
+    </div>
+
+    <div style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);margin-top:0.85rem;line-height:1.5">
+      FEP is an operational planning aid, not a validated clinical index. Seed data built from published national indicators. Run <em>Assistiv_WY_FEP_Pipeline.ipynb</em> to refresh from live API.
+    </div>
+  `;
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  ['detail','ranked','about'].forEach(t => {
+    const el = document.getElementById(`tab-${t}`);
+    if (el) el.classList.toggle('active', t === tab);
+  });
+  const content = document.getElementById('panel-content');
+  if (tab === 'ranked') {
+    const cached = content.getAttribute('data-ranked-html');
+    if (cached) content.innerHTML = cached;
+  } else if (tab === 'about') {
+    renderAbout();
+  } else if (tab === 'detail' && selectedDistrict) {
+    showDistrictDetail(selectedDistrict);
+  } else if (tab === 'detail') {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">🗺</div>
+        <div class="empty-title">Select a district</div>
+        <div class="empty-desc">Click any West Yorkshire district to explore its frailty risk profile.</div>
+      </div>`;
+  }
+}
+
+loadMap();
+</script>
+</body>
+</html>
