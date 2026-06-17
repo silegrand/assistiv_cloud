@@ -1265,7 +1265,7 @@ async function init() {
   if (winterData) {
     const gen = winterData.meta?.generated?.slice(0, 10) || '—';
     document.getElementById('datagenerated').textContent = `WVI data · ${gen}`;
-    document.getElementById('data-freshness-badge').textContent = `WVI data · ${gen}`;
+    { const _b = document.getElementById('data-freshness-badge'); if (_b) _b.textContent = `WVI data · ${gen}`; }
 
     // Banner: highest WVI district
     const districts = Object.entries(winterData.districts);
