@@ -182,10 +182,11 @@ body {
 .tc-sub  { font-family: var(--mono); font-size: 0.58rem; color: var(--text-dim); }
 
 /* ── MAIN LAYOUT ── */
-.main { display: flex; flex: 1; overflow: hidden; }
+.main { display: flex; flex: 1; overflow: hidden;
+  min-height: 0; }
 
 /* ── MAP ── */
-#map { flex: 1; position: relative; z-index: 1; height: 100%; }
+#map { flex: 1; position: relative; z-index: 1; min-height: 0; }
 .map-toggle {
   position: absolute; top: 12px; right: 12px; z-index: 1000;
   display: flex; background: #fff; border: 1px solid var(--border);
