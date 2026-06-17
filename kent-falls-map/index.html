@@ -103,10 +103,11 @@ body {
 .stat-note { font-family: var(--mono); font-size: 0.55rem; color: #6b7fa8; letter-spacing: 0.02em; }
 
 /* ── MAIN LAYOUT ── */
-.main { display: flex; flex: 1; overflow: hidden; }
+.main { display: flex; flex: 1; overflow: hidden;
+  min-height: 0; }
 
 /* ── MAP ── */
-#map { flex: 1; position: relative; z-index: 1; height: 100%; }
+#map { flex: 1; position: relative; z-index: 1; min-height: 0; }
 .map-loading {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   background: rgba(238,242,251,0.9); z-index: 500; flex-direction: column; gap: 0.75rem;
