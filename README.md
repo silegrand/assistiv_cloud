@@ -4,7 +4,7 @@
 
 Population-level frailty intelligence for NHS commissioners, PCN leads, and community outreach teams across Kent & Medway. Identifies the *Missing Middle* — approximately 3.5 million people nationally who are living at home with emerging frailty, invisible to existing care pathways, and heading toward crisis.
 
-Built on open NHS data. No patient identifiers. No login required. Updated daily.
+Built on open NHS data. No patient identifiers. No login required.  Updated daily.
 
 ---
 
