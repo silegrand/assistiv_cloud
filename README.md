@@ -2,19 +2,25 @@
 
 **Live platform → [assistiv.cloud](https://www.assistiv.cloud)**
 
-Population-level frailty intelligence for NHS commissioners, PCN leads, and community outreach teams across Kent & Medway. Identifies the *Missing Middle* — approximately 3.5 million people nationally who are living at home with emerging frailty, invisible to existing care pathways, and heading toward crisis.
+Population-level frailty intelligence for NHS commissioners, PCN leads and community outreach teams across Kent & Medway. Identifies the *Missing Middle* — approximately 3.5 million people nationally living at home with emerging frailty, invisible to existing care pathways, and heading toward preventable crisis.
 
-Built on open NHS data. No patient identifiers. No login required.  Updated daily.
+Built on open NHS data. No patient identifiers. No login required. Updated daily.
 
 ---
 
 ## What this repository is
 
-This is the GitHub Pages deployment repository for `assistiv.cloud`. Every HTML file in this repo is a live tool, served directly to the browser. Data pipelines run in [`silegrand/assistivagents`](https://github.com/silegrand/assistivagents) and commit JSON to that repo daily; the tools here fetch from it at runtime.
+This is the unified repository for `assistiv.cloud` — both the GitHub Pages deployment (static HTML tools) and the daily data pipeline (Python scripts, JSON outputs, history archive).
 
 ```
-assistiv_cloud/          ← this repo (GitHub Pages, static HTML)
-assistivagents/          ← data repo (daily JSON, FEP history, pipeline scripts)
+assistiv_cloud/
+├── *.html                      ← Live tools, served directly by GitHub Pages
+├── *-data.json                 ← JSON data feeds, updated by pipeline scripts
+├── daily_refresh.py            ← Daily GitHub Actions pipeline (Fingertips + EPD)
+├── inject_stats.py             ← Static fallback injection for crawlers / SEO
+├── fetch_*.py                  ← Monthly data fetchers (corridor, HES, SHMI, GP, 111)
+├── history/                    ← Daily FEP snapshot archive
+└── backtest/                   ← Frozen predictions and scored outcomes
 ```
 
 ---
@@ -78,30 +84,45 @@ All tools are standalone HTML files, deployable with zero build step.
 
 ## Data architecture
 
-```
-silegrand/assistivagents
-├── kent-fep-data.json          ← current FEP scores (written daily by pipeline)
-├── kent-fep-history.json       ← delta summary
-├── history/
-│   └── kent-fep-YYYY-MM-DD.json
-├── kent-hscm-data.json         ← KPHO clinical frailty recalibration data
-└── daily_refresh.py            ← GitHub Actions pipeline (Fingertips + EPD)
+All JSON data files live in this repository. The daily pipeline reads from and writes to the same repo.
 
+```
 silegrand/assistiv_cloud
-├── kent-ravi-data.json         ← RAVI LSOA scores
-├── kent-winter-data.json       ← Winter Vulnerability Index
-├── kent-corridor-data.json     ← NHS corridor care (sitrep)
-├── kent-hes-data.json          ← HES emergency admissions
-├── kent-shmi-data.json         ← SHMI mortality ratios
-├── kent-gp-reg-data.json       ← GP registration 75+ population
-├── kent-111-data.json          ← NHS 111 demand
-├── kent-discharge-data.json    ← Discharge delay sitrep
-├── kent-hscm-data.json         ← KPHO frailty (mirror)
+├── kent-fep-data.json               ← FEP scores — written daily by pipeline
+├── kent-fep-history.json            ← Delta summary
+├── kent-hscm-data.json              ← KPHO clinical frailty recalibration
+├── kent-ravi-data.json              ← RAVI LSOA scores
+├── kent-winter-data.json            ← Winter Vulnerability Index
+├── kent-corridor-data.json          ← NHS corridor care (sitrep)
+├── kent-hes-data.json               ← HES emergency admissions
+├── kent-shmi-data.json              ← SHMI mortality ratios
+├── kent-gp-reg-data.json            ← GP registration 75+ population
+├── kent-111-data.json               ← NHS 111 demand
+├── kent-discharge-data.json         ← Discharge delay sitrep
+├── kent-cbi-data.json               ← Carer Burden Index signals
+├── kent-carers-data.json            ← Census unpaid carer hours
+├── kent-secamb-falls-data.json      ← SECAmb FOI callout data
+├── kent-districts.geojson           ← District boundaries (static)
 ├── community-touchpoints-data.json  ← 195 community venues, 13 districts
-└── inject_stats.py             ← Static fallback injection for crawlers/SEO
+├── history/
+│   └── kent-fep-YYYY-MM-DD.json     ← Daily FEP snapshot archive
+└── backtest/
+    ├── ledger.json                  ← Frozen predictions
+    └── scorecard-latest.json        ← Most recent scored outcome
 ```
 
-**Single source of truth for FEP:** `silegrand/assistivagents/kent-fep-data.json`. All tools and pipelines read from there. `assistiv_cloud` does not hold a copy.
+**Single source of truth for all data:** this repository. All tools fetch JSON directly from `raw.githubusercontent.com/silegrand/assistiv_cloud/main/`.
+
+---
+
+## Daily pipeline
+
+The GitHub Actions workflow (`.github/workflows/`) runs at 06:00 UTC daily:
+
+1. `daily_refresh.py` — fetches latest NHS Fingertips indicators at LAD and ICB level, recalculates district FEP scores using last committed EPD data, commits `kent-fep-data.json` and a dated history snapshot
+2. `inject_stats.py` — bakes current live values into `index.html` and `nhs-pressure-map.html` as static fallback text for search engines and AI crawlers
+
+EPD prescribing data (18m+ rows) is **not** re-fetched daily — it is updated manually when NHSBSA publish a new monthly release. See `MONTHLY_MAINTENANCE.md` for the manual update checklist.
 
 ---
 
@@ -143,13 +164,13 @@ Full governance and data assurance documentation: [assistiv.co/governance.html](
 Key positions:
 - Population intelligence only — outputs end in a question for a clinician, never a diagnosis
 - No patient identifiers at any stage of the pipeline
-- All data sources are open, approved, and cited in-tool
+- All data sources are open, approved and cited in-tool
 - FEP scores are modelled, not clinically validated — stated explicitly on every relevant page
 - June 2026 recalibration event (Thanet 61→77, Maidstone 60→37, Swale →31) was a model update, not a real-world change — flagged in the briefing and history tools
 
 ---
 
-## Advisory
+## Advisory board
 
 - **Professor Ann Netten** — ASCOT creator, University of Kent. Confirmed methodological originality.
 - **Professor John Jerrim** — Quantitative social statistics, UCL.
@@ -162,7 +183,6 @@ Key positions:
 
 | Repo | Purpose |
 |---|---|
-| [`silegrand/assistivagents`](https://github.com/silegrand/assistivagents) | Daily FEP pipeline, JSON data feeds, history archive |
 | [`silegrand/assistiv_co`](https://github.com/silegrand/assistiv_co) | assistiv.co — parent brand, governance, investor pages |
 | [`silegrand/assistiv_tools`](https://github.com/silegrand/assistiv_tools) | assistiv.tools — community frailty screening (PRISMA-7, FRAIL Scale) |
 | [`silegrand/assistiv_services`](https://github.com/silegrand/assistiv_services) | assistiv.services — preventative care platform |
@@ -171,7 +191,7 @@ Key positions:
 
 ## Intellectual property
 
-Three granted patents cover the core technology: mmWave radar detection, acoustic AI monitoring, and IoT architecture for home-based frailty monitoring. These underpin the Model B sensor platform, which is distinct from this population intelligence layer.
+Proprietary sensing technology underpins the Model B sensor platform, which is distinct from this population intelligence layer. Details available under NDA to serious partners and investors.
 
 © 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597.
 
