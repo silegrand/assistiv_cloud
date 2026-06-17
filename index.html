@@ -510,6 +510,47 @@ footer {
   .hero-headline { font-size: clamp(1.8rem, 7vw, 2.8rem); }
 }
 </style>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Assistiv Cloud — Frailty Intelligence for the NHS">
+  <meta property="og:description" content="Assistiv Systems identifies older adults at risk before they reach crisis — using open NHS data, geographic intelligence, and community screening.">
+  <meta property="og:url" content="https://www.assistiv.cloud/">
+  <meta property="og:image" content="https://www.assistiv.cloud/og-image.png">
+  <meta property="og:site_name" content="Assistiv Cloud">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Assistiv Cloud — Frailty Intelligence for the NHS">
+  <meta name="twitter:description" content="Assistiv Systems identifies older adults at risk before they reach crisis — using open NHS data, geographic intelligence, and community screening.">
+  <meta name="twitter:image" content="https://www.assistiv.cloud/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Assistiv Systems Limited",
+  "url": "https://www.assistiv.cloud",
+  "logo": "https://www.assistiv.cloud/favicon%20(1).svg",
+  "description": "Frailty intelligence for the NHS. Finding older adults at risk before the system has to respond.",
+  "foundingDate": "2024",
+  "legalName": "Assistiv Systems Limited",
+  "identifier": {
+    "@type": "PropertyValue",
+    "name": "Companies House",
+    "value": "17082597"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "GB"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "simon@assistiv.co",
+    "contactType": "customer service"
+  },
+  "sameAs": [
+    "https://www.assistiv.services",
+    "https://www.assistiv.tools",
+    "https://www.assistiv.co"
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -624,6 +665,63 @@ footer {
     #site-nav .links { display: none; }
     #site-nav .cta   { display: none; }
   }
+
+  /* ── MOBILE NAV ── */
+  .nav-burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 6px;
+    background: none;
+    border: none;
+  }
+  .nav-burger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+  .nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-burger.open span:nth-child(2) { opacity: 0; }
+  .nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .nav-mobile-menu {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0; right: 0;
+    background: #2a4d9e;
+    z-index: 9998;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 8px 24px rgba(20,40,100,0.25);
+  }
+  .nav-mobile-menu.open { display: block; }
+  .nav-mobile-menu a {
+    display: block;
+    padding: 0.75rem 2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.88);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-mobile-menu a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav-mobile-menu .mob-eco-head {
+    padding: 0.75rem 2rem 0.4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  @media (max-width: 820px) {
+    #site-nav .links { display: none; }
+    #site-nav .cta   { display: none; }
+    .nav-burger      { display: flex; }
+  }
 </style>
 
 <nav id="site-nav">
@@ -658,9 +756,24 @@ footer {
     </ul>
 
     <a href="#contact" class="cta">Get in touch</a>
+    <button class="nav-burger" id="nav-burger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
 
   </div>
 </nav>
+<div class="nav-mobile-menu" id="nav-mobile-menu" role="navigation" aria-label="Mobile navigation">
+  <a href="/#tools">Find tools</a>
+  <a href="/#carers">Carers</a>
+  <a href="/#reach">Reach</a>
+  <a href="/#how-it-works">How it works</a>
+  <a href="/#evidence">Evidence</a>
+  <a href="/#contact">Get in touch</a>
+  <div class="mob-eco-head">Ecosystem</div>
+  <a href="https://www.assistiv.services" target="_blank" rel="noopener">assistiv.services ↗</a>
+  <a href="https://www.assistiv.tools" target="_blank" rel="noopener">assistiv.tools ↗</a>
+  <a href="https://www.assistiv.co" target="_blank" rel="noopener">assistiv.co ↗</a>
+</div>
 <!-- ══════════════════════════════════════════════════ END NAV -->
 
 <!-- ECOSYSTEM BANNER -->
@@ -868,19 +981,19 @@ footer {
         <div class="tool-title">Frailty Heat Map</div>
         <div class="tool-desc">Live ONS district boundaries, FEP colour tiers, economic cost of inaction, discharge intelligence, 111 demand, prescribing signals. One-click PDF commissioner briefing.</div>
         <div class="tool-link">Open map →</div>
-      </a><a href="method-fep-heatmap.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-fep-heatmap.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/frailty-emergence-probability-calculator/" class="tool-card">
         <div class="tool-tag">Scoring engine · Configurable</div>
         <div class="tool-title">FEP Configurator</div>
         <div class="tool-desc">21 adjustable signal weights. Commissioner-configurable scoring. Ranked zone results with uncertainty flags. Ada AI explainer built in.</div>
         <div class="tool-link">Open scoring engine →</div>
-      </a><a href="method-fep-configurator.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-fep-configurator.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/kent-falls-map/" class="tool-card">
         <div class="tool-tag">Falls intelligence · SECAmb FOI 2025</div>
         <div class="tool-title">Kent Falls Hotspot Map</div>
         <div class="tool-desc">10,720 ambulance falls callouts (65+) across Kent in 2025, mapped by district. SECAmb FOI data integrated with Fingertips hip fracture admissions. The Medway divergence: highest callout rate in Kent, 27% above the next district, yet only mid-table on FEP.</div>
         <div class="tool-link">Open falls map →</div>
-      </a><a href="method-kent-falls.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-kent-falls.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
     <div class="tools-grid" style="margin-top:1rem">
       <div class="tool-card-wrap"><a href="/rural-access-vulnerability/" class="tool-card">
@@ -888,19 +1001,19 @@ footer {
         <div class="tool-title">Rural Access Vulnerability</div>
         <div class="tool-desc">1,065 LSOA-level hotspots revealing hidden frailty in Challock, Hever, Appledore and 53 unnamed rural settlements, invisible to district-level FEP scores.</div>
         <div class="tool-link">Open RAVI map →</div>
-      </a><a href="method-ravi.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-ravi.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/nhs-pressure-map/" class="tool-card">
         <div class="tool-tag">NHS system pressure · Monthly</div>
         <div class="tool-title">NHS Pressure Intelligence Map</div>
         <div class="tool-desc">Corridor care, non-elective admissions, SHMI mortality and GP population data mapped to district. Tells commissioners where system pressure and Missing Middle risk converge.</div>
         <div class="tool-link">Open NHS pressure map →</div>
-      </a><a href="method-nhs-pressure.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-nhs-pressure.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/winter-readiness/" class="tool-card">
         <div class="tool-tag">Forward planning · 2026-27</div>
         <div class="tool-title">Winter Readiness Intelligence</div>
         <div class="tool-desc">District-level Winter Vulnerability Index across five components: frailty load, seasonal amplifiers, prescribing signals, system headroom, and social isolation. NICE-evidenced intervention windows and PDF briefing.</div>
         <div class="tool-link">Open winter readiness →</div>
-      </a><a href="method-winter-readiness.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-winter-readiness.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
   </div>
 </div>
@@ -935,13 +1048,13 @@ footer {
         <div class="tool-title">Carers Intensity Map</div>
         <div class="tool-desc">Where unpaid care is most concentrated across the thirteen districts, and in particular where the heaviest care — 50 or more hours a week — falls. A direct Census count, foregrounding the band most predictive of carer breakdown.</div>
         <div class="tool-link">Open carers map →</div>
-      </a><a href="method-kent-carers.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-kent-carers.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/cbi-fep-map/" class="tool-card">
         <div class="tool-tag">Dual intelligence · Risk convergence</div>
         <div class="tool-title">FEP × Carer Burden Quadrant</div>
         <div class="tool-desc">Frailty risk and carer burden on the same axes. The top-right quadrant — where high frailty and high carer burden coincide — is where both the patient and the person holding them up are under strain at once. Where preventative investment buys the most avoided crises.</div>
         <div class="tool-link">Open CBI map →</div>
-      </a><a href="method-cbi-fep.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-cbi-fep.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
   </div>
 </div>
@@ -960,19 +1073,19 @@ footer {
         <div class="tool-title">Reachable Neighbourhoods</div>
         <div class="tool-desc">Drills below district level to 17 named neighbourhoods of ~7,500 residents, ranked by deprivation, solo living, access and three-month prescribing velocity. Plain-English briefing cards tell outreach teams where to go first.</div>
         <div class="tool-link">Open shortlist →</div>
-      </a><a href="method-reachable-neighbourhoods.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-reachable-neighbourhoods.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="/community-touchpoints/" class="tool-card">
         <div class="tool-tag">Outreach action planning · AI-assisted</div>
         <div class="tool-title">Community Outreach Map</div>
         <div class="tool-desc">High-risk LSOAs overlaid with 195 community touchpoints across Kent. Hover any venue to see its neighbourhood risk profile. Click to generate AI-matched outreach ideas specific to that venue type and risk combination. A place, a problem, an action.</div>
         <div class="tool-link">Open outreach planner →</div>
-      </a><a href="method-community-touchpoints.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-community-touchpoints.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
       <div class="tool-card-wrap"><a href="https://www.assistiv.tools" target="_blank" rel="noopener" class="tool-card">
         <div class="tool-tag">Community screening · Voice-first</div>
         <div class="tool-title">Voice-First Frailty Screen</div>
         <div class="tool-desc">Twelve conversational questions across six life domains. PRISMA-7 and FRAIL Scale scored in real time. Structured GP referral output. Carer pathway integrated. Deployable in any community setting with no clinical training required.</div>
         <div class="tool-link">Open assistiv.tools ↗</div>
-      </a><a href="method-voice-screen.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      </a><a href="/method-voice-screen.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
   </div>
 </div>
@@ -1702,6 +1815,28 @@ window.PAGE_CONTEXT = {
     initStage(0);
     raf = requestAnimationFrame(draw);
     autoTimer = setInterval(()=>{ stage=(stage+1)%5; initStage(stage); }, 8000);
+  });
+})();
+</script>
+<script>
+(function(){
+  var burger = document.getElementById('nav-burger');
+  var menu   = document.getElementById('nav-mobile-menu');
+  if (!burger || !menu) return;
+  burger.addEventListener('click', function(){
+    var open = menu.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  // Close on link click
+  menu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      menu.classList.remove('open');
+      burger.classList.remove('open');
+      burger.setAttribute('aria-expanded', false);
+      document.body.style.overflow = '';
+    });
   });
 })();
 </script>
