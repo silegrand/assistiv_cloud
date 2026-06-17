@@ -541,7 +541,7 @@ body {
     <div class="panel-tabs">
       <div class="panel-tab active" id="tab-detail"   onclick="switchTab('detail')">District</div>
       <div class="panel-tab"        id="tab-ranked"   onclick="switchTab('ranked')">Ranked</div>
-      <div class="panel-tab"        id="tab-dualcrisis" onclick="switchTab('dualcrisis')">Dual Crisis</div>
+      <div class="panel-tab"        id="tab-dualcrisis" onclick="switchTab('dualcrisis')">Dual Risk</div>
       <div class="panel-tab"        id="tab-legend"   onclick="switchTab('legend')">About</div>
     </div>
     <div class="panel-content" id="panel-content">
@@ -1586,7 +1586,7 @@ function openDualCrisisModal() {
   backdrop.innerHTML = `
     <div class="dc-modal">
       <div class="dc-modal-hdr">
-        <div class="dc-modal-title">Dual Crisis Matrix — Kent &amp; Medway</div>
+        <div class="dc-modal-title">Dual Risk Matrix — Kent &amp; Medway</div>
         <button class="dc-modal-close" onclick="closeDualCrisisModal()">×</button>
       </div>
       <div style="overflow:auto;flex:1">${largeSvg}</div>
@@ -1700,7 +1700,7 @@ function renderDualCrisis() {
 
   // Build SVG scatter
   const W = 460, H = 320, PAD = 52;
-  const xMin = 0, xMax = 28, yMin = 30, yMax = 80;
+  const xMin = 0, xMax = 35, yMin = 30, yMax = 80;
   const px = v => PAD + (v - xMin) / (xMax - xMin) * (W - PAD * 2);
   const py = v => H - PAD - (v - yMin) / (yMax - yMin) * (H - PAD * 2);
   const qx = px(CORR_T), qy = py(SC_T);
@@ -1731,7 +1731,7 @@ function renderDualCrisis() {
     <text x="${PAD+5}" y="${H-PAD-6}" font-size="8.5" fill="#166534" font-weight="700" font-family="DM Mono,monospace">MANAGED</text>
     <text x="${qx+5}"  y="${H-PAD-6}" font-size="8.5" fill="#1d4ed8" font-weight="700" font-family="DM Mono,monospace">NHS PRESSURE</text>`;
 
-  const xTicks = [0,5,10,15,20,25].map(v =>
+  const xTicks = [0,5,10,15,20,25,30,35].map(v =>
     `<line x1="${px(v)}" y1="${H-PAD}" x2="${px(v)}" y2="${H-PAD+4}" stroke="#ccc" stroke-width="1"/>
      <text x="${px(v)}" y="${H-PAD+13}" font-size="8" fill="#aaa" text-anchor="middle" font-family="DM Mono,monospace">${v}</text>`
   ).join('');
@@ -1746,8 +1746,8 @@ function renderDualCrisis() {
 
   const dots = points.map(p => {
     const q     = quadrant(p);
-    const cx    = px(p.corridor);
-    const cy    = py(p.scProxy);
+    const cx    = px(Math.max(xMin, Math.min(xMax, p.corridor)));
+    const cy    = py(Math.max(yMin, Math.min(yMax, p.scProxy)));
     const nudge = NUDGE[p.name] || { dx:6, dy:-5 };
     const short = p.name.replace(' & ', '/').replace(' and ', '/');
     const isSel = p.name === selectedDistrict;
@@ -1786,7 +1786,7 @@ function renderDualCrisis() {
   document.getElementById('panel-content').innerHTML = `
     <div style="padding:1rem;overflow-y:auto;height:100%">
       <h2 style="font-family:var(--sans);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.3rem">
-        Dual Crisis Matrix
+        Dual Risk Matrix
       </h2>
       <p style="font-size:0.75rem;color:var(--text-mid);line-height:1.6;margin-bottom:1rem;max-width:560px">
         NHS and social care fail each other in winter. This view maps both simultaneously.
