@@ -27,7 +27,21 @@ RAW_URL = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/{GITHUB_FILE}"
 # ── LOAD LAST COMMITTED JSON (to reuse EPD data) ──────────────────────
 print("Loading last committed kent-fep-data.json...")
 r = requests.get(RAW_URL, timeout=15)
-last = r.json()
+if r.status_code != 200:
+    raise RuntimeError(
+        f"Could not fetch kent-fep-data.json from {RAW_URL} "
+        f"(HTTP {r.status_code}). "
+        f"Check that silegrand/assistivagents is public and the file exists. "
+        f"Response: {r.text[:200]}"
+    )
+try:
+    last = r.json()
+except Exception as e:
+    raise RuntimeError(
+        f"kent-fep-data.json did not parse as JSON. "
+        f"HTTP {r.status_code}. First 200 chars: {r.text[:200]}"
+    ) from e
+
 last_epd   = last.get("icb_baseline", {}).get("prescribing", {})
 last_meta  = last.get("meta", {})
 last_epd_d = {d["name"]: d.get("epd_district", {}) for d in last.get("districts", [])}
@@ -169,8 +183,6 @@ ENGLAND_PRESCRIBING_RATES = {
     "anti_dementia": 2.8, "denosumab": 0.9, "parkinsons": 2.4,
 }
 
-# Key names MUST match what the Combined Pipeline notebook writes into
-# epd_district — the notebook uses 'ons_nutrition' (not 'oral_nutrition').
 EPD_SIGNAL_KEYS_ORDERED = [
     "hypnotics", "antidepressants", "bisphosphonates", "diuretics", "ace_arb",
     "anxiolytics", "bladder_antimusc", "ons_nutrition", "anti_dementia", "denosumab", "parkinsons"
@@ -190,8 +202,6 @@ def epd_norm(district, signal_key):
     d_data = last_epd_d.get(district, {}).get(signal_key, {})
     return norm(d_data.get("rate_per_1000"), ENGLAND_PRESCRIBING_RATES.get(signal_key))
 
-# Map FEP signal index → Fingertips key (+ invert flag) for the 7 outcome
-# signals that come from Fingertips. Indices 0,3,5 are synthetic; 10-20 are EPD.
 FT_SIGNAL_MAP = {
     1: ("falls_65",           False),
     2: ("hip_fractures_65",   False),
@@ -209,24 +219,14 @@ def ft_district_norm(district, signal_key, invert=False):
     dval = fingertips_district.get(district, {}).get(signal_key)
     if dval is not None and eng:
         return norm(dval, eng, invert)
-    # Fallback: ICB-level normalised value (same for all districts)
     return ft(signal_key, invert)
 
 ICB_BASE = [
     50.0, ft("falls_65"), ft("hip_fractures_65"), 50.0, ft("winter_mortality"), 50.0,
     ft("loneliness"), ft("dementia_diagnosis", invert=True), ft("hip_fractures_80"),
     ft("social_isolation"), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-]  # retained for reference / ICB-level diagnostics; district scoring uses real LAD data
+]
 
-# ── SYNTHETIC SIGNAL DISTRICT PROFILES ───────────────────────────────
-# The 7 Fingertips outcome signals now use REAL district-level data (see
-# FT_SIGNAL_MAP + ft_district_norm). Only the 3 synthetic signals that have
-# no district-level Fingertips source retain modelled district differentiation:
-#   idx 0 — Over-75s Living Alone   (Census 2021 TS011 — to be wired to real data)
-#   idx 3 — Deprivation (IMD)       (IMD 2025 LAD-level — to be wired to real data)
-#   idx 5 — Care Home Gap           (modelled — no open district source)
-# These multipliers scale a 50.0 neutral base and are explicitly flagged as
-# 'modelled' in the output. They are the next candidates for real-data upgrade.
 SYNTH_PROFILES = {
     "Thanet":              {0: 1.30, 3: 1.35, 5: 1.30},
     "Folkestone & Hythe":  {0: 1.22, 3: 1.22, 5: 1.20},
@@ -242,7 +242,7 @@ SYNTH_PROFILES = {
     "Sevenoaks":           {0: 0.65, 3: 0.52, 5: 0.75},
     "Tunbridge Wells":     {0: 0.58, 3: 0.58, 5: 0.65},
 }
-SYNTH_INDICES = [0, 3, 5]   # Over-75s living alone, IMD deprivation, care home gap
+SYNTH_INDICES = [0, 3, 5]
 
 POP75 = {
     "Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
@@ -251,49 +251,33 @@ POP75 = {
     "Sevenoaks":12100,"Tunbridge Wells":11200,
 }
 
-# ── BUILD DISTRICT SCORES ─────────────────────────────────────────────
-# Signal construction per district:
-#   • Fingertips outcome signals (idx 1,2,4,6,7,8,9) → REAL LAD-level data,
-#     normalised vs England, with ICB fallback if a district is unpublished.
-#   • Synthetic signals (idx 0,3,5) → 50.0 neutral base × modelled multiplier.
-#   • EPD prescribing signals (idx 10-20) → reused from last manual NHSBSA run.
 print("\nBuilding district FEP scores (real LAD-level Fingertips)...")
 districts = []
 for name in LAD_CODES:
     synth = SYNTH_PROFILES[name]
     signals = [0.0] * 21
 
-    # Synthetic signals — neutral 50 base scaled by modelled district multiplier
     for i in SYNTH_INDICES:
         signals[i] = round(min(100, max(0, 50.0 * synth.get(i, 1.0))), 1)
 
-    # Fingertips outcome signals — real district data with ICB fallback
     for i, (ft_key, invert) in FT_SIGNAL_MAP.items():
         signals[i] = ft_district_norm(name, ft_key, invert)
 
-    # EPD prescribing signals — reused district-level prescribing
     for idx, epd_key in zip(EPD_SIGNAL_INDICES, EPD_SIGNAL_KEYS_ORDERED):
         signals[idx] = epd_norm(name, epd_key)
 
     fep  = round(min(100, max(0, sum(s * w for s, w in zip(signals, WEIGHTS)))))
     risk = "critical" if fep >= 70 else "high" if fep >= 55 else "moderate" if fep >= 40 else "low"
 
-    # ── KPHO Clinical Frailty Recalibration ──────────────────────────────
-    # Blend GP-recorded CFS scores (40%) with proxy-signal FEP (60%).
-    # kpho_district contains normalised KPHO frailty on 0-100 Kent scale.
-    # Where available this corrects systematic divergences identified in V1.6:
-    #   Dartford: proxy FEP=49, clinical KPHO=79  → blended ~60 (material uplift)
-    #   Maidstone: proxy FEP=60, clinical KPHO=44 → blended ~53 (material reduction)
     kpho_norm = kpho_district.get(name)
     if kpho_norm is not None:
-        fep_proxy = fep   # preserve proxy value for diagnostics
+        fep_proxy = fep
         fep       = round(min(100, max(0, KPHO_FEP_WEIGHT * kpho_norm + (1 - KPHO_FEP_WEIGHT) * fep)))
         risk      = "critical" if fep >= 70 else "high" if fep >= 55 else "moderate" if fep >= 40 else "low"
     else:
         fep_proxy = None
         kpho_norm = None
 
-    # Count how many Fingertips signals resolved to real district data
     real_ft = sum(1 for i,(k,_) in FT_SIGNAL_MAP.items()
                   if fingertips_district.get(name, {}).get(k) is not None)
 
@@ -302,17 +286,11 @@ for name in LAD_CODES:
         "risk": risk, "signals": signals, "signal_names": SIGNAL_NAMES,
         "pop75": POP75[name],
         "fingertips_district_signals": real_ft,
-        "fep_proxy":  fep_proxy,   # pre-recalibration FEP (None if KPHO unavailable)
-        "kpho_frailty_normalised": kpho_norm,  # KPHO clinical signal used in blend
+        "fep_proxy":  fep_proxy,
+        "kpho_frailty_normalised": kpho_norm,
         "kpho_recalibrated": kpho_norm is not None,
     }
 
-    # CRITICAL: carry the district EPD prescribing data forward. The manual
-    # Combined Pipeline writes epd_district per district; this script reads it
-    # (last_epd_d) for scoring but previously did NOT write it back — so the
-    # second daily run onwards found nothing and every EPD signal collapsed to
-    # 50.0 neutral (32% of total FEP weight pinned dead). Persisting it here
-    # makes the EPD data survive between manual NHSBSA runs.
     if last_epd_d.get(name):
         record["epd_district"] = last_epd_d[name]
     _last_rec = next((d for d in last.get("districts", []) if d.get("name") == name), {})
@@ -325,11 +303,6 @@ for name in LAD_CODES:
 
 districts.sort(key=lambda x: x["fep"], reverse=True)
 
-# ── v5.1: FEP delta — rate of change vs previous commit ──────────────────────
-# Loads the last committed JSON and computes per-district FEP change.
-# fep_delta > 0 = rising risk, fep_delta < 0 = falling risk.
-# Used for predictive alerting: a zone with rising FEP + rising 111 demand
-# is a crisis precursor candidate even if absolute FEP score is not yet critical.
 print("\nComputing FEP deltas vs previous commit...")
 prev_scores = {}
 try:
@@ -338,23 +311,18 @@ try:
         prev_data = prev_resp.json()
         prev_scores = {d["name"]: d["fep"] for d in prev_data.get("districts", [])}
         print(f"  Previous commit loaded: {prev_data.get('meta',{}).get('generated','?')[:10]}")
+    else:
+        print(f"  Previous commit unavailable (HTTP {prev_resp.status_code}) — deltas will be null")
 except Exception as e:
     print(f"  Could not load previous commit: {e} — deltas will be null")
 
 for d in districts:
     prev = prev_scores.get(d["name"])
-    d["fep_delta"]          = (d["fep"] - prev) if prev is not None else None
-    d["fep_delta_direction"] = ("rising" if d["fep_delta"] and d["fep_delta"] > 0
+    d["fep_delta"]           = (d["fep"] - prev) if prev is not None else None
+    d["fep_delta_direction"] = ("rising"  if d["fep_delta"] and d["fep_delta"] > 0
                                  else "falling" if d["fep_delta"] and d["fep_delta"] < 0
-                                 else "stable" if d["fep_delta"] == 0 else "unknown")
+                                 else "stable"  if d["fep_delta"] == 0 else "unknown")
 
-# ── v5.1: Crisis precursor flags ─────────────────────────────────────────────
-# A zone is flagged as a crisis precursor if BOTH:
-#   1. FEP score is rising (fep_delta > 0) AND fep_delta >= 2 points
-#   2. FEP risk tier is 'high' or 'critical'
-# This is a conservative threshold — designed to surface genuine acceleration
-# rather than noise from minor Fingertips indicator updates.
-# The 111 velocity component will be added once 111 data is non-zero.
 print("\nCrisis precursor assessment:")
 for d in districts:
     delta = d.get("fep_delta") or 0
@@ -368,27 +336,18 @@ precursor_count = sum(1 for d in districts if d.get("crisis_precursor"))
 if precursor_count == 0:
     print("  No crisis precursors flagged (all deltas < 2 points or risk < high)")
 
-
-# ── ASSEMBLE OUTPUT ───────────────────────────────────────────────────
 today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 real_signals = [k for k, v in fingertips_results.items() if v.get("value")]
 
-# Derive EPD period from the actual prescribing data rather than inheriting a
-# possibly-blank meta field. Each prescribing signal carries its own "period"
-# (e.g. "Mar 2026") stamped at the last manual EPD run. Read it from the data
-# so the published period can never silently go blank.
 def derive_epd_period():
-    # 1. Prefer a non-blank inherited meta value
     inherited = (last_meta.get("epd_period") or "").strip()
     if inherited:
         return inherited
-    # 2. Fall back to the period stamped on any prescribing signal
     for sig in last_epd.values():
         if isinstance(sig, dict):
             p = (sig.get("period") or "").strip()
             if p:
                 return p
-    # 3. Last resort: parse from a signal source string like "...MAR2026"
     import re as _re
     for sig in last_epd.values():
         if isinstance(sig, dict):
@@ -420,7 +379,9 @@ output = {
                          "modelled pending real district sources. EPD prescribing reused from last manual NHSBSA run."),
         "signal_names":      SIGNAL_NAMES,
         "weights":           WEIGHTS,
-        "fep_delta_note": ("fep_delta = change vs previous daily commit. ""Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. ""Phase 2: add 111 call velocity to precursor logic."),
+        "fep_delta_note": ("fep_delta = change vs previous daily commit. "
+                           "Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. "
+                           "Phase 2: add 111 call velocity to precursor logic."),
         "sources": {
             "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py — fetched today",
             "epd":        f"NHSBSA EPD — {epd_period} (reused)",
@@ -433,7 +394,6 @@ output = {
     "districts": districts,
 }
 
-# ── COMMIT CURRENT + HISTORIC ─────────────────────────────────────────
 def commit_file(content_dict, filepath, message):
     api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{filepath}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}",
@@ -450,7 +410,6 @@ def commit_file(content_dict, filepath, message):
     print(f"  ✗ {filepath}: {r.status_code} {r.json().get('message','')}")
     return False
 
-# ── Delta scorecard ──────────────────────────────────────────────────────────
 print(f"\n── FEP Delta Scorecard ({today}) ──")
 print(f"  {'District':<25} {'FEP':>5}  {'Prev':>5}  {'Δ':>5}  Direction     Precursor")
 print(f"  {'-'*70}")
