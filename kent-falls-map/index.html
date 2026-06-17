@@ -108,7 +108,8 @@ body {
   min-height: 0; }
 
 /* ── MAP ── */
-#map { flex: 1; position: relative; z-index: 1; min-height: 0; }
+#map { flex: 1;
+  height: 100%; position: relative; z-index: 1; min-height: 0; }
 .map-loading {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   background: rgba(238,242,251,0.9); z-index: 500; flex-direction: column; gap: 0.75rem;
@@ -298,7 +299,7 @@ footer a { color: var(--text-muted); text-decoration: none; }
 <div class="main">
 
   <!-- MAP -->
-  <div style="position:relative;flex:1">
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;min-height:0;">
     <div class="map-loading" id="map-loading">
       <div class="spinner"></div>
       Loading falls map…
