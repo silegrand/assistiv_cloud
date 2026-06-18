@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Question Log · Assistiv Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #1a3a2a; --sage: #2d6b47; --sage2: #4a7c5f;
+  --ada:    #1a3a2a; --ada-bg: #eaf3ee; --ada-border: #b6d9c4;
+  --vera:   #4c1d95; --vera-bg: #f5f3ff; --vera-border: #c4b5fd;
+  --linen:  #f7f5f0; --surface: #ffffff;
+  --border: #d8e4dc; --text: #1a2420; --muted: #5a6b62;
+  --mono: 'DM Mono', monospace; --sans: 'DM Sans', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--linen); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* ── TOPBAR ── */
+.topbar { background: var(--forest); padding: 0 1.4rem; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.nav-back { color: rgba(255,255,255,0.6); text-decoration: none; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.nav-back:hover { color: white; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+.brand-title { font-size: 0.88rem; font-weight: 600; color: #fff; }
+.brand-sub { font-family: var(--mono); font-size: 0.48rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+.topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+.refresh-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 4px; cursor: pointer; }
+.refresh-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+.download-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 4px; cursor: pointer; text-decoration: none; }
+.download-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+
+/* ── LAYOUT ── */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.4rem; }
+.main { padding: 1.6rem 0 3rem; }
+
+/* ── SUMMARY STRIP ── */
+.summary-strip {
+  display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem;
+}
+.summary-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 0.8rem 1.1rem; flex: 1; min-width: 120px;
+}
+.summary-val { font-family: 'DM Sans', sans-serif; font-size: 1.8rem; font-weight: 600; color: var(--forest); line-height: 1; }
+.summary-label { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
+.ada-val  { color: var(--ada); }
+.vera-val { color: var(--vera); }
+
+/* ── FILTERS ── */
+.filters {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 0.85rem 1.1rem; margin-bottom: 1.2rem;
+  display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+}
+.filter-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.filter-btn {
+  background: var(--linen); border: 1px solid var(--border); border-radius: 20px;
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); padding: 0.25rem 0.7rem; cursor: pointer; transition: all 0.15s;
+}
+.filter-btn:hover { border-color: var(--sage); color: var(--forest); }
+.filter-btn.active { background: var(--forest); color: white; border-color: var(--forest); }
+.filter-btn.active.ada  { background: var(--ada); border-color: var(--ada); }
+.filter-btn.active.vera { background: var(--vera); border-color: var(--vera); }
+.filter-search {
+  flex: 1; min-width: 180px; border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.35rem 0.7rem; font-family: var(--sans); font-size: 0.75rem; color: var(--text);
+  background: var(--linen); outline: none;
+}
+.filter-search:focus { border-color: var(--sage); }
+.filter-count { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); margin-left: auto; }
+
+/* ── TOP QUESTIONS ── */
+.top-section {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.4rem;
+}
+@media (max-width: 700px) { .top-section { grid-template-columns: 1fr; } }
+.top-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.top-card-hdr { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+.top-card-hdr.ada  { background: var(--ada-bg); border-color: var(--ada-border); }
+.top-card-hdr.vera { background: var(--vera-bg); border-color: var(--vera-border); }
+.top-card-title { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.top-card-hdr.ada  .top-card-title { color: var(--ada); }
+.top-card-hdr.vera .top-card-title { color: var(--vera); }
+.top-question-row { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
+.top-question-row:last-child { border-bottom: none; }
+.tq-count { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; color: var(--muted); flex-shrink: 0; min-width: 1.5rem; }
+.tq-text  { font-size: 0.74rem; line-height: 1.5; color: var(--text); }
+
+/* ── LOG TABLE ── */
+.log-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.log-table-hdr { display: grid; grid-template-columns: 110px 46px 1fr 160px 90px; gap: 0; padding: 0.5rem 1rem; background: var(--linen); border-bottom: 1px solid var(--border); }
+.log-th { font-family: var(--mono); font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.log-body { }
+.log-row {
+  display: grid; grid-template-columns: 110px 46px 1fr 160px 90px;
+  gap: 0; padding: 0.55rem 1rem; border-bottom: 1px solid var(--border);
+  align-items: start; transition: background 0.1s;
+}
+.log-row:last-child { border-bottom: none; }
+.log-row:hover { background: var(--linen); }
+.log-ts       { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); padding-top: 0.1rem; }
+.log-agent    { }
+.agent-pill   { display: inline-block; font-family: var(--mono); font-size: 0.5rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15rem 0.4rem; border-radius: 3px; }
+.agent-pill.ADA  { background: var(--ada-bg); color: var(--ada); border: 1px solid var(--ada-border); }
+.agent-pill.VERA { background: var(--vera-bg); color: var(--vera); border: 1px solid var(--vera-border); }
+.log-question { font-size: 0.74rem; line-height: 1.5; color: var(--text); padding-right: 0.75rem; }
+.log-page     { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); word-break: break-all; padding-right: 0.5rem; }
+.log-district { font-size: 0.68rem; color: var(--muted); }
+
+/* ── EMPTY / LOADING ── */
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+.empty-icon  { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.4; }
+.empty-text  { font-size: 0.8rem; line-height: 1.7; }
+
+#loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; gap: 0.75rem; }
+.loader-orb { width: 32px; height: 32px; border-radius: 50%; background: var(--forest); opacity: 0.3; animation: breathe 2s ease-in-out infinite; }
+@keyframes breathe { 0%,100%{opacity:.2;transform:scale(.9);} 50%{opacity:.6;transform:scale(1.1);} }
+.loader-text { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; }
+
+/* ── PAGE HEATMAP ── */
+.heatmap-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.4rem; }
+.heatmap-hdr { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.heatmap-body { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.heatmap-row  { display: grid; grid-template-columns: 200px 1fr 2.5rem; gap: 0.75rem; align-items: center; }
+.heatmap-page { font-family: var(--mono); font-size: 0.62rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.heatmap-bar-wrap { height: 8px; background: #e8f0eb; border-radius: 4px; overflow: hidden; }
+.heatmap-bar  { height: 100%; border-radius: 4px; background: var(--sage2); }
+.heatmap-n    { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); text-align: right; }
+
+/* ── PAGINATION ── */
+.pagination { display: flex; gap: 0.4rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+.page-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; font-family: var(--mono); font-size: 0.6rem; padding: 0.3rem 0.6rem; cursor: pointer; color: var(--muted); }
+.page-btn:hover { border-color: var(--sage); color: var(--forest); }
+.page-btn.active { background: var(--forest); color: white; border-color: var(--forest); }
+
+/* ── NOTE ── */
+.privacy-note { font-family: var(--mono); font-size: 0.54rem; color: var(--muted); line-height: 1.8; margin-top: 1.2rem; opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="nav-back">← Overview</a>
+    <div class="divider-v"></div>
+    <div>
+      <div class="brand-title">Agent Question Log</div>
+      <div class="brand-sub">ADA &amp; VERA · assistiv.cloud</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="refresh-btn" onclick="loadLogs()">↺ Refresh</button>
+    <a class="download-btn" id="download-link" href="#" download="agent-questions.json">↓ JSON</a>
+  </div>
+</nav>
+
+<div class="wrap main">
+
+  <!-- LOADING -->
+  <div id="loading-state">
+    <div class="loader-orb"></div>
+    <div class="loader-text">Loading question log…</div>
+  </div>
+
+  <!-- CONTENT (hidden until loaded) -->
+  <div id="log-content" style="display:none">
+
+    <!-- SUMMARY -->
+    <div class="summary-strip" id="summary-strip"></div>
+
+    <!-- TOP QUESTIONS BY AGENT -->
+    <div class="top-section" id="top-section"></div>
+
+    <!-- PAGE HEATMAP -->
+    <div class="heatmap-section">
+      <div class="heatmap-hdr">Questions by page</div>
+      <div class="heatmap-body" id="heatmap-body"></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <span class="filter-label">Filter</span>
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn ada"  data-filter="ADA"  onclick="setFilter('ADA', this)">ADA only</button>
+      <button class="filter-btn vera" data-filter="VERA" onclick="setFilter('VERA', this)">VERA only</button>
+      <input class="filter-search" id="search-input" type="text" placeholder="Search questions…" oninput="applyFilters()">
+      <span class="filter-count" id="filter-count"></span>
+    </div>
+
+    <!-- LOG TABLE -->
+    <div class="log-table-wrap">
+      <div class="log-table-hdr">
+        <span class="log-th">Time</span>
+        <span class="log-th">Agent</span>
+        <span class="log-th">Question</span>
+        <span class="log-th">Page</span>
+        <span class="log-th">District</span>
+      </div>
+      <div class="log-body" id="log-body"></div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination" id="pagination"></div>
+
+    <p class="privacy-note">
+      Questions are logged anonymously with no user identity. Session IDs are random 8-character strings that reset on each page load — they exist only to group questions from the same visit, not to identify individuals. No IP addresses are stored. Log entries are capped at 2,000 rows. Log file: <a href="https://github.com/silegrand/assistiv_cloud/blob/main/logs/agent-questions.json" target="_blank" rel="noopener" style="color:var(--sage)">logs/agent-questions.json</a>
+    </p>
+
+  </div>
+</div>
+
+<script>
+const LOG_URL = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/logs/agent-questions.json';
+const PAGE_SIZE = 50;
+
+let allEntries  = [];
+let filtered    = [];
+let currentPage = 1;
+let activeFilter = 'all';
+
+async function loadLogs() {
+  document.getElementById('loading-state').style.display = 'flex';
+  document.getElementById('log-content').style.display   = 'none';
+
+  try {
+    const r = await fetch(LOG_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status === 404
+      ? 'No questions logged yet — the log file will appear after the first question is asked.'
+      : `HTTP ${r.status}`);
+    allEntries = await r.json();
+    // Most recent first
+    allEntries = [...allEntries].reverse();
+
+    // Update download link
+    document.getElementById('download-link').href =
+      'data:application/json,' + encodeURIComponent(JSON.stringify(allEntries, null, 2));
+
+    renderAll();
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('log-content').style.display   = 'block';
+
+  } catch(e) {
+    document.getElementById('loading-state').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✦</div>
+        <div class="empty-text">${e.message}<br><small style="opacity:.7">Questions will appear here once visitors start using ADA and VERA.</small></div>
+      </div>`;
+  }
+}
+
+function renderAll() {
+  renderSummary();
+  renderTopQuestions();
+  renderHeatmap();
+  applyFilters();
+}
+
+// ── SUMMARY ──────────────────────────────────────────────────────────
+function renderSummary() {
+  const total  = allEntries.length;
+  const ada    = allEntries.filter(e => e.agent === 'ADA').length;
+  const vera   = allEntries.filter(e => e.agent === 'VERA').length;
+  const pages  = new Set(allEntries.map(e => e.page)).size;
+  const today  = allEntries.filter(e => e.ts?.slice(0,10) === new Date().toISOString().slice(0,10)).length;
+  const firstDate = allEntries.length ? allEntries[allEntries.length-1].ts?.slice(0,10) : '—';
+
+  document.getElementById('summary-strip').innerHTML = `
+    <div class="summary-card"><div class="summary-val">${total}</div><div class="summary-label">Total questions</div></div>
+    <div class="summary-card"><div class="summary-val ada-val">${ada}</div><div class="summary-label">ADA questions</div></div>
+    <div class="summary-card"><div class="summary-val vera-val">${vera}</div><div class="summary-label">VERA challenges</div></div>
+    <div class="summary-card"><div class="summary-val">${today}</div><div class="summary-label">Today</div></div>
+    <div class="summary-card"><div class="summary-val">${pages}</div><div class="summary-label">Unique pages</div></div>
+    <div class="summary-card"><div class="summary-val" style="font-size:1rem;padding-top:0.3rem">${firstDate}</div><div class="summary-label">First logged</div></div>
+  `;
+}
+
+// ── TOP QUESTIONS ─────────────────────────────────────────────────────
+function renderTopQuestions() {
+  function topN(agent, n) {
+    const counts = {};
+    allEntries.filter(e => e.agent === agent).forEach(e => {
+      const q = (e.question || '').trim().toLowerCase();
+      counts[q] = (counts[q] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, n)
+      .map(([q, c]) => ({ q, c }));
+  }
+
+  const adaTop  = topN('ADA', 8);
+  const veraTop = topN('VERA', 8);
+
+  function topList(items) {
+    if (!items.length) return '<div class="empty-state" style="padding:1rem"><div class="empty-text" style="font-size:0.7rem">No questions yet.</div></div>';
+    return items.map(({ q, c }) => `
+      <div class="top-question-row">
+        <span class="tq-count">${c}×</span>
+        <span class="tq-text">${escHtml(capitalise(q))}</span>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('top-section').innerHTML = `
+    <div class="top-card">
+      <div class="top-card-hdr ada"><span class="top-card-title">✦ Top ADA questions</span></div>
+      ${topList(adaTop)}
+    </div>
+    <div class="top-card">
+      <div class="top-card-hdr vera"><span class="top-card-title">⚖ Top VERA challenges</span></div>
+      ${topList(veraTop)}
+    </div>
+  `;
+}
+
+// ── PAGE HEATMAP ──────────────────────────────────────────────────────
+function renderHeatmap() {
+  const counts = {};
+  allEntries.forEach(e => {
+    const p = e.page || '/';
+    counts[p] = (counts[p] || 0) + 1;
+  });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 12);
+  const max = sorted[0]?.[1] || 1;
+
+  document.getElementById('heatmap-body').innerHTML = sorted.map(([page, n]) => `
+    <div class="heatmap-row">
+      <span class="heatmap-page" title="${escHtml(page)}">${escHtml(page)}</span>
+      <div class="heatmap-bar-wrap"><div class="heatmap-bar" style="width:${Math.round((n/max)*100)}%"></div></div>
+      <span class="heatmap-n">${n}</span>
+    </div>
+  `).join('') || '<div style="font-size:0.72rem;color:var(--muted);padding:0.5rem 0">No data yet.</div>';
+}
+
+// ── FILTERS + TABLE ───────────────────────────────────────────────────
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentPage = 1;
+  applyFilters();
+}
+
+function applyFilters() {
+  const query = document.getElementById('search-input').value.trim().toLowerCase();
+  filtered = allEntries.filter(e => {
+    if (activeFilter !== 'all' && e.agent !== activeFilter) return false;
+    if (query && !(e.question || '').toLowerCase().includes(query)
+              && !(e.page || '').toLowerCase().includes(query)
+              && !(e.district || '').toLowerCase().includes(query)) return false;
+    return true;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function renderTable() {
+  document.getElementById('filter-count').textContent =
+    `${filtered.length} of ${allEntries.length}`;
+
+  const start  = (currentPage - 1) * PAGE_SIZE;
+  const page   = filtered.slice(start, start + PAGE_SIZE);
+
+  if (page.length === 0) {
+    document.getElementById('log-body').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" style="font-size:1.4rem">○</div>
+        <div class="empty-text">No questions match this filter.</div>
+      </div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  document.getElementById('log-body').innerHTML = page.map(e => {
+    const dt   = e.ts ? new Date(e.ts) : null;
+    const time = dt ? dt.toLocaleDateString('en-GB', {day:'2-digit',month:'short'}) + ' ' +
+                      dt.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}) : '—';
+    return `
+      <div class="log-row">
+        <span class="log-ts">${time}</span>
+        <span class="log-agent"><span class="agent-pill ${escHtml(e.agent)}">${escHtml(e.agent)}</span></span>
+        <span class="log-question">${escHtml(e.question || '')}</span>
+        <span class="log-page">${escHtml(e.page || '')}</span>
+        <span class="log-district">${escHtml(e.district || '')}</span>
+      </div>
+    `;
+  }).join('');
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  if (totalPages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) pages.push(i);
+  document.getElementById('pagination').innerHTML = pages.map(p => `
+    <button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>
+  `).join('');
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderTable();
+  window.scrollTo({ top: document.querySelector('.filters').offsetTop - 70, behavior: 'smooth' });
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function capitalise(s) {
+  return s.length ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
+loadLogs();
+</script>
+</body>
+</html>

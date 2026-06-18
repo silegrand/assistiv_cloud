@@ -172,7 +172,29 @@ const veraStarters    = ctx.veraStarters || [
   'Should a commissioner act on this alone?',
 ];
 
-const AGENT_WORKER = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
+const AGENT_WORKER   = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
+const AGENT_LOG_URL  = 'https://assistiv-proxy.simongeorgelegrand.workers.dev/log';
+
+// Session ID — anonymous, resets each page load, used only to group
+// questions from the same visit in the logs
+const SESSION_ID = Math.random().toString(36).slice(2, 10);
+
+function logQuestion(agent, question) {
+  // Fire-and-forget — never blocks the agent response, never surfaces errors to user
+  const ctx = window.PAGE_CONTEXT || {};
+  const district = ctx.title?.match(/^(.+?) ·/)?.[1] || '';
+  fetch(AGENT_LOG_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      agent,
+      question: question.slice(0, 500),
+      page:     window.location.pathname,
+      district: district.slice(0, 60),
+      session:  SESSION_ID,
+    }),
+  }).catch(() => {}); // silent fail
+}
 const AGENT_JSON   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
 
 let agentLiveData = null;
@@ -269,6 +291,7 @@ async function adaSendText(text) {
   adaBusy = true;
   adaAdd('usr', text);
   adaHist.push({role:'user', content:text});
+  logQuestion('ADA', text);
   const th = agentThink('ada-msgs', 'ada');
   document.getElementById('ada-snd').disabled = true;
   try {
@@ -357,6 +380,7 @@ async function veraSendText(text) {
   veraBusy = true;
   veraAdd('usr', text);
   veraHist.push({role:'user', content:text});
+  logQuestion('VERA', text);
   const th = agentThink('vera-msgs', 'vera');
   document.getElementById('vera-snd').disabled = true;
   try {
