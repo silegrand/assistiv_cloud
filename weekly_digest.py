@@ -754,7 +754,7 @@ def send_email(subject, html_body):
             },
             json={
                 "from": "Assistiv Digest <digest@assistiv.cloud>",
-                "to": ["simon@assistiv.co"],
+                "to": ["simon@assistiv.co", "paul@assistiv.co"],
                 "subject": subject,
                 "html": html_body,
             },
