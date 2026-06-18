@@ -106,6 +106,12 @@ const css = `
 #vera-snd { background:#6d28d9; }
 #vera-snd:hover { background:#4c1d95; }
 .agent-snd:disabled { opacity:.4;cursor:default; }
+.agent-rating { display:flex;gap:4px;margin-top:5px;align-self:flex-start; }
+.rating-btn { background:none;border:1px solid rgba(0,0,0,0.1);border-radius:4px;padding:2px 7px;cursor:pointer;font-size:11px;opacity:0.5;transition:all .15s;line-height:1.4; }
+.rating-btn:hover { opacity:1; }
+.rating-btn.voted { opacity:1;border-color:currentColor; }
+.rating-btn.up.voted   { color:#166534;background:#dcfce7;border-color:#86efac; }
+.rating-btn.down.voted { color:#991b1b;background:#fee2e2;border-color:#fca5a5; }
 `;
 
 // Inject CSS
@@ -196,6 +202,21 @@ function logQuestion(agent, question) {
     }),
   }).catch(() => {}); // silent fail
 }
+function logRating(agent, question, response, rating) {
+  fetch(AGENT_LOG_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      _type:    'rating',
+      agent,
+      question: question.slice(0, 500),
+      response: response.slice(0, 500),
+      rating,
+      session:  SESSION_ID,
+    }),
+  }).catch(() => {});
+}
+
 const AGENT_JSON   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
 
 let agentLiveData = null;
@@ -297,7 +318,7 @@ async function adaSendText(text) {
   document.getElementById('ada-snd').disabled = true;
   try {
     const reply = await agentCall(adaHist, ADA_SYS);
-    th.remove(); adaAdd('ada', reply);
+    th.remove(); adaAdd('ada', reply, text);
     adaHist.push({role:'assistant', content:reply});
     if (adaHist.length > 20) adaHist = adaHist.slice(-20);
   } catch(e) { th.remove(); adaAdd('ada', 'Connection issue — please try again.'); }
@@ -305,10 +326,19 @@ async function adaSendText(text) {
   document.getElementById('ada-snd').disabled = false;
 }
 
-function adaAdd(role, html) {
+function adaAdd(role, html, question) {
   const el = document.createElement('div');
   el.className = `agent-m ${role === 'usr' ? 'usr' : 'ada'}`;
   el.innerHTML = html;
+  if (role === 'ada' && question) {
+    const rating = document.createElement('div');
+    rating.className = 'agent-rating';
+    rating.innerHTML = '<button class="rating-btn up" title="Helpful">👍</button><button class="rating-btn down" title="Not helpful">👎</button>';
+    const plainText = el.innerText || el.textContent || html;
+    rating.querySelector('.up').onclick   = (e) => castRating(e.currentTarget, rating, 'ADA', question, plainText, 'up');
+    rating.querySelector('.down').onclick = (e) => castRating(e.currentTarget, rating, 'ADA', question, plainText, 'down');
+    el.appendChild(rating);
+  }
   document.getElementById('ada-msgs').appendChild(el);
   document.getElementById('ada-msgs').scrollTop = 9999;
 }
@@ -386,7 +416,7 @@ async function veraSendText(text) {
   document.getElementById('vera-snd').disabled = true;
   try {
     const reply = await agentCall(veraHist, VERA_SYS);
-    th.remove(); veraAdd('vera', reply);
+    th.remove(); veraAdd('vera', reply, text);
     veraHist.push({role:'assistant', content:reply});
     if (veraHist.length > 20) veraHist = veraHist.slice(-20);
   } catch(e) { th.remove(); veraAdd('vera', 'Connection issue — please try again.'); }
@@ -394,12 +424,31 @@ async function veraSendText(text) {
   document.getElementById('vera-snd').disabled = false;
 }
 
-function veraAdd(role, html) {
+function veraAdd(role, html, question) {
   const el = document.createElement('div');
   el.className = `agent-m ${role === 'usr' ? 'usr' : 'vera'}`;
   el.innerHTML = html;
+  if (role === 'vera' && question) {
+    const rating = document.createElement('div');
+    rating.className = 'agent-rating';
+    rating.innerHTML = '<button class="rating-btn up" title="Helpful">👍</button><button class="rating-btn down" title="Not helpful">👎</button>';
+    const plainText = el.innerText || el.textContent || html;
+    rating.querySelector('.up').onclick   = (e) => castRating(e.currentTarget, rating, 'VERA', question, plainText, 'up');
+    rating.querySelector('.down').onclick = (e) => castRating(e.currentTarget, rating, 'VERA', question, plainText, 'down');
+    el.appendChild(rating);
+  }
   document.getElementById('vera-msgs').appendChild(el);
   document.getElementById('vera-msgs').scrollTop = 9999;
+}
+
+// ── RATING ───────────────────────────────────────────────────────────────────
+function castRating(btn, container, agent, question, response, rating) {
+  // Prevent double-voting
+  if (container.querySelector('.voted')) return;
+  btn.classList.add('voted');
+  // Dim the other button
+  container.querySelectorAll('.rating-btn').forEach(b => { if (b !== btn) b.style.opacity = '0.2'; });
+  logRating(agent, question, response, rating);
 }
 
 // ── SHARED ─────────────────────────────────────────────────────────────

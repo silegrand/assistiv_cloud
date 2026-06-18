@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Report Card · Assistiv Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #1a3a2a; --sage: #2d6b47; --sage2: #4a7c5f;
+  --red: #c04828; --red-bg: #fff5f5;
+  --amber: #8a6200; --amber-bg: #fffbeb;
+  --green: #166534; --green-bg: #f0fdf4;
+  --blue: #1e40af; --blue-bg: #eff6ff;
+  --purple: #4c1d95; --purple-bg: #f5f3ff;
+  --linen: #f7f5f0; --surface: #ffffff;
+  --border: #d8e4dc; --text: #1a2420; --muted: #5a6b62;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--linen); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+/* ── TOPBAR ── */
+.topbar { background: var(--forest); padding: 0 1.4rem; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.nav-back { color: rgba(255,255,255,0.6); text-decoration: none; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.nav-back:hover { color: white; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+.brand-title { font-size: 0.88rem; font-weight: 600; color: #fff; }
+.brand-sub { font-family: var(--mono); font-size: 0.48rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+.topbar-right { display: flex; align-items: center; gap: 0.6rem; }
+.print-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 4px; cursor: pointer; }
+.print-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+
+/* ── LAYOUT ── */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.4rem; }
+.main { padding: 1.6rem 0 3rem; }
+.two-col { display: grid; grid-template-columns: 260px 1fr; gap: 1.4rem; align-items: start; }
+@media (max-width: 820px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── SIDEBAR ── */
+.sidebar { position: sticky; top: 68px; }
+.week-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
+.week-card-hdr { background: var(--forest); padding: 0.65rem 0.9rem; font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+.week-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+.week-item:last-child { border-bottom: none; }
+.week-item:hover { background: var(--linen); }
+.week-item.active { background: #eaf3ee; }
+.week-label { font-family: var(--mono); font-size: 0.62rem; font-weight: 600; color: var(--forest); flex: 1; }
+.week-date  { font-family: var(--mono); font-size: 0.54rem; color: var(--muted); }
+.week-dot   { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+.week-dot.current { background: var(--red); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+.alert-pill { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 3px; }
+.alert-pill.red    { background: #fee2e2; color: var(--red); }
+.alert-pill.amber  { background: #fef3c7; color: var(--amber); }
+.alert-pill.green  { background: #dcfce7; color: var(--green); }
+
+/* ── SCORECARD ── */
+.scorecard-header { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; margin-bottom: 1.2rem; }
+.sc-week { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+.sc-title { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 600; color: var(--forest); line-height: 1.1; }
+.sc-sub { font-size: 0.76rem; color: var(--muted); margin-top: 0.4rem; }
+
+/* ── STAT STRIP ── */
+.stat-strip { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 0.9rem; flex: 1; min-width: 90px; }
+.st-val { font-family: var(--serif); font-size: 1.7rem; font-weight: 600; color: var(--forest); line-height: 1; }
+.st-label { font-family: var(--mono); font-size: 0.48rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
+
+/* ── SECTION CARDS ── */
+.section-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.section-row.trio { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 700px) { .section-row, .section-row.trio { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.card-hdr { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.card-sup { font-family: var(--mono); font-size: 0.52rem; color: var(--muted); opacity: 0.6; }
+.card-body { padding: 0.8rem 0.9rem; }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+.dt th { font-family: var(--mono); font-size: 0.52rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 0 0 0.45rem; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 0.38rem 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.dt tr:last-child td { border-bottom: none; }
+.dt td:last-child { text-align: right; }
+.risk-pill { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.1rem 0.35rem; border-radius: 3px; }
+.risk-critical { background: #fee2e2; color: var(--red); }
+.risk-high     { background: #fef3c7; color: #92400e; }
+.risk-moderate { background: #dbeafe; color: var(--blue); }
+.risk-low      { background: #dcfce7; color: var(--green); }
+.delta-up   { font-family: var(--mono); font-size: 0.62rem; font-weight: 600; color: var(--red); }
+.delta-down { font-family: var(--mono); font-size: 0.62rem; font-weight: 600; color: var(--green); }
+.delta-flat { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+.mono-val   { font-family: var(--mono); font-size: 0.66rem; font-weight: 600; }
+
+/* ── AGENT SECTION ── */
+.q-item { padding: 0.45rem 0; border-bottom: 1px solid var(--border); display: flex; gap: 0.5rem; }
+.q-item:last-child { border-bottom: none; }
+.q-count { font-family: var(--mono); font-size: 0.6rem; font-weight: 600; color: var(--muted); flex-shrink: 0; min-width: 1.8rem; }
+.q-text  { font-size: 0.72rem; line-height: 1.5; }
+.ada-pill  { display: inline-block; background: #eaf3ee; color: var(--forest); font-family: var(--mono); font-size: 0.5rem; padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; }
+.vera-pill { display: inline-block; background: var(--purple-bg); color: var(--purple); font-family: var(--mono); font-size: 0.5rem; padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; }
+.flagged-block { background: var(--red-bg); border: 1px solid #fecaca; border-radius: 6px; padding: 0.6rem 0.8rem; margin-bottom: 0.5rem; font-size: 0.7rem; line-height: 1.6; }
+.flagged-q { font-weight: 600; color: var(--text); }
+.flagged-r { color: var(--muted); font-style: italic; margin-top: 0.2rem; }
+.flagged-note { font-family: var(--mono); font-size: 0.54rem; color: var(--red); margin-top: 0.25rem; }
+
+/* ── LOADING ── */
+#loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 1rem; }
+.loader-orb { width: 36px; height: 36px; border-radius: 50%; background: var(--forest); opacity: 0.3; animation: breathe 2s ease-in-out infinite; }
+@keyframes breathe { 0%,100%{opacity:.2;transform:scale(.9);} 50%{opacity:.6;transform:scale(1.1);} }
+.loader-text { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; }
+
+/* ── PRINT ── */
+@media print {
+  .topbar, .sidebar, .print-btn { display: none !important; }
+  .two-col { display: block; }
+  .section-row, .section-row.trio { display: block; }
+  .section-row > *, .section-row.trio > * { margin-bottom: 1rem; }
+  .card { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="nav-back">← Overview</a>
+    <div class="divider-v"></div>
+    <div>
+      <div class="brand-title">Weekly Report Card</div>
+      <div class="brand-sub">assistiv.cloud · Intelligence Digest</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="print-btn" onclick="window.print()">⎙ Print / PDF</button>
+    <a class="print-btn" href="/logs/" style="text-decoration:none">Agent Logs →</a>
+  </div>
+</nav>
+
+<div id="loading">
+  <div class="loader-orb"></div>
+  <div class="loader-text">Loading digest…</div>
+</div>
+
+<div class="wrap main" id="main-content" style="display:none">
+  <div class="two-col">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="week-card">
+        <div class="week-card-hdr">Weekly digests</div>
+        <div id="week-list"></div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="digest-content"></div>
+
+  </div>
+</div>
+
+<script>
+const RAW = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/';
+const CB  = () => '?t=' + Date.now();
+
+async function init() {
+  try {
+    // Load latest digest JSON summary
+    const r = await fetch(RAW + 'logs/digest-latest.json' + CB(), {cache:'no-store'});
+    if (!r.ok) throw new Error('No digest found yet — the first digest will be generated next Monday at 07:00 UTC. You can also trigger it manually from the GitHub Actions tab.');
+    const latest = await r.json();
+
+    // Discover past digests by listing known weeks
+    const weeks = await discoverWeeks(latest.week);
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+
+    renderSidebar(weeks, latest.week);
+    renderDigest(latest);
+
+  } catch(e) {
+    document.getElementById('loading').innerHTML = `
+      <div style="text-align:center;padding:2rem;max-width:480px">
+        <div style="font-size:2rem;margin-bottom:1rem;opacity:0.4">📋</div>
+        <div style="font-size:0.82rem;line-height:1.7;color:var(--muted)">${e.message}</div>
+        <div style="margin-top:1rem">
+          <a href="/logs/" style="color:var(--sage);font-size:0.72rem">← Back to agent logs</a>
+        </div>
+      </div>`;
+  }
+}
+
+async function discoverWeeks(latestWeek) {
+  // Try to find up to 8 past weeks
+  const weeks = [{ week: latestWeek, current: true }];
+  const [year, weekNum] = latestWeek.split('-W').map(Number);
+  for (let i = 1; i <= 7; i++) {
+    let w = weekNum - i, y = year;
+    if (w < 1) { w += 52; y--; }
+    const wStr = `${y}-W${String(w).padStart(2,'0')}`;
+    try {
+      const r = await fetch(RAW + `logs/digest-${wStr}.md` + CB(), {cache:'no-store'});
+      if (r.ok) weeks.push({ week: wStr, current: false });
+    } catch {}
+  }
+  return weeks;
+}
+
+function renderSidebar(weeks, currentWeek) {
+  document.getElementById('week-list').innerHTML = weeks.map(w => `
+    <div class="week-item ${w.week === currentWeek ? 'active' : ''}"
+         onclick="loadWeek('${w.week}')">
+      <div class="week-dot ${w.current ? 'current' : ''}"></div>
+      <span class="week-label">${w.week}</span>
+      ${w.current ? '<span class="alert-pill green">Latest</span>' : ''}
+    </div>
+  `).join('');
+}
+
+async function loadWeek(week) {
+  document.querySelectorAll('.week-item').forEach(el => {
+    el.classList.toggle('active', el.querySelector('.week-label')?.textContent === week);
+  });
+
+  // Try JSON summary first, fall back to rendering from markdown
+  try {
+    const r = await fetch(RAW + 'logs/digest-latest.json' + CB(), {cache:'no-store'});
+    const latest = await r.json();
+    if (latest.week === week) {
+      renderDigest(latest);
+      return;
+    }
+  } catch {}
+
+  // Load markdown directly
+  try {
+    const r = await fetch(RAW + `logs/digest-${week}.md` + CB(), {cache:'no-store'});
+    const md = await r.text();
+    renderMarkdownFallback(md, week);
+  } catch(e) {
+    document.getElementById('digest-content').innerHTML =
+      `<div style="font-size:0.8rem;color:var(--muted);padding:1rem">Could not load digest for ${week}.</div>`;
+  }
+}
+
+function renderDigest(d) {
+  const fep = d.fep || {};
+  const agents = d.agents || {};
+  const winter = d.winter || {};
+  const rx = d.prescribing || {};
+  const allDists = fep.all_districts || [];
+  const critical = allDists.filter(x => x.risk === 'critical').length;
+  const high     = allDists.filter(x => x.risk === 'high').length;
+  const totalPop = allDists.reduce((s, x) => s + (x.pop75 || 0), 0);
+
+  const satisfactionPct = agents.week_up + agents.week_down > 0
+    ? Math.round(agents.week_up / (agents.week_up + agents.week_down) * 100)
+    : null;
+
+  const el = document.getElementById('digest-content');
+
+  el.innerHTML = `
+    <div class="scorecard-header">
+      <div class="sc-week">Weekly Intelligence Report Card · ${escHtml(d.week)}</div>
+      <div class="sc-title">Assistiv Platform — Kent &amp; Medway</div>
+      <div class="sc-sub">Generated ${escHtml(d.generated)} · assistiv.cloud</div>
+    </div>
+
+    <!-- STAT STRIP -->
+    <div class="stat-strip">
+      <div class="stat-tile">
+        <div class="st-val" style="color:${critical > 0 ? 'var(--red)' : 'var(--forest)'}">${critical}</div>
+        <div class="st-label">Critical districts</div>
+      </div>
+      <div class="stat-tile">
+        <div class="st-val" style="color:var(--amber)">${high}</div>
+        <div class="st-label">High risk</div>
+      </div>
+      <div class="stat-tile">
+        <div class="st-val">${fep.risers?.length || 0}</div>
+        <div class="st-label">Rising ↑ this week</div>
+      </div>
+      <div class="stat-tile">
+        <div class="st-val">${agents.week_total || 0}</div>
+        <div class="st-label">Agent questions</div>
+      </div>
+      <div class="stat-tile">
+        <div class="st-val" style="color:${satisfactionPct !== null && satisfactionPct < 70 ? 'var(--red)' : 'var(--forest)'}">
+          ${satisfactionPct !== null ? satisfactionPct + '%' : '—'}
+        </div>
+        <div class="st-label">Satisfaction rate</div>
+      </div>
+      <div class="stat-tile">
+        <div class="st-val">${fmt(totalPop)}</div>
+        <div class="st-label">Pop. 75+ Kent</div>
+      </div>
+    </div>
+
+    <!-- ROW 1: FEP TABLE + MOVEMENT -->
+    <div class="section-row">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">📊 FEP League Table</span>
+          <span class="card-sup">England avg = 50</span>
+        </div>
+        <div class="card-body">
+          <table class="dt">
+            <thead><tr>
+              <th>#</th><th>District</th><th>FEP</th><th>Risk</th><th>Δ wk</th>
+            </tr></thead>
+            <tbody>
+              ${allDists.map((d, i) => {
+                const dCls = d.delta_week > 2 ? 'delta-up' : d.delta_week < -2 ? 'delta-down' : 'delta-flat';
+                const dStr = d.delta_week > 0 ? '+'+d.delta_week : d.delta_week === 0 ? '—' : String(d.delta_week);
+                return `<tr>
+                  <td style="font-family:var(--mono);font-size:0.58rem;color:var(--muted)">${i+1}</td>
+                  <td style="font-weight:500">${escHtml(d.name)}</td>
+                  <td class="mono-val" style="color:${fepColor(d.fep)}">${d.fep}</td>
+                  <td><span class="risk-pill risk-${escHtml(d.risk)}">${escHtml(d.risk)}</span></td>
+                  <td class="${dCls}">${dStr}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <!-- ALERTS -->
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">⚠ Alerts</span></div>
+          <div class="card-body" style="font-size:0.74rem;line-height:1.7">
+            ${fep.crisis_precursors?.length > 0
+              ? fep.crisis_precursors.map(n =>
+                  `<div style="color:var(--red);font-weight:600;margin-bottom:0.3rem">🔴 Crisis precursor: ${escHtml(n)}</div>`
+                ).join('')
+              : `<div style="color:var(--green)">✅ No crisis precursors flagged</div>`
+            }
+            ${fep.risers?.length > 0 ? `
+              <div style="margin-top:0.6rem;font-size:0.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Rising this week</div>
+              ${fep.risers.map(r => `<div>↑ <strong>${escHtml(r.name)}</strong> FEP ${r.fep} (+${r.delta})</div>`).join('')}
+            ` : ''}
+            ${fep.fallers?.length > 0 ? `
+              <div style="margin-top:0.6rem;font-size:0.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Falling this week</div>
+              ${fep.fallers.map(r => `<div style="color:var(--green)">↓ <strong>${escHtml(r.name)}</strong> FEP ${r.fep} (${r.delta})</div>`).join('')}
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- WINTER -->
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">❄ Winter Vulnerability Top 5</span></div>
+          <div class="card-body">
+            <table class="dt">
+              <thead><tr><th>District</th><th>WVI</th><th>Tier</th></tr></thead>
+              <tbody>
+                ${(winter.top_5 || []).map(w => `
+                  <tr>
+                    <td style="font-weight:500">${escHtml(w.name)}</td>
+                    <td class="mono-val" style="color:${w.wvi >= 70 ? 'var(--red)' : w.wvi >= 55 ? 'var(--amber)' : 'var(--sage)'}">${w.wvi}</td>
+                    <td><span class="risk-pill risk-${w.tier === 'high' ? 'high' : w.tier === 'critical' ? 'critical' : 'moderate'}">${escHtml(w.tier)}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            ${(winter.upcoming_deployments || []).length > 0 ? `
+              <div style="margin-top:0.65rem;font-size:0.66rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem">Coming up</div>
+              ${winter.upcoming_deployments.slice(0,3).map(dep =>
+                `<div style="font-size:0.7rem;margin-bottom:0.2rem"><strong>${escHtml(dep.district)}</strong> — ${escHtml(dep.action)}: <span style="color:var(--amber)">${escHtml(dep.window)}</span></div>`
+              ).join('')}
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: PRESCRIBING + AGENT QUESTIONS -->
+    <div class="section-row">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">💊 Prescribing Outliers</span>
+          <span class="card-sup">≥1.5× England avg</span>
+        </div>
+        <div class="card-body">
+          ${(rx.outliers_150pct_plus || []).length > 0 ? `
+            <table class="dt">
+              <thead><tr><th>District</th><th>Signal</th><th>Ratio</th></tr></thead>
+              <tbody>
+                ${(rx.outliers_150pct_plus || []).map(o => `
+                  <tr>
+                    <td style="font-weight:500">${escHtml(o.district)}</td>
+                    <td style="color:var(--muted)">${escHtml(o.signal)}</td>
+                    <td class="mono-val" style="color:var(--red)">${o.ratio}× ▲▲</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : '<div style="font-size:0.72rem;color:var(--muted)">No signals ≥1.5× this week.</div>'}
+        </div>
+      </div>
+
+      <!-- AGENT SUMMARY -->
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">🤖 Agent Questions This Week</span>
+          <span class="card-sup">${agents.week_total || 0} total</span>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap">
+            <div style="background:#eaf3ee;border:1px solid #b6d9c4;border-radius:6px;padding:0.45rem 0.7rem">
+              <div style="font-family:var(--mono);font-size:1rem;font-weight:600;color:var(--forest)">${agents.week_ada || 0}</div>
+              <div style="font-family:var(--mono);font-size:0.48rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--sage)">ADA questions</div>
+            </div>
+            <div style="background:var(--purple-bg);border:1px solid #c4b5fd;border-radius:6px;padding:0.45rem 0.7rem">
+              <div style="font-family:var(--mono);font-size:1rem;font-weight:600;color:var(--purple)">${agents.week_vera || 0}</div>
+              <div style="font-family:var(--mono);font-size:0.48rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--purple)">VERA challenges</div>
+            </div>
+            ${satisfactionPct !== null ? `
+            <div style="background:${satisfactionPct >= 80 ? '#dcfce7' : satisfactionPct >= 60 ? '#fef3c7' : '#fee2e2'};border:1px solid ${satisfactionPct >= 80 ? '#86efac' : satisfactionPct >= 60 ? '#fcd34d' : '#fca5a5'};border-radius:6px;padding:0.45rem 0.7rem">
+              <div style="font-family:var(--mono);font-size:1rem;font-weight:600;color:${satisfactionPct >= 80 ? 'var(--green)' : satisfactionPct >= 60 ? 'var(--amber)' : 'var(--red)'}">${satisfactionPct}%</div>
+              <div style="font-family:var(--mono);font-size:0.48rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)">Satisfaction ${agents.week_up}👍 ${agents.week_down}👎</div>
+            </div>` : ''}
+          </div>
+
+          ${(agents.top_ada || []).length > 0 ? `
+            <div style="font-family:var(--mono);font-size:0.54rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.35rem">Top ADA questions</div>
+            ${agents.top_ada.slice(0,4).map(q => `
+              <div class="q-item">
+                <span class="q-count">${q.count}×</span>
+                <span class="q-text">${escHtml(capitalise(q.q))}</span>
+              </div>
+            `).join('')}
+          ` : ''}
+
+          ${(agents.top_vera || []).length > 0 ? `
+            <div style="font-family:var(--mono);font-size:0.54rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin:0.65rem 0 0.35rem">Top VERA challenges</div>
+            ${agents.top_vera.slice(0,3).map(q => `
+              <div class="q-item">
+                <span class="q-count">${q.count}×</span>
+                <span class="q-text">${escHtml(capitalise(q.q))}</span>
+              </div>
+            `).join('')}
+          ` : ''}
+        </div>
+      </div>
+    </div>
+
+    <!-- FLAGGED RESPONSES -->
+    ${agents.flagged > 0 ? `
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-hdr" style="background:var(--red-bg)">
+        <span class="card-title" style="color:var(--red)">👎 Responses Flagged for Review (${agents.flagged})</span>
+        <span class="card-sup">Review system prompts</span>
+      </div>
+      <div class="card-body" id="flagged-body">
+        <div style="font-size:0.72rem;color:var(--muted)">Loading flagged responses…</div>
+      </div>
+    </div>
+    ` : ''}
+
+    <div style="font-family:var(--mono);font-size:0.52rem;color:var(--muted);line-height:1.8;margin-top:0.5rem;opacity:0.7">
+      Generated ${escHtml(d.generated)} · Assistiv Systems Limited, Company No. 17082597, Faversham, Kent ·
+      <a href="/briefing/" style="color:var(--sage)">Commissioner Briefing</a> ·
+      <a href="/logs/" style="color:var(--sage)">Agent Logs</a>
+    </div>
+  `;
+
+  // Load flagged responses from live log if any
+  if (agents.flagged > 0) loadFlagged();
+}
+
+async function loadFlagged() {
+  try {
+    const r = await fetch(RAW + 'logs/agent-questions.json' + CB(), {cache:'no-store'});
+    if (!r.ok) return;
+    const entries = await r.json();
+    const flagged = entries.filter(e => e.rating === 'down').slice(-10).reverse();
+    const el = document.getElementById('flagged-body');
+    if (!el) return;
+    if (!flagged.length) { el.innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">No flagged responses found.</div>'; return; }
+    el.innerHTML = flagged.map(e => `
+      <div class="flagged-block">
+        <div class="flagged-q">${escHtml(e.agent || '?')}: "${escHtml((e.question||'').slice(0,120))}"</div>
+        ${e.response ? `<div class="flagged-r">"${escHtml(e.response.slice(0,200))}…"</div>` : ''}
+        <div class="flagged-note">👎 Flagged as not helpful — consider updating the ${e.agent} system prompt</div>
+      </div>
+    `).join('');
+  } catch {}
+}
+
+function renderMarkdownFallback(md, week) {
+  // Simple markdown → HTML for archive weeks
+  const html = md
+    .replace(/^# (.+)$/gm, '<h1 style="font-family:var(--serif);font-size:1.8rem;font-weight:600;color:var(--forest);margin:1rem 0 0.5rem">$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin:1.4rem 0 0.5rem;padding-top:1rem;border-top:1px solid var(--border)">$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:0.9rem;font-weight:600;margin:0.8rem 0 0.3rem">$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '<li style="margin-bottom:0.3rem">$1</li>')
+    .replace(/^> (.+)$/gm, '<blockquote style="border-left:3px solid var(--sage);padding-left:0.75rem;margin:0.5rem 0;color:var(--muted);font-size:0.8rem">$1</blockquote>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">')
+    .replace(/\n\n/g, '</p><p style="margin-bottom:0.6rem">')
+    .replace(/`([^`]+)`/g, '<code style="font-family:var(--mono);font-size:0.8em;background:#f0f4f0;padding:0.1em 0.3em;border-radius:3px">$1</code>');
+
+  document.getElementById('digest-content').innerHTML = `
+    <div class="scorecard-header">
+      <div class="sc-week">Archive · ${escHtml(week)}</div>
+      <div class="sc-title">Weekly Report Card</div>
+    </div>
+    <div class="card"><div class="card-body" style="font-size:0.78rem;line-height:1.7"><p>${html}</p></div></div>
+  `;
+}
+
+function fepColor(fep) {
+  if (fep >= 70) return 'var(--red)';
+  if (fep >= 55) return 'var(--amber)';
+  if (fep >= 40) return 'var(--blue)';
+  return 'var(--green)';
+}
+function fmt(n) { return (n||0).toLocaleString('en-GB'); }
+function capitalise(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+init();
+</script>
+</body>
+</html>

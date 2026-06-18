@@ -68,6 +68,9 @@ export default {
     if (url.pathname === '/log' || url.pathname.endsWith('/log')) {
       return handleLog(request, env, origin);
     }
+    if (url.pathname === '/rate' || url.pathname.endsWith('/rate')) {
+      return handleRating(request, env, origin);
+    }
 
     // ── Route: / (default) — Anthropic proxy ────────────────────────
     // Clone body to allow double-read: peek at _type before deciding route
@@ -76,13 +79,17 @@ export default {
     try { bodyParsed = JSON.parse(bodyText); } catch { bodyParsed = {}; }
 
     if (bodyParsed._type === 'log') {
-      // Reconstruct a readable request for handleLog
       const fakeReq = new Request(request.url, {
-        method: 'POST',
-        headers: request.headers,
-        body: bodyText,
+        method: 'POST', headers: request.headers, body: bodyText,
       });
       return handleLog(fakeReq, env, origin);
+    }
+
+    if (bodyParsed._type === 'rating') {
+      const fakeReq = new Request(request.url, {
+        method: 'POST', headers: request.headers, body: bodyText,
+      });
+      return handleRating(fakeReq, env, origin);
     }
 
     // Reconstruct for proxy (body was consumed above)
@@ -244,6 +251,83 @@ async function handleLog(request, env, origin) {
     // Fail silently from the user's perspective
     return corsResponse(JSON.stringify({ ok: true, note: 'log write failed silently' }),
       200, origin, 'application/json');
+  }
+}
+
+// ── RATING HANDLER ──────────────────────────────────────────────────────────
+async function handleRating(request, env, origin) {
+  if (!env.GITHUB_LOG_TOKEN) {
+    return corsResponse(JSON.stringify({ ok: true, note: 'logging not configured' }),
+      200, origin, 'application/json');
+  }
+
+  let entry;
+  try { entry = await request.json(); }
+  catch { return corsResponse(JSON.stringify({ error: 'Invalid JSON' }), 400, origin, 'application/json'); }
+
+  const ghHeaders = {
+    'Authorization': `token ${env.GITHUB_LOG_TOKEN}`,
+    'Accept':        'application/vnd.github.v3+json',
+    'Content-Type':  'application/json',
+    'User-Agent':    'assistiv-worker',
+  };
+
+  try {
+    const getResp = await fetch(`${GITHUB_API}?ref=${LOG_BRANCH}&t=${Date.now()}`, { headers: ghHeaders });
+    if (getResp.status !== 200) {
+      return corsResponse(JSON.stringify({ ok: false, error: 'log file not found' }), 404, origin, 'application/json');
+    }
+    const fileData = await getResp.json();
+    const sha = fileData.sha;
+    let entries = [];
+    try { entries = JSON.parse(atob(fileData.content.replace(/\n/g, ''))); } catch { entries = []; }
+
+    // Find the most recent entry from this session matching the question and add rating
+    const q = String(entry.question || '').slice(0, 500);
+    const sess = String(entry.session || '');
+    let matched = false;
+    for (let i = entries.length - 1; i >= 0; i--) {
+      if (entries[i].session === sess && entries[i].question === q && !entries[i].rating) {
+        entries[i].rating   = entry.rating === 'up' ? 'up' : 'down';
+        entries[i].response = String(entry.response || '').slice(0, 500);
+        matched = true;
+        break;
+      }
+    }
+
+    if (!matched) {
+      // Log as standalone rating entry if no match (edge case)
+      entries.push({
+        ts:       new Date().toISOString(),
+        agent:    String(entry.agent || '').slice(0, 10),
+        question: q,
+        response: String(entry.response || '').slice(0, 500),
+        rating:   entry.rating === 'up' ? 'up' : 'down',
+        session:  sess.slice(0, 16),
+        _standalone_rating: true,
+      });
+    }
+
+    const payload = {
+      message: `log: rating ${entry.rating} — ${entry.agent} [${new Date().toISOString().slice(0,10)}]`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(entries, null, 2)))),
+      branch:  LOG_BRANCH,
+      sha,
+    };
+
+    const putResp = await fetch(GITHUB_API, {
+      method: 'PUT', headers: ghHeaders, body: JSON.stringify(payload),
+    });
+
+    if (!putResp.ok) {
+      console.error('GitHub rating write error:', putResp.status);
+      return corsResponse(JSON.stringify({ ok: false }), 500, origin, 'application/json');
+    }
+    return corsResponse(JSON.stringify({ ok: true }), 200, origin, 'application/json');
+
+  } catch(err) {
+    console.error('Rating handler error:', err);
+    return corsResponse(JSON.stringify({ ok: true, note: 'rating write failed silently' }), 200, origin, 'application/json');
   }
 }
 
