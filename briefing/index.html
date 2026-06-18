@@ -263,6 +263,10 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
       <span style="font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);line-height:1">Kent & Medway Intelligence</span>
     </div>
   </div>
+  <div style="display:flex;align-items:center;gap:0.5rem">
+    <span class="badge live" id="freshness-badge">Loading data…</span>
+    <button class="print-btn" onclick="window.print()">⎙ Print / PDF</button>
+  </div>
 </nav>
 
 <div id="loading">
@@ -521,9 +525,10 @@ function render(fep, hist, wint) {
   const dateStr = generated.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
   const timeStr = generated.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 
-  document.getElementById('brief-date').textContent = dateStr;
-  document.getElementById('brief-gen').textContent = `Data refreshed ${timeStr} UTC`;
-  document.getElementById('freshness-badge').textContent = `Live · ${dateStr}`;
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('brief-date', dateStr);
+  setEl('brief-gen', `Data refreshed ${timeStr} UTC`);
+  setEl('freshness-badge', `Live · ${dateStr}`);
 
   renderAlerts(districts, hist);
   renderSummaryStats(districts);
