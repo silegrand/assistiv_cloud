@@ -1,0 +1,246 @@
+{
+  "week": "2026-W25",
+  "generated": "2026-06-18",
+  "fep": {
+    "critical_count": 1,
+    "high_count": 1,
+    "top_district": "Thanet",
+    "top_fep": 77,
+    "risers": [
+      {
+        "name": "Thanet",
+        "fep": 77,
+        "delta": 16
+      },
+      {
+        "name": "Tunbridge Wells",
+        "fep": 51,
+        "delta": 14
+      },
+      {
+        "name": "Dartford",
+        "fep": 55,
+        "delta": 8
+      },
+      {
+        "name": "Sevenoaks",
+        "fep": 47,
+        "delta": 7
+      }
+    ],
+    "fallers": [
+      {
+        "name": "Swale",
+        "fep": 31,
+        "delta": -23
+      },
+      {
+        "name": "Ashford",
+        "fep": 36,
+        "delta": -14
+      },
+      {
+        "name": "Gravesham",
+        "fep": 40,
+        "delta": -12
+      },
+      {
+        "name": "Maidstone",
+        "fep": 37,
+        "delta": -11
+      },
+      {
+        "name": "Tonbridge & Malling",
+        "fep": 32,
+        "delta": -11
+      },
+      {
+        "name": "Dover",
+        "fep": 46,
+        "delta": -10
+      },
+      {
+        "name": "Canterbury",
+        "fep": 41,
+        "delta": -9
+      },
+      {
+        "name": "Folkestone & Hythe",
+        "fep": 50,
+        "delta": -6
+      }
+    ],
+    "crisis_precursors": [],
+    "all_districts": [
+      {
+        "name": "Thanet",
+        "fep": 77,
+        "risk": "critical",
+        "delta_week": 16
+      },
+      {
+        "name": "Dartford",
+        "fep": 55,
+        "risk": "high",
+        "delta_week": 8
+      },
+      {
+        "name": "Medway",
+        "fep": 54,
+        "risk": "moderate",
+        "delta_week": 1
+      },
+      {
+        "name": "Tunbridge Wells",
+        "fep": 51,
+        "risk": "moderate",
+        "delta_week": 14
+      },
+      {
+        "name": "Folkestone & Hythe",
+        "fep": 50,
+        "risk": "moderate",
+        "delta_week": -6
+      },
+      {
+        "name": "Sevenoaks",
+        "fep": 47,
+        "risk": "moderate",
+        "delta_week": 7
+      },
+      {
+        "name": "Dover",
+        "fep": 46,
+        "risk": "moderate",
+        "delta_week": -10
+      },
+      {
+        "name": "Canterbury",
+        "fep": 41,
+        "risk": "moderate",
+        "delta_week": -9
+      },
+      {
+        "name": "Gravesham",
+        "fep": 40,
+        "risk": "moderate",
+        "delta_week": -12
+      },
+      {
+        "name": "Maidstone",
+        "fep": 37,
+        "risk": "low",
+        "delta_week": -11
+      },
+      {
+        "name": "Ashford",
+        "fep": 36,
+        "risk": "low",
+        "delta_week": -14
+      },
+      {
+        "name": "Tonbridge & Malling",
+        "fep": 32,
+        "risk": "low",
+        "delta_week": -11
+      },
+      {
+        "name": "Swale",
+        "fep": 31,
+        "risk": "low",
+        "delta_week": -23
+      }
+    ]
+  },
+  "agents": {
+    "week_total": 1,
+    "week_ada": 1,
+    "week_vera": 0,
+    "week_up": 0,
+    "week_down": 0,
+    "all_time": 1,
+    "top_ada": [
+      {
+        "q": "where is this data from and can we trust it?",
+        "count": 1
+      }
+    ],
+    "top_vera": [],
+    "flagged": 0
+  },
+  "winter": {
+    "top_5": [
+      {
+        "name": "Maidstone",
+        "wvi": 63,
+        "tier": "high"
+      },
+      {
+        "name": "Medway",
+        "wvi": 63,
+        "tier": "high"
+      },
+      {
+        "name": "Tunbridge Wells",
+        "wvi": 62,
+        "tier": "high"
+      },
+      {
+        "name": "Gravesham",
+        "wvi": 59,
+        "tier": "high"
+      },
+      {
+        "name": "Sevenoaks",
+        "wvi": 59,
+        "tier": "high"
+      }
+    ],
+    "upcoming_deployments": []
+  },
+  "prescribing": {
+    "outliers_150pct_plus": [
+      {
+        "district": "Maidstone",
+        "signal": "Bladder antimusc.",
+        "ratio": 4.34
+      },
+      {
+        "district": "Ashford",
+        "signal": "Bladder antimusc.",
+        "ratio": 4.3
+      },
+      {
+        "district": "Sevenoaks",
+        "signal": "Bladder antimusc.",
+        "ratio": 4.08
+      },
+      {
+        "district": "Canterbury",
+        "signal": "Bladder antimusc.",
+        "ratio": 3.86
+      },
+      {
+        "district": "Sevenoaks",
+        "signal": "Anti-dementia",
+        "ratio": 3.63
+      },
+      {
+        "district": "Gravesham",
+        "signal": "Parkinson's drugs",
+        "ratio": 3.56
+      },
+      {
+        "district": "Medway",
+        "signal": "Bladder antimusc.",
+        "ratio": 3.55
+      },
+      {
+        "district": "Gravesham",
+        "signal": "Anti-dementia",
+        "ratio": 3.54
+      }
+    ]
+  },
+  "markdown_path": "logs/digest-2026-W25.md"
+}
