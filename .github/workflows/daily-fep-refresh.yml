@@ -30,7 +30,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+          token: ${{ secrets.ASSISTIV_GITHUB_TOKEN_FETCH }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,10 +42,10 @@ jobs:
 
       - name: Run Fingertips refresh (script commits via API)
         env:
-          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN_FETCH }}
         run: python daily_refresh.py
 
       - name: Inject static stat fallbacks into HTML (commits via API)
         env:
-          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN_FETCH }}
         run: python inject_stats.py
