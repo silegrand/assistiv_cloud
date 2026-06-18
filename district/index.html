@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">District Intelligence · Kent & Medway · Assistiv</title>
+<meta name="description" id="page-desc" content="Complete population intelligence for a Kent district — frailty, NHS pressure, carers, falls, winter vulnerability, and prescribing signals.">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:  #1a3a2a; --sage: #2d6b47; --sage2: #4a7c5f;
+  --amber:   #8a6200; --amber-bg: #fffbeb;
+  --red:     #c04828; --red-bg: #fff5f5;
+  --green:   #166534; --green-bg: #f0fdf4;
+  --blue:    #1e40af; --blue-bg: #eff6ff;
+  --purple:  #6d28d9; --purple-bg: #f5f3ff;
+  --linen:   #f7f5f0; --surface: #ffffff;
+  --border:  #d8e4dc; --border2: #e8e0d4;
+  --text:    #1a2420; --muted: #5a6b62;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+  --risk-critical: #c04828; --risk-high: #b07010;
+  --risk-moderate: #1a6090; --risk-low: #2d6b47;
+  --c-district: #1a3a2a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--linen); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* ── TOPBAR ── */
+.topbar { background: var(--c-district); padding: 0 1.4rem; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.08); transition: background 0.3s; }
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.nav-back { color: rgba(255,255,255,0.6); text-decoration: none; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.15s; }
+.nav-back:hover { color: white; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+.logo-ring { position: relative; width: 28px; height: 28px; flex-shrink: 0; }
+.logo-ring .dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 7px; height: 7px; background: #fff; border-radius: 50%; z-index: 2; }
+.logo-ring .r1  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 15px; height: 15px; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 50%; }
+.logo-ring .r2  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 26px; height: 26px; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 50%; }
+.brand-label { display: flex; flex-direction: column; gap: 1px; }
+.brand-title { font-family: var(--sans); font-size: 0.88rem; font-weight: 600; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+.brand-sub   { font-family: var(--mono); font-size: 0.48rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+.topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+.badge { font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+.badge.risk { border-color: rgba(255,255,255,0.4); color: white; font-weight: 600; }
+
+/* ── HERO ── */
+.district-hero {
+  background: var(--c-district);
+  padding: 2.4rem 1.4rem 2rem;
+  position: relative; overflow: hidden;
+}
+.district-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-eyebrow { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.5rem; }
+.hero-name { font-family: var(--serif); font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 600; color: white; line-height: 1.0; margin-bottom: 0.6rem; letter-spacing: -0.01em; }
+.hero-name em { font-style: italic; color: rgba(255,255,255,0.55); }
+.hero-meta { font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-bottom: 1.6rem; line-height: 1.6; }
+.hero-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.hero-stat { }
+.hero-stat-val { font-family: var(--serif); font-size: 2rem; font-weight: 600; color: white; line-height: 1; }
+.hero-stat-label { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
+.hero-divider { width: 1px; background: rgba(255,255,255,0.15); align-self: stretch; }
+.hero-narrative { margin-top: 1.6rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,0.1); font-family: var(--serif); font-size: 1.05rem; font-weight: 400; font-style: italic; color: rgba(255,255,255,0.65); line-height: 1.7; max-width: 80ch; }
+
+/* ── DISTRICT NAV ── */
+.district-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.4rem; display: flex; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.district-nav a { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.7rem 0.9rem; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; }
+.district-nav a:hover { color: var(--text); border-color: var(--border); }
+.district-nav a.active { color: var(--forest); border-color: var(--forest); font-weight: 600; }
+
+/* ── LAYOUT ── */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.4rem; }
+.main { padding: 1.6rem 0 3rem; }
+.section { margin-bottom: 1.6rem; }
+.section-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+@media (max-width: 780px) { .grid-2, .grid-3, .grid-2-1 { grid-template-columns: 1fr; } }
+
+/* ── CARDS ── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.card-hdr { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.card-sup { font-family: var(--mono); font-size: 0.54rem; color: var(--muted); opacity: 0.7; }
+.card-body { padding: 0.9rem 1rem; }
+
+/* ── FEP DISPLAY ── */
+.fep-big { display: flex; align-items: flex-end; gap: 1rem; margin-bottom: 1rem; }
+.fep-num { font-family: var(--serif); font-size: 4rem; font-weight: 600; line-height: 1; }
+.fep-meta { padding-bottom: 0.4rem; }
+.fep-label { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.risk-pill { display: inline-block; font-family: var(--mono); font-size: 0.52rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15rem 0.45rem; border-radius: 3px; margin-top: 0.25rem; }
+.risk-critical { background: #fee2e2; color: var(--red); }
+.risk-high     { background: #fef3c7; color: #92400e; }
+.risk-moderate { background: #dbeafe; color: var(--blue); }
+.risk-low      { background: #dcfce7; color: var(--green); }
+
+/* ── SPARKLINE TREND ── */
+.trend-block { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.trend-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+.trend-label { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.trend-delta { font-family: var(--mono); font-size: 0.68rem; font-weight: 600; }
+.trend-delta.up   { color: var(--red); }
+.trend-delta.down { color: var(--green); }
+.trend-delta.flat { color: var(--muted); }
+.trend-dates { font-family: var(--mono); font-size: 0.5rem; color: var(--muted); margin-top: 0.2rem; }
+.recalib-note { font-size: 0.66rem; color: var(--muted); margin-top: 0.5rem; padding: 0.4rem 0.6rem; background: var(--amber-bg); border-radius: 4px; border-left: 2px solid var(--amber); }
+
+/* ── SIGNAL BARS ── */
+.signal-row { display: grid; grid-template-columns: 1fr 100px 2.5rem; align-items: center; gap: 0.5rem; padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
+.signal-row:last-child { border-bottom: none; }
+.signal-name { font-size: 0.7rem; color: var(--text); line-height: 1.3; }
+.signal-bar-wrap { height: 5px; background: #e8f0eb; border-radius: 3px; overflow: hidden; }
+.signal-bar { height: 100%; border-radius: 3px; }
+.signal-val { font-family: var(--mono); font-size: 0.62rem; text-align: right; color: var(--muted); }
+
+/* ── STAT BOXES ── */
+.stat-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+.stat-box { flex: 1; min-width: 80px; background: var(--linen); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.7rem; }
+.stat-val { font-family: var(--serif); font-size: 1.55rem; font-weight: 600; color: var(--forest); line-height: 1; }
+.stat-label { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 0.15rem; }
+
+/* ── RX PRESCRIBING ── */
+.rx-row { display: grid; grid-template-columns: 1fr 3rem 3.5rem; gap: 0.5rem; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid var(--border); }
+.rx-row:last-child { border-bottom: none; }
+.rx-name { font-size: 0.72rem; }
+.rx-rate { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); text-align: right; }
+.rx-badge { font-family: var(--mono); font-size: 0.6rem; font-weight: 600; text-align: right; }
+.rx-high   { color: var(--red); }
+.rx-mod    { color: var(--amber); }
+.rx-ok     { color: var(--muted); }
+.rx-low    { color: var(--green); }
+
+/* ── RAVI ── */
+.ravi-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem; }
+.ravi-box { background: var(--linen); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.7rem; }
+.ravi-val { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--forest); }
+.ravi-label { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lsoa-row { display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid var(--border); font-size: 0.72rem; }
+.lsoa-row:last-child { border-bottom: none; }
+.lsoa-name { color: var(--text); }
+.lsoa-ravi { font-family: var(--mono); font-size: 0.66rem; font-weight: 600; color: var(--red); }
+.lsoa-place { font-size: 0.64rem; color: var(--muted); }
+
+/* ── FALLS CHART ── */
+.falls-months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; align-items: flex-end; height: 60px; margin-bottom: 0.4rem; }
+.falls-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; height: 100%; justify-content: flex-end; }
+.falls-bar { width: 100%; border-radius: 2px 2px 0 0; background: var(--sage2); min-height: 3px; transition: opacity 0.15s; }
+.falls-bar.peak { background: var(--red); }
+.falls-bar.trough { background: var(--green); }
+.falls-month-label { font-family: var(--mono); font-size: 0.44rem; color: var(--muted); }
+.falls-stat-row { display: flex; gap: 1rem; margin-top: 0.6rem; }
+.falls-stat { flex: 1; }
+.falls-stat-val { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.falls-stat-label { font-family: var(--mono); font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+
+/* ── WINTER ── */
+.wvi-bar-wrap { height: 8px; background: #e8f0eb; border-radius: 4px; overflow: hidden; margin: 0.4rem 0 0.6rem; }
+.wvi-bar { height: 100%; border-radius: 4px; }
+.deployment-list { list-style: none; }
+.deployment-item { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid var(--border); font-size: 0.72rem; }
+.deployment-item:last-child { border-bottom: none; }
+.deployment-action { color: var(--text); }
+.deployment-when { font-family: var(--mono); font-size: 0.62rem; color: var(--amber); font-weight: 600; }
+
+/* ── CARERS ── */
+.cbi-arc { text-align: center; padding: 0.5rem 0; }
+.cbi-score { font-family: var(--serif); font-size: 3rem; font-weight: 600; color: var(--forest); line-height: 1; }
+.cbi-label { font-family: var(--mono); font-size: 0.52rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+
+/* ── TRUST PANEL ── */
+.trust-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--blue-bg); border: 1px solid #bfdbfe; border-radius: 5px; padding: 0.25rem 0.6rem; font-size: 0.68rem; color: var(--blue); font-weight: 500; margin-bottom: 0.7rem; }
+.trust-metric-row { display: flex; justify-content: space-between; align-items: center; padding: 0.38rem 0; border-bottom: 1px solid var(--border); font-size: 0.72rem; }
+.trust-metric-row:last-child { border-bottom: none; }
+.trust-metric-label { color: var(--muted); }
+.trust-metric-val { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; color: var(--text); }
+.trust-metric-val.warn { color: var(--red); }
+
+/* ── DISTRICT SELECTOR ── */
+.district-selector { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 1.4rem; }
+.selector-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+.district-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.4rem; }
+.d-btn { background: var(--linen); border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.65rem; font-family: var(--sans); font-size: 0.72rem; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; transition: all 0.15s; text-decoration: none; display: block; }
+.d-btn:hover { border-color: var(--sage); color: var(--forest); background: var(--surface); }
+.d-btn.active { background: var(--forest); color: white; border-color: var(--forest); }
+.d-btn .d-fep { font-family: var(--mono); font-size: 0.58rem; display: block; margin-top: 0.1rem; }
+
+/* ── NARRATIVE BLOCK ── */
+.narrative { font-size: 0.82rem; line-height: 1.75; color: var(--text); padding: 0.8rem 1rem; background: var(--linen); border-radius: 6px; border-left: 3px solid var(--sage); }
+
+/* ── LOADING ── */
+#loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 1rem; }
+.loader-orb { width: 40px; height: 40px; border-radius: 50%; background: var(--forest); opacity: 0.3; animation: breathe 2s ease-in-out infinite; }
+@keyframes breathe { 0%,100%{opacity:.25;transform:scale(.92);} 50%{opacity:.7;transform:scale(1.08);} }
+.loader-text { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+
+/* ── SOURCE FOOTER ── */
+.source-note { font-family: var(--mono); font-size: 0.54rem; color: var(--muted); line-height: 1.8; padding: 0.5rem 0; opacity: 0.7; }
+
+/* ── PRINT ── */
+@media print {
+  .topbar, .district-nav, .district-selector { display: none !important; }
+  .card { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topbar" id="topbar">
+  <div class="topbar-left">
+    <a href="/" class="nav-back">← Overview</a>
+    <div class="divider-v"></div>
+    <a href="/" style="text-decoration:none">
+      <div class="logo-ring"><div class="dot"></div><div class="r1"></div><div class="r2"></div></div>
+    </a>
+    <div class="divider-v"></div>
+    <div class="brand-label">
+      <span class="brand-title" id="topbar-title">District Intelligence</span>
+      <span class="brand-sub">Kent &amp; Medway · Assistiv Systems</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge risk" id="topbar-risk-badge" style="display:none"></span>
+    <span class="badge" id="topbar-fep-badge" style="display:none"></span>
+  </div>
+</nav>
+
+<div id="loading">
+  <div class="loader-orb"></div>
+  <div class="loader-text" id="loader-text">Loading district intelligence…</div>
+</div>
+
+<div id="page-content" style="display:none">
+
+  <!-- HERO -->
+  <div class="district-hero" id="district-hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Kent &amp; Medway · District Intelligence</div>
+      <div class="hero-name" id="hero-name">—</div>
+      <div class="hero-meta" id="hero-meta"></div>
+      <div class="hero-stats" id="hero-stats"></div>
+      <div class="hero-narrative" id="hero-narrative" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- PAGE NAV -->
+  <div class="district-nav">
+    <a href="#frailty" class="active">Frailty</a>
+    <a href="#nhs">NHS Pressure</a>
+    <a href="#carers">Carers</a>
+    <a href="#falls">Falls</a>
+    <a href="#rural">Rural Access</a>
+    <a href="#winter">Winter</a>
+    <a href="#prescribing">Prescribing</a>
+    <a href="#other-districts">All Districts</a>
+  </div>
+
+  <div class="wrap main">
+
+    <!-- DISTRICT SELECTOR -->
+    <div class="district-selector">
+      <div class="selector-label">Switch District</div>
+      <div class="district-grid" id="district-grid"></div>
+    </div>
+
+    <!-- SECTION: FRAILTY -->
+    <div class="section" id="frailty">
+      <div class="section-label">Frailty Early Prediction</div>
+      <div class="grid-2-1">
+
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">FEP Score &amp; Signal Breakdown</span>
+            <span class="card-sup">22 signals · England avg = 50</span>
+          </div>
+          <div class="card-body">
+            <div class="fep-big">
+              <div class="fep-num" id="fep-score">—</div>
+              <div class="fep-meta">
+                <div class="fep-label">Frailty Emergence Probability</div>
+                <div id="fep-risk-pill"></div>
+                <div style="font-family:var(--mono);font-size:0.54rem;color:var(--muted);margin-top:0.3rem" id="fep-proxy-note"></div>
+              </div>
+            </div>
+            <div class="trend-block" id="trend-block" style="display:none">
+              <div class="trend-header">
+                <span class="trend-label">12-day FEP trend</span>
+                <span class="trend-delta" id="trend-delta"></span>
+              </div>
+              <svg id="trend-spark" viewBox="0 0 240 40" width="100%" height="40" style="overflow:visible;display:block"></svg>
+              <div class="trend-dates" id="trend-dates"></div>
+              <div class="recalib-note" id="recalib-note" style="display:none">
+                ⚑ Score updated 13 Jun 2026 following KPHO district-level signal recalibration. Previous score shown as dashed line.
+              </div>
+            </div>
+            <div id="signals-list" style="margin-top:0.85rem"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Population</span></div>
+            <div class="card-body" id="pop-card"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Recommended Actions</span></div>
+            <div class="card-body" id="recs-card" style="font-size:0.72rem;line-height:1.65;color:var(--text)"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><span class="card-title">Cost of Inaction</span><span class="card-sup">Annual est. ±30%</span></div>
+            <div class="card-body" id="econ-card"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION: NHS PRESSURE -->
+    <div class="section" id="nhs">
+      <div class="section-label">NHS Pressure</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Serving NHS Trust</span></div>
+          <div class="card-body" id="trust-card"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Emergency Admissions 65+</span><span class="card-sup">HES M13 Apr 25–Mar 26</span></div>
+          <div class="card-body" id="hes-card"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: CARERS -->
+    <div class="section" id="carers">
+      <div class="section-label">Unpaid Carers &amp; Carer Burden</div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Carer Intensity</span><span class="card-sup">Census 2021</span></div>
+          <div class="card-body" id="carers-card"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Carer Burden Index</span><span class="card-sup">CBI · 5 signals</span></div>
+          <div class="card-body" id="cbi-card"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Heavy Care (50+ hrs/week)</span><span class="card-sup">Near full-time unpaid care</span></div>
+          <div class="card-body" id="heavy-carers-card"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: FALLS -->
+    <div class="section" id="falls">
+      <div class="section-label">Falls — SECAmb Ambulance-Attended</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Annual Falls Pattern</span><span class="card-sup">FOI data · ambulance-attended only</span></div>
+          <div class="card-body" id="falls-card"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Falls Context &amp; Interpretation</span></div>
+          <div class="card-body" id="falls-context"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: RURAL ACCESS -->
+    <div class="section" id="rural">
+      <div class="section-label">Rural Access Vulnerability (RAVI)</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">District RAVI Summary</span><span class="card-sup">1,065 Kent LSOAs</span></div>
+          <div class="card-body" id="ravi-card"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Highest-Vulnerability LSOAs</span><span class="card-sup">Top 5 by RAVI score</span></div>
+          <div class="card-body" id="ravi-lsoas"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: WINTER -->
+    <div class="section" id="winter">
+      <div class="section-label">Winter Vulnerability</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Winter Vulnerability Index</span><span class="card-sup">WVI 2026–27</span></div>
+          <div class="card-body" id="winter-card"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Deployment Planning</span><span class="card-sup">Evidence-backed windows</span></div>
+          <div class="card-body" id="deployment-card"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: PRESCRIBING -->
+    <div class="section" id="prescribing">
+      <div class="section-label">Prescribing Intelligence</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">Frailty-Signal Medications</span><span class="card-sup">NHSBSA EPD Mar 2026 · vs England avg</span></div>
+          <div class="card-body" id="rx-card"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><span class="card-title">PCN Priority Action</span></div>
+          <div class="card-body" id="rx-action-card" style="font-size:0.76rem;line-height:1.7;color:var(--text)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL DISTRICTS -->
+    <div class="section" id="other-districts">
+      <div class="section-label">All Kent &amp; Medway Districts</div>
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">Compare Districts — FEP Score</span>
+          <span class="card-sup">Click to navigate</span>
+        </div>
+        <div class="card-body" id="all-districts-card"></div>
+      </div>
+    </div>
+
+    <div class="source-note" id="source-note"></div>
+
+  </div>
+</div>
+
+<script>
+// ── DATA SOURCES ──────────────────────────────────────────────────────
+const RAW = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/';
+const FEP_URL  = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+const CB = () => '?t=' + Date.now();
+const NO_STORE = { cache: 'no-store' };
+
+const SOURCES = {
+  fep:      FEP_URL,
+  history:  RAW + 'kent-fep-history.json',
+  carers:   RAW + 'kent-carers-data.json',
+  cbi:      RAW + 'kent-cbi-data.json',
+  falls:    RAW + 'kent-secamb-falls-data.json',
+  ravi:     RAW + 'kent-ravi-data.json',
+  winter:   RAW + 'kent-winter-data.json',
+  corridor: RAW + 'kent-corridor-data.json',
+  hes:      RAW + 'kent-hes-data.json',
+  shmi:     RAW + 'kent-shmi-data.json',
+  gp:       RAW + 'kent-gp-reg-data.json',
+};
+
+// ── RESOLVE DISTRICT FROM URL ─────────────────────────────────────────
+// URL pattern: /district/thanet/ or /district/?d=thanet
+function resolveDistrict() {
+  // Try path segment first: /district/thanet/
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  const distIdx = parts.indexOf('district');
+  if (distIdx >= 0 && parts[distIdx + 1]) {
+    return decodeURIComponent(parts[distIdx + 1]).replace(/-/g, ' ');
+  }
+  // Try query param: ?d=thanet
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('d')) return params.get('d').replace(/-/g, ' ');
+  // Default
+  return 'thanet';
+}
+
+// Normalise name for URL
+function toSlug(name) {
+  return name.toLowerCase().replace(/\s*&\s*/g, '-and-').replace(/\s+/g, '-');
+}
+
+// ── COLOUR HELPERS ────────────────────────────────────────────────────
+function fepColor(fep) {
+  if (fep >= 70) return 'var(--risk-critical)';
+  if (fep >= 55) return 'var(--risk-high)';
+  if (fep >= 40) return 'var(--risk-moderate)';
+  return 'var(--risk-low)';
+}
+function fepRisk(fep) {
+  if (fep >= 70) return 'critical';
+  if (fep >= 55) return 'high';
+  if (fep >= 40) return 'moderate';
+  return 'low';
+}
+function wviColor(wvi) {
+  if (wvi >= 70) return 'var(--red)';
+  if (wvi >= 55) return 'var(--amber)';
+  return 'var(--sage)';
+}
+function rxBadgeClass(ratio) {
+  if (ratio >= 1.5)  return 'rx-high';
+  if (ratio >= 1.15) return 'rx-mod';
+  if (ratio <= 0.7 && ratio > 0) return 'rx-low';
+  return 'rx-ok';
+}
+function rxLabel(ratio) {
+  if (ratio >= 1.5)  return ratio.toFixed(2) + 'x ▲▲';
+  if (ratio >= 1.15) return ratio.toFixed(2) + 'x ▲';
+  if (ratio <= 0.7 && ratio > 0) return ratio.toFixed(2) + 'x ▼';
+  if (ratio > 0)     return ratio.toFixed(2) + 'x';
+  return 'n/a';
+}
+function fmt(n) { return n?.toLocaleString('en-GB') ?? '—'; }
+function fmtGBP(n) {
+  if (!n) return '—';
+  if (n >= 1e6) return '£' + (n/1e6).toFixed(1) + 'm';
+  if (n >= 1e3) return '£' + (n/1e3).toFixed(0) + 'k';
+  return '£' + n.toLocaleString();
+}
+
+// ── ECONOMIC MODEL ────────────────────────────────────────────────────
+function calcEcon(d) {
+  const pop75 = d.pop75 || 15000;
+  const uplift = Math.min(1.5, 1 + Math.max(0, (d.fep - 50) / 100));
+  const falls = Math.round((1917 / 100000) * pop75 * uplift);
+  const hips  = Math.round((543  / 100000) * pop75 * uplift);
+  const pFalls = Math.round(falls * 0.30);
+  const pHips  = Math.round(hips  * 0.28);
+  const mid = pFalls * 3068 + pHips * 14642;
+  return { falls, hips, pFalls, pHips, mid, low: Math.round(mid*.7), high: Math.round(mid*1.3), uplift };
+}
+
+// ── MAIN INIT ─────────────────────────────────────────────────────────
+async function init() {
+  const targetName = resolveDistrict().toLowerCase();
+  document.getElementById('loader-text').textContent = `Loading intelligence for ${targetName}…`;
+
+  try {
+    // Fetch all in parallel
+    const results = await Promise.all(
+      Object.entries(SOURCES).map(([k, url]) =>
+        fetch(url + CB(), NO_STORE)
+          .then(r => r.ok ? r.json() : null)
+          .then(d => [k, d])
+          .catch(() => [k, null])
+      )
+    );
+    const data = Object.fromEntries(results);
+
+    // Find the matching district
+    const districts = data.fep?.districts || [];
+    const norm = s => s.toLowerCase().replace(/\s*&\s*/g, ' and ').replace(/\s+/g, ' ').trim();
+    const d = districts.find(x => norm(x.name) === norm(targetName))
+           || districts.find(x => norm(x.name).includes(norm(targetName)))
+           || districts[0];
+
+    if (!d) throw new Error(`District "${targetName}" not found`);
+
+    render(d, districts, data);
+
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      `<div style="text-align:center;font-size:0.8rem;color:var(--red)">
+        Could not load data: ${e.message}<br>
+        <a href="/" style="color:var(--sage);font-size:0.72rem">← Return to overview</a>
+      </div>`;
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function render(d, allDistricts, data) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('page-content').style.display = 'block';
+
+  const color = fepColor(d.fep);
+  const risk  = fepRisk(d.fep);
+
+  // Topbar
+  document.title = `${d.name} · District Intelligence · Assistiv`;
+  document.getElementById('page-title').textContent = `${d.name} · District Intelligence · Assistiv`;
+  document.getElementById('topbar-title').textContent = d.name;
+  document.getElementById('topbar').style.background = color.replace('var(', '').replace(')', '');
+  const riskBadge = document.getElementById('topbar-risk-badge');
+  riskBadge.textContent = `${risk} risk`;
+  riskBadge.style.display = '';
+  const fepBadge = document.getElementById('topbar-fep-badge');
+  fepBadge.textContent = `FEP ${d.fep}`;
+  fepBadge.style.display = '';
+
+  // Hero
+  document.getElementById('hero-name').innerHTML = d.name;
+  document.getElementById('district-hero').style.background =
+    `linear-gradient(135deg, ${color === 'var(--risk-critical)' ? '#7f1d1d' :
+      color === 'var(--risk-high)' ? '#78350f' :
+      color === 'var(--risk-moderate)' ? '#1e3a8a' : '#14532d'} 0%, var(--forest) 100%)`;
+
+  const gp = data.gp?.districts?.[d.name] || {};
+  const pop75Gp = gp.pop_75plus || d.pop75;
+  document.getElementById('hero-meta').innerHTML =
+    `Kent &amp; Medway · LAD code ${d.lad_code} · Pop. 75+ ${fmt(d.pop75)} (ONS est.) · GP-registered 75+: ${fmt(pop75Gp)}`;
+
+  document.getElementById('hero-stats').innerHTML = `
+    <div class="hero-stat">
+      <div class="hero-stat-val" style="color:${color}">${d.fep}</div>
+      <div class="hero-stat-label">FEP Score</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">${fmt(d.pop75)}</div>
+      <div class="hero-stat-label">Pop. 75+</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">${fmt(d.list_size)}</div>
+      <div class="hero-stat-label">GP list size</div>
+    </div>
+  `;
+
+  // Winter narrative if available
+  const wintD = data.winter?.districts?.[d.name];
+  if (wintD?.winter_narrative) {
+    const narr = document.getElementById('hero-narrative');
+    narr.textContent = wintD.winter_narrative;
+    narr.style.display = '';
+  }
+
+  renderFrailty(d, data);
+  renderNHS(d, data);
+  renderCarers(d, data);
+  renderFalls(d, data);
+  renderRAVI(d, data);
+  renderWinter(d, data);
+  renderPrescribing(d);
+  renderDistrictSelector(d, allDistricts);
+  renderAllDistricts(d, allDistricts);
+  renderSourceNote(data);
+  setupNavSpy();
+
+  // PAGE_CONTEXT for ADA/VERA
+  window.PAGE_CONTEXT = {
+    title: `${d.name} District Intelligence`,
+    description: `Complete population intelligence for ${d.name}: FEP ${d.fep} (${risk} risk), pop 75+ ${fmt(d.pop75)}, ${wintD ? 'WVI '+Math.round(wintD.wvi_score||0) : ''}.`,
+    adaStarters: [
+      `What is driving ${d.name}'s FEP score of ${d.fep}?`,
+      `What should commissioners prioritise in ${d.name}?`,
+      `How does ${d.name} compare to the rest of Kent?`,
+      `What is the economic case for early intervention in ${d.name}?`,
+    ],
+    veraStarters: [
+      `What are the limitations of the FEP score for ${d.name}?`,
+      `How reliable is the ${d.name} data given the June 13th recalibration?`,
+      `What would a peer reviewer challenge in this district profile?`,
+      `Should a commissioner act on this data alone for ${d.name}?`,
+    ],
+  };
+}
+
+// ── FRAILTY ──────────────────────────────────────────────────────────
+function renderFrailty(d, data) {
+  const color = fepColor(d.fep);
+  const risk  = fepRisk(d.fep);
+
+  document.getElementById('fep-score').textContent = d.fep;
+  document.getElementById('fep-score').style.color = color;
+  document.getElementById('fep-risk-pill').innerHTML =
+    `<span class="risk-pill risk-${risk}">${risk} risk</span>`;
+
+  if (d.fep_proxy && d.kpho_recalibrated) {
+    document.getElementById('fep-proxy-note').textContent =
+      `Pre-recalibration proxy: ${d.fep_proxy} · KPHO-recalibrated 13 Jun 2026`;
+  }
+
+  // Trend sparkline
+  const hist = data.history?.districts?.[d.name];
+  if (hist?.series?.length >= 2) {
+    const tb = document.getElementById('trend-block');
+    tb.style.display = '';
+    const delta = hist.delta_week;
+    const cls = delta > 2 ? 'up' : delta < -2 ? 'down' : 'flat';
+    const str = delta > 0 ? `↑ +${delta} this week` : delta < 0 ? `↓ ${delta} this week` : '→ stable';
+    const dd = document.getElementById('trend-delta');
+    dd.textContent = str;
+    dd.className = `trend-delta ${cls}`;
+
+    const pts = hist.series;
+    const vals = pts.map(p => p.fep);
+    const min = Math.min(...vals) - 3;
+    const max = Math.max(...vals) + 3;
+    const W = 240, H = 40;
+    const toX = i => (i / (pts.length-1)) * W;
+    const toY = v => H - ((v - min) / (max - min)) * H;
+    const lineColor = delta > 2 ? '#dc2626' : delta < -2 ? '#16a34a' : '#6b7280';
+
+    // Split at recalibration
+    const recalIdx = pts.findIndex(p => p.date === '2026-06-13');
+    let pathD = '';
+    if (recalIdx > 0) {
+      const prePath = pts.slice(0, recalIdx).map((p,i) => `${i===0?'M':'L'}${toX(i).toFixed(1)},${toY(p.fep).toFixed(1)}`).join(' ');
+      const postPath = pts.slice(recalIdx).map((p,i) => `${i===0?'M':'L'}${toX(recalIdx+i).toFixed(1)},${toY(p.fep).toFixed(1)}`).join(' ');
+      const recalX = toX(recalIdx).toFixed(1);
+      pathD = `
+        <path d="${prePath}" fill="none" stroke="${lineColor}" stroke-width="1.5" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.5"/>
+        <line x1="${recalX}" y1="0" x2="${recalX}" y2="${H}" stroke="${lineColor}" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+        <path d="${postPath}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      `;
+      document.getElementById('recalib-note').style.display = '';
+    } else {
+      pathD = `<path d="${pts.map((p,i) => `${i===0?'M':'L'}${toX(i).toFixed(1)},${toY(p.fep).toFixed(1)}`).join(' ')}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+
+    document.getElementById('trend-spark').innerHTML = pathD +
+      `<circle cx="${toX(pts.length-1).toFixed(1)}" cy="${toY(vals[vals.length-1]).toFixed(1)}" r="3.5" fill="${lineColor}"/>
+       <text x="${toX(0).toFixed(1)}" y="${H+10}" font-family="monospace" font-size="7" fill="#8a9e8a">${pts[0].date.slice(5)}</text>
+       <text x="${toX(pts.length-1).toFixed(1)}" y="${H+10}" font-family="monospace" font-size="7" fill="#8a9e8a" text-anchor="end">${pts[pts.length-1].date.slice(5)}</text>`;
+    document.getElementById('trend-dates').textContent = `${hist.earliest} → ${hist.latest} over ${pts.length} days`;
+  }
+
+  // Signal bars
+  const SIGNAL_NAMES = d.signal_names || data.fep?.meta?.signal_names || [];
+  const sigWeights = data.fep?.meta?.weights || [];
+  const signals = (d.signals || []).map((val, i) => ({
+    name: SIGNAL_NAMES[i] || `Signal ${i+1}`,
+    val: Math.round(val),
+    weight: sigWeights[i] || 0,
+  })).sort((a, b) => b.val - a.val);
+
+  document.getElementById('signals-list').innerHTML = signals.map(s => {
+    const col = s.val >= 75 ? '#dc2626' : s.val >= 60 ? '#d97706' : s.val >= 40 ? '#2563eb' : '#16a34a';
+    return `<div class="signal-row">
+      <span class="signal-name">${s.name}</span>
+      <div class="signal-bar-wrap"><div class="signal-bar" style="width:${s.val}%;background:${col}"></div></div>
+      <span class="signal-val">${s.val}</span>
+    </div>`;
+  }).join('');
+
+  // Population card
+  const gp = data.gp?.districts?.[d.name] || {};
+  document.getElementById('pop-card').innerHTML = `
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-val">${fmt(d.pop75)}</div><div class="stat-label">Pop. 75+ (ONS)</div></div>
+      <div class="stat-box"><div class="stat-val">${fmt(gp.pop_75plus || '—')}</div><div class="stat-label">GP-reg. 75+</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-val">${fmt(d.list_size)}</div><div class="stat-label">GP list size</div></div>
+      <div class="stat-box"><div class="stat-val">${fmt(gp.pop_65plus || '—')}</div><div class="stat-label">GP-reg. 65+</div></div>
+    </div>
+    <div class="source-note">Sources: ONS Census 2021 (pop75) · NHS Digital GP Registration Jun 2026 (GP figures)</div>
+  `;
+
+  // Recs
+  const recs = [];
+  if (d.risk === 'critical') recs.push('Immediate outreach priority — highest-band FEP in Kent cohort.');
+  if ((d.signals||[])[0] >= 75) recs.push('Social isolation dominant — target faith communities and lunch clubs.');
+  if ((d.signals||[])[4] >= 70) recs.push('Winter mortality elevated — prioritise September–October medication reviews.');
+  if ((d.signals||[])[10] >= 70) recs.push('High hypnotics prescribing — pharmacy-led medication reviews indicated.');
+  if ((d.signals||[])[3] >= 70) recs.push('High deprivation — facilitated rather than digital-first screening approach.');
+  recs.push(`Brief ${d.name} PCN lead with FEP signal breakdown.`);
+  recs.push(`Deploy resiliencetools.xyz screening at highest-priority community touchpoints.`);
+  document.getElementById('recs-card').innerHTML = recs.map(r =>
+    `<div style="display:flex;gap:0.5rem;margin-bottom:0.5rem"><span style="color:var(--sage);flex-shrink:0">→</span><span>${r}</span></div>`
+  ).join('');
+
+  // Economic
+  const e = calcEcon(d);
+  document.getElementById('econ-card').innerHTML = `
+    <div style="font-family:var(--serif);font-size:1.8rem;font-weight:600;color:var(--forest);line-height:1">${fmtGBP(e.low)} – ${fmtGBP(e.high)}</div>
+    <div style="font-family:var(--mono);font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0.2rem 0 0.7rem">estimated annual preventable NHS cost</div>
+    <div class="trust-metric-row"><span class="trust-metric-label">Est. falls admissions 65+ pa</span><span class="trust-metric-val">${fmt(e.falls)}</span></div>
+    <div class="trust-metric-row"><span class="trust-metric-label">Preventable falls (30%)</span><span class="trust-metric-val">${fmt(e.pFalls)} · ${fmtGBP(e.pFalls*3068)}</span></div>
+    <div class="trust-metric-row"><span class="trust-metric-label">Est. hip fractures 65+ pa</span><span class="trust-metric-val">${fmt(e.hips)}</span></div>
+    <div class="trust-metric-row"><span class="trust-metric-label">Preventable hips (28%)</span><span class="trust-metric-val">${fmt(e.pHips)} · ${fmtGBP(e.pHips*14642)}</span></div>
+    <div class="trust-metric-row"><span class="trust-metric-label">FEP risk uplift</span><span class="trust-metric-val">${e.uplift.toFixed(2)}×</span></div>
+    <div class="source-note" style="margin-top:0.6rem">Falls cost: NHS Improvement 2024/25. Hip fracture: Lancet Healthy Longevity 2023 (£14,642/patient). Preventability: BGS/NICE QS86. Uncertainty ±30%.</div>
+  `;
+}
+
+// ── NHS PRESSURE ──────────────────────────────────────────────────────
+function renderNHS(d, data) {
+  // Find trust serving this district
+  const trusts = data.corridor?.trusts || {};
+  const trust = Object.values(trusts).find(t => (t.districts||[]).includes(d.name));
+  const trustCode = Object.keys(trusts).find(k => (trusts[k].districts||[]).includes(d.name));
+  const shmiTrust = trustCode ? data.shmi?.trusts?.[trustCode] : null;
+  const hesTrust  = trustCode ? data.hes?.trusts?.[trustCode]  : null;
+
+  if (trust) {
+    document.getElementById('trust-card').innerHTML = `
+      <div class="trust-badge">🏥 ${trust.name}</div>
+      <div class="trust-metric-row"><span class="trust-metric-label">Corridor care avg (May 2026)</span>
+        <span class="trust-metric-val ${trust.corridor_total > 10 ? 'warn' : ''}">${trust.corridor_total ?? '—'} patients/day</span></div>
+      <div class="trust-metric-row"><span class="trust-metric-label">Corridor peak (May 2026)</span>
+        <span class="trust-metric-val">${trust.corridor_ed_max ?? '—'} patients/day</span></div>
+      ${shmiTrust ? `
+        <div class="trust-metric-row"><span class="trust-metric-label">SHMI (Feb 25–Jan 26)</span>
+          <span class="trust-metric-val">${shmiTrust.shmi_value ?? '—'} · ${shmiTrust.banding_label ?? ''}</span></div>
+        <div class="trust-metric-row"><span class="trust-metric-label">Observed deaths</span>
+          <span class="trust-metric-val">${fmt(shmiTrust.observed_deaths)} (predicted ${fmt(shmiTrust.predicted_deaths)})</span></div>
+      ` : ''}
+      <div class="trust-metric-row"><span class="trust-metric-label">Districts served</span>
+        <span class="trust-metric-val" style="font-size:0.62rem">${(trust.districts||[]).join(', ')}</span></div>
+      <div class="source-note" style="margin-top:0.6rem">Corridor: NHS weekly sitrep May 2026. SHMI: NHS Digital Feb 2025–Jan 2026.</div>
+    `;
+  } else {
+    document.getElementById('trust-card').innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">Trust data not available for this district.</div>';
+  }
+
+  if (hesTrust) {
+    document.getElementById('hes-card').innerHTML = `
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-val">${fmt(hesTrust.total_emerg_65plus)}</div>
+          <div class="stat-label">Emergency admissions 65+</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">${hesTrust.emerg_65plus_yoy_delta ? (hesTrust.emerg_65plus_yoy_delta > 0 ? '+' : '') + fmt(hesTrust.emerg_65plus_yoy_delta) : '—'}</div>
+          <div class="stat-label">Year-on-year change</div>
+        </div>
+      </div>
+      <p style="font-size:0.7rem;color:var(--muted);line-height:1.6">Figures are trust-level (${hesTrust.name || hesTrust.short}) and cannot be attributed to individual districts. ${d.name} is one of ${(trust?.districts||[]).length} districts served by this trust.</p>
+      <div class="source-note" style="margin-top:0.5rem">HES M13 Apr 2025–Mar 2026 · NHS Digital</div>
+    `;
+  } else {
+    document.getElementById('hes-card').innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">HES data not available.</div>';
+  }
+}
+
+// ── CARERS ────────────────────────────────────────────────────────────
+function renderCarers(d, data) {
+  const carers = (data.carers?.districts || data.carers || []);
+  const cd = Array.isArray(carers) ? carers.find(x => x.name === d.name)
+           : carers[d.name];
+  const cbi_list = data.cbi?.districts || [];
+  const cbi = Array.isArray(cbi_list) ? cbi_list.find(x => x.name === d.name)
+            : cbi_list[d.name];
+
+  if (cd) {
+    document.getElementById('carers-card').innerHTML = `
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-val">${fmt(cd.carers_total)}</div><div class="stat-label">Total unpaid carers</div></div>
+        <div class="stat-box"><div class="stat-val">${cd.carer_pct}%</div><div class="stat-label">Of population</div></div>
+      </div>
+      <div class="trust-metric-row"><span class="trust-metric-label">Carers rate per 1,000</span><span class="trust-metric-val">${cd.carer_rate_per_1000}</span></div>
+      <div class="trust-metric-row"><span class="trust-metric-label">Carers aged 50+</span><span class="trust-metric-val">${fmt(cd.carers_aged_50plus)} (${cd.carers_aged_50plus_pct}%)</span></div>
+      <div class="trust-metric-row"><span class="trust-metric-label">Kent rank (carer rate)</span><span class="trust-metric-val">${cd.heavy_care_rank ? '#'+cd.heavy_care_rank : '—'} of 13</span></div>
+      <div class="source-note" style="margin-top:0.5rem">Census 2021 · ONS via KPHO HSCM V1.6 · Note: Census undercounts carers — especially spouses who don't self-identify.</div>
+    `;
+
+    document.getElementById('heavy-carers-card').innerHTML = `
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-val" style="color:var(--red)">${fmt(cd.carers_high_50plus)}</div><div class="stat-label">Heavy carers (50+ hrs)</div></div>
+        <div class="stat-box"><div class="stat-val">${cd.heavy_care_pct}%</div><div class="stat-label">Of population</div></div>
+      </div>
+      <div class="trust-metric-row"><span class="trust-metric-label">Heavy care rate per 1,000</span>
+        <span class="trust-metric-val ${cd.heavy_care_rate_per_1000 > 30 ? 'warn' : ''}">${cd.heavy_care_rate_per_1000}</span></div>
+      <div style="margin-top:0.7rem;font-size:0.7rem;color:var(--muted);line-height:1.65">50+ hours/week represents near full-time unpaid care. This group faces the highest risk of carer breakdown — the event that typically precipitates an acute admission for the person being cared for.</div>
+      <div class="source-note" style="margin-top:0.5rem">Census 2021 · ONS TS039 LTLA level</div>
+    `;
+  } else {
+    document.getElementById('carers-card').innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">Carer data not available.</div>';
+    document.getElementById('heavy-carers-card').innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">Heavy carer data not available.</div>';
+  }
+
+  if (cbi) {
+    const sigs = cbi.signal_scores || {};
+    const sigLabels = { census_20plus: 'Census 20+ hrs carers', social_isolation: 'Social isolation', support_access: 'Support access', assessment_rate: 'Assessment rate', wellbeing: 'Wellbeing' };
+    document.getElementById('cbi-card').innerHTML = `
+      <div class="cbi-arc">
+        <div class="cbi-score" style="color:${cbi.cbi >= 60 ? 'var(--red)' : cbi.cbi >= 45 ? 'var(--amber)' : 'var(--sage)'}">${cbi.cbi}</div>
+        <div class="cbi-label">Carer Burden Index · <span class="risk-pill risk-${cbi.tier}">${cbi.tier}</span></div>
+      </div>
+      <div style="margin-top:0.75rem">
+        ${Object.entries(sigs).map(([k, v]) => `
+          <div class="signal-row">
+            <span class="signal-name">${sigLabels[k] || k}</span>
+            <div class="signal-bar-wrap"><div class="signal-bar" style="width:${v}%;background:${v>=70?'var(--red)':v>=50?'var(--amber)':'var(--sage)'}"></div></div>
+            <span class="signal-val">${v}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="source-note" style="margin-top:0.6rem">CBI: 4 of 5 signals are county-level (Kent-wide). District discrimination primarily from Census 2021 intensive carer rates.</div>
+    `;
+  } else {
+    document.getElementById('cbi-card').innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">CBI data not available.</div>';
+  }
+}
+
+// ── FALLS ─────────────────────────────────────────────────────────────
+function renderFalls(d, data) {
+  const falls = data.falls?.districts?.[d.name];
+  if (!falls) {
+    ['falls-card','falls-context'].forEach(id =>
+      document.getElementById(id).innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">Falls data not available for this district.</div>');
+    return;
+  }
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const values = months.map(m => falls.monthly?.[m] || 0);
+  const maxVal = Math.max(...values);
+
+  document.getElementById('falls-card').innerHTML = `
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-val" style="color:var(--red)">${fmt(falls.annual_total)}</div><div class="stat-label">Annual falls</div></div>
+      <div class="stat-box"><div class="stat-val">${falls.rate_per_1000_pop75}</div><div class="stat-label">Per 1,000 pop 75+</div></div>
+    </div>
+    <div class="falls-months">
+      ${months.map((m, i) => {
+        const val = values[i];
+        const h = maxVal > 0 ? Math.round((val / maxVal) * 52) + 8 : 8;
+        const cls = m === falls.peak_month ? 'peak' : m === falls.trough_month ? 'trough' : '';
+        return `<div class="falls-bar-wrap">
+          <div class="falls-bar ${cls}" style="height:${h}px" title="${m}: ${val}"></div>
+          <div class="falls-month-label">${m.slice(0,1)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="falls-stat-row">
+      <div class="falls-stat"><div class="falls-stat-val" style="color:var(--red)">${falls.peak_month} ${falls.peak_count}</div><div class="falls-stat-label">Peak month</div></div>
+      <div class="falls-stat"><div class="falls-stat-val" style="color:var(--green)">${falls.trough_month} ${falls.trough_count}</div><div class="falls-stat-label">Lowest month</div></div>
+    </div>
+    <div class="source-note" style="margin-top:0.5rem">SECAmb FOI response · ambulance-attended falls · Assistiv signal 22 (7% weight in FEP)</div>
+  `;
+
+  document.getElementById('falls-context').innerHTML = `
+    <div class="narrative">
+      ${d.name} recorded ${fmt(falls.annual_total)} ambulance-attended falls in the FOI period — a rate of ${falls.rate_per_1000_pop75} per 1,000 adults aged 75 and over. The peak month is ${falls.peak_month} (${falls.peak_count} incidents), consistent with the 27% seasonal winter uplift observed across Kent. This data covers only ambulance-attended falls — a subset of all falls, biased toward severity and the geography of SECAmb coverage.
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.72rem;line-height:1.7;color:var(--muted)">
+      <strong style="color:var(--text)">Note on scope:</strong> FOI data covers Kent, Surrey, and Sussex combined — district figures represent Assistiv's district-level disaggregation using population weighting. Not a direct district count. Full methodology: <a href="/methodology/" style="color:var(--sage)">methodology page</a>.
+    </div>
+  `;
+}
+
+// ── RAVI ──────────────────────────────────────────────────────────────
+function renderRAVI(d, data) {
+  const rSum = data.ravi?.district_summary?.[d.name];
+  const rLsoas = (data.ravi?.lsoas || [])
+    .filter(l => l.district === d.name)
+    .sort((a, b) => b.ravi - a.ravi)
+    .slice(0, 6);
+
+  if (rSum) {
+    document.getElementById('ravi-card').innerHTML = `
+      <div class="ravi-summary">
+        <div class="ravi-box"><div class="ravi-val">${rSum.mean_ravi}</div><div class="ravi-label">Mean RAVI</div></div>
+        <div class="ravi-box"><div class="ravi-val" style="color:var(--red)">${rSum.max_ravi}</div><div class="ravi-label">Peak RAVI</div></div>
+        <div class="ravi-box"><div class="ravi-val">${rSum.lsoa_count}</div><div class="ravi-label">LSOAs</div></div>
+        <div class="ravi-box"><div class="ravi-val" style="color:${rSum.pct_high > 10 ? 'var(--red)' : 'var(--amber)'}">${rSum.pct_high}%</div><div class="ravi-label">High RAVI LSOAs</div></div>
+      </div>
+      <div style="font-size:0.7rem;color:var(--muted);line-height:1.65">
+        ${rSum.high_ravi_count} of ${rSum.lsoa_count} LSOAs in ${d.name} score in the high RAVI band, indicating concentrated rural access vulnerability. Highest-risk LSOA: ${rSum.top_lsoa}.
+      </div>
+      <div class="source-note" style="margin-top:0.5rem">RAVI v2.1 · DESNZ fuel poverty, Census 2021, Ofcom broadband, LSOA road-distance barriers · Note: 3 of 5 signals use national avg fallback pending granular Census API</div>
+    `;
+  } else {
+    document.getElementById('ravi-card').innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">RAVI summary not available for this district.</div>';
+  }
+
+  if (rLsoas.length > 0) {
+    document.getElementById('ravi-lsoas').innerHTML = rLsoas.map(l => `
+      <div class="lsoa-row">
+        <div>
+          <div class="lsoa-name">${l.lsoa_name}</div>
+          <div class="lsoa-place">${l.place_name || ''} · ${l.signals?.ruc_label || ''}</div>
+        </div>
+        <div class="lsoa-ravi">${l.ravi}</div>
+      </div>
+    `).join('');
+  } else {
+    document.getElementById('ravi-lsoas').innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">LSOA data not available.</div>';
+  }
+}
+
+// ── WINTER ────────────────────────────────────────────────────────────
+function renderWinter(d, data) {
+  const w = data.winter?.districts?.[d.name];
+  if (!w) {
+    ['winter-card','deployment-card'].forEach(id =>
+      document.getElementById(id).innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">Winter data not available.</div>');
+    return;
+  }
+
+  const wvi = Math.round(w.wvi_score || 0);
+  const wviCol = wviColor(wvi);
+  const comps = w.wvi_components || {};
+
+  document.getElementById('winter-card').innerHTML = `
+    <div style="display:flex;align-items:flex-end;gap:0.75rem;margin-bottom:0.6rem">
+      <div style="font-family:var(--serif);font-size:3rem;font-weight:600;color:${wviCol};line-height:1">${wvi}</div>
+      <div style="padding-bottom:0.3rem">
+        <div style="font-family:var(--mono);font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Winter Vulnerability Index</div>
+        <div style="font-family:var(--mono);font-size:0.62rem;font-weight:600;color:${wviCol};margin-top:0.15rem">${w.wvi_tier || ''} tier</div>
+      </div>
+    </div>
+    <div class="wvi-bar-wrap"><div class="wvi-bar" style="width:${wvi}%;background:${wviCol}"></div></div>
+    ${Object.entries(comps).map(([k, v]) => {
+      const label = { baseline_frailty:'Baseline frailty', seasonal_amplifier:'Seasonal amplifier', prescribing_signal:'Prescribing signal', system_headroom:'System headroom', social_isolation:'Social isolation' }[k] || k;
+      return `<div class="signal-row">
+        <span class="signal-name">${label}</span>
+        <div class="signal-bar-wrap"><div class="signal-bar" style="width:${v}%;background:${v>=70?'var(--red)':v>=50?'var(--amber)':'var(--sage)'}"></div></div>
+        <span class="signal-val">${v}</span>
+      </div>`;
+    }).join('')}
+    <div style="margin-top:0.6rem;font-size:0.68rem;color:var(--muted)">Historical peak: ${w.historical_peak_month} (+${w.historical_peak_uplift_pct}% falls uplift)</div>
+    <div class="source-note" style="margin-top:0.4rem">WVI 2026–27 · Assistiv winter pipeline</div>
+  `;
+
+  const deps = w.deployment_windows || {};
+  const depLabels = { medication_review:'Medication review', falls_prevention:'Falls prevention outreach', respiratory_outreach:'Respiratory outreach', social_connection:'Social connection programme' };
+  document.getElementById('deployment-card').innerHTML = `
+    <ul class="deployment-list">
+      ${Object.entries(deps).map(([k, v]) => `
+        <li class="deployment-item">
+          <span class="deployment-action">${depLabels[k] || k}</span>
+          <span class="deployment-when">${v}</span>
+        </li>
+      `).join('')}
+    </ul>
+    <div style="margin-top:0.7rem;font-size:0.7rem;color:var(--muted);line-height:1.65">
+      Deployment windows are evidence-backed — September–October outreach has the strongest evidence base for reducing January peak admission pressure (27% winter uplift, Kent data).
+    </div>
+  `;
+}
+
+// ── PRESCRIBING ───────────────────────────────────────────────────────
+function renderPrescribing(d) {
+  const epd = d.epd_district || {};
+  if (Object.keys(epd).length === 0) {
+    ['rx-card','rx-action-card'].forEach(id =>
+      document.getElementById(id).innerHTML = '<div style="font-size:0.72rem;color:var(--muted)">Prescribing data not available.</div>');
+    return;
+  }
+
+  const RX = [
+    { key:'antidepressants', label:'Antidepressants' },
+    { key:'hypnotics',       label:'Hypnotics (sleep)' },
+    { key:'bladder_antimusc',label:'Bladder antimusc.' },
+    { key:'parkinsons',      label:"Parkinson's drugs" },
+    { key:'ace_arb',         label:'ACE/ARBs' },
+    { key:'bisphosphonates', label:'Bisphosphonates' },
+    { key:'anxiolytics',     label:'Anxiolytics' },
+    { key:'anti_dementia',   label:'Anti-dementia' },
+    { key:'diuretics',       label:'Diuretics' },
+  ];
+
+  const rows = RX.map(r => {
+    const v = epd[r.key] || {};
+    return { ...r, rate: v.rate_per_1000 || 0, ratio: v.ratio || 0 };
+  }).filter(r => r.rate > 0).sort((a,b) => b.ratio - a.ratio);
+
+  document.getElementById('rx-card').innerHTML = rows.map(r => `
+    <div class="rx-row">
+      <span class="rx-name">${r.label}</span>
+      <span class="rx-rate">${r.rate.toFixed(1)}/1k</span>
+      <span class="rx-badge ${rxBadgeClass(r.ratio)}">${rxLabel(r.ratio)}</span>
+    </div>
+  `).join('') + `<div class="source-note" style="margin-top:0.5rem">NHSBSA EPD Mar 2026 · practice-level aggregated to district · ratio vs England avg</div>`;
+
+  const high = rows.filter(r => r.ratio >= 1.15).slice(0,3);
+  const veryHigh = rows.filter(r => r.ratio >= 1.5);
+  let action = '';
+  if (veryHigh.length > 0) {
+    action = `<strong>High priority:</strong> ${d.name} has ${veryHigh.length} prescribing signal${veryHigh.length>1?'s':''} at 1.5× or more the England average — ${veryHigh.map(r=>r.label.toLowerCase()).join(', ')}. These are the strongest frailty and anticholinergic burden signals in the prescribing data. Targeted medication reviews at highest-volume practices are warranted.`;
+  } else if (high.length > 0) {
+    action = `<strong>PCN priority:</strong> Prescribing is elevated on ${high.map(r=>r.label.toLowerCase()).join(', ')}. Consider structured medication reviews targeting anticholinergic burden and sleep medication, particularly in patients aged 75+.`;
+  } else {
+    action = `${d.name} prescribing rates are broadly in line with England averages across monitored signals.`;
+  }
+  document.getElementById('rx-action-card').innerHTML = `<div class="narrative">${action}</div>
+    <div style="margin-top:0.75rem;font-size:0.7rem;color:var(--muted);line-height:1.65">
+      <strong style="color:var(--text)">Note:</strong> Prescribing signals reflect GP surgery registered populations, not older adults specifically. High rates may reflect age structure, deprivation, or diagnostic practice — not frailty exclusively. Practice-level rankings available in Phase 2.
+    </div>`;
+}
+
+// ── DISTRICT SELECTOR ─────────────────────────────────────────────────
+function renderDistrictSelector(current, allDistricts) {
+  const sorted = [...allDistricts].sort((a,b) => b.fep - a.fep);
+  document.getElementById('district-grid').innerHTML = sorted.map(d => {
+    const slug = toSlug(d.name);
+    const isActive = d.name === current.name;
+    return `<a href="/district/${slug}/" class="d-btn ${isActive ? 'active' : ''}">
+      ${d.name}
+      <span class="d-fep" style="color:${isActive ? 'rgba(255,255,255,0.7)' : fepColor(d.fep)}">FEP ${d.fep} · ${d.risk}</span>
+    </a>`;
+  }).join('');
+}
+
+// ── ALL DISTRICTS COMPARISON ──────────────────────────────────────────
+function renderAllDistricts(current, allDistricts) {
+  const sorted = [...allDistricts].sort((a,b) => b.fep - a.fep);
+  const maxFep = sorted[0].fep;
+  document.getElementById('all-districts-card').innerHTML = sorted.map((d, i) => {
+    const isActive = d.name === current.name;
+    const color = fepColor(d.fep);
+    return `<div style="display:grid;grid-template-columns:1.2rem 140px 1fr 2.5rem;gap:0.5rem;align-items:center;padding:0.38rem 0;border-bottom:1px solid var(--border);${isActive ? 'background:rgba(26,58,42,0.04);border-radius:4px;padding-left:0.4rem;' : ''}">
+      <span style="font-family:var(--mono);font-size:0.6rem;color:var(--muted)">${i+1}</span>
+      <a href="/district/${toSlug(d.name)}/" style="font-size:0.78rem;font-weight:${isActive?'700':'500'};color:${isActive ? 'var(--forest)' : 'var(--text)'};text-decoration:none">${d.name}${isActive ? ' ◀' : ''}</a>
+      <div style="height:6px;background:#e8f0eb;border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${Math.round((d.fep/maxFep)*100)}%;background:${color};border-radius:3px"></div>
+      </div>
+      <span style="font-family:var(--mono);font-size:0.7rem;font-weight:600;color:${color};text-align:right">${d.fep}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── SOURCE NOTE ───────────────────────────────────────────────────────
+function renderSourceNote(data) {
+  const fepGen = data.fep?.meta?.generated ? new Date(data.fep.meta.generated).toLocaleDateString('en-GB') : '—';
+  document.getElementById('source-note').textContent =
+    `Data generated: ${fepGen} · FEP: NHS Fingertips/OHID + NHSBSA EPD Mar 2026 + SECAmb FOI · History: Assistiv daily pipeline · All NHS data: OGL v3 · Falls: FOI response · This page is a population-level intelligence instrument, not a clinical document.`;
+}
+
+// ── NAV SPY ───────────────────────────────────────────────────────────
+function setupNavSpy() {
+  const sections = ['frailty','nhs','carers','falls','rural','winter','prescribing','other-districts'];
+  const links = document.querySelectorAll('.district-nav a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`.district-nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+}
+
+init();
+</script>
+
+<!-- ADA + VERA -->
+<script src="/agents.js"></script>
+</body>
+</html>

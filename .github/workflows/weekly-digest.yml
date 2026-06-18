@@ -1,13 +1,10 @@
 name: Weekly Intelligence Digest
 
 # Runs every Monday at 07:00 UTC
-# Generates a weekly report card for assistiv.cloud covering:
-#   - FEP score movement and alerts
-#   - Agent question summary and rated responses
-#   - Winter deployment windows
-#   - Prescribing outliers
-#   - Data freshness status
-# Commits digest to logs/digest-YYYY-WW.md and updates logs/digest-latest.json
+# Generates a weekly report card for assistiv.cloud and emails it to simon@assistiv.co
+# Requires one GitHub Actions secret:
+#   RESEND_API_KEY — from resend.com (free tier, 3,000 emails/month)
+# Also requires a verified sending domain in Resend (assistiv.cloud)
 
 on:
   schedule:
@@ -34,12 +31,13 @@ jobs:
       - name: Install dependencies
         run: pip install requests --break-system-packages
 
-      - name: Generate weekly digest
+      - name: Generate weekly digest and send email
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: python weekly_digest.py
 
-      - name: Commit digest
+      - name: Commit digest files
         run: |
           git config user.name  "Assistiv Digest Bot"
           git config user.email "digest@assistiv.cloud"

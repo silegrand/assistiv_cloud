@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Folkestone & Hythe · District Intelligence · Kent & Medway · Assistiv</title>
+<meta name="description" content="Complete population intelligence for Folkestone & Hythe, Kent — frailty score, NHS pressure, carers intensity, falls hotspots, rural access vulnerability, winter risk, and prescribing signals.">
+<link rel="canonical" href="https://www.assistiv.cloud/district/folkestone-and-hythe/">
+<script>
+// Immediately redirect to the district template with correct path
+// (This page IS the district template — served from /district/folkestone-and-hythe/index.html)
+</script>
+</head>
+<body>
+<script>
+// Load the shared district template inline
+// We can't iframe due to CORS, so we load it via fetch and inject
+(async function() {
+  try {
+    const r = await fetch('/district/index.html');
+    const html = await r.text();
+    document.open();
+    document.write(html);
+    document.close();
+  } catch(e) {
+    window.location.href = '/district/index.html';
+  }
+})();
+</script>
+<noscript><a href="/district/index.html">Load district intelligence</a></noscript>
+</body>
+</html>

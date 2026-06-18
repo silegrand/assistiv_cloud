@@ -14,6 +14,11 @@ Data sources (all read from repo or assistivagents):
 """
 
 import json, os, requests, datetime, glob, re
+try:
+    import resend
+    RESEND_AVAILABLE = True
+except ImportError:
+    RESEND_AVAILABLE = False
 from collections import Counter
 from pathlib import Path
 
@@ -463,6 +468,318 @@ summary = {
 with open("logs/digest-latest.json", "w") as f:
     json.dump(summary, f, indent=2)
 print("✓ Summary saved: logs/digest-latest.json")
+
+# ── BUILD + SEND EMAIL ────────────────────────────────────────────────
+def build_email_html(summary, digest_md):
+    """Build a clean HTML email from the digest summary."""
+    fep = summary.get("fep", {})
+    agents = summary.get("agents", {})
+    winter = summary.get("winter", {})
+    rx = summary.get("prescribing", {})
+    all_dists = fep.get("all_districts", [])
+    week = summary.get("week", "")
+    generated = summary.get("generated", "")
+
+    critical_count = fep.get("critical_count", 0)
+    high_count     = fep.get("high_count", 0)
+    crisis         = fep.get("crisis_precursors", [])
+    risers         = fep.get("risers", [])
+    fallers        = fep.get("fallers", [])
+    top_district   = fep.get("top_district", "—")
+    top_fep        = fep.get("top_fep", 0)
+
+    week_q     = agents.get("week_total", 0)
+    week_ada   = agents.get("week_ada", 0)
+    week_vera  = agents.get("week_vera", 0)
+    week_up    = agents.get("week_up", 0)
+    week_down  = agents.get("week_down", 0)
+    flagged    = agents.get("flagged", 0)
+    top_ada    = agents.get("top_ada", [])
+    top_vera   = agents.get("top_vera", [])
+    sat_pct    = round(week_up / (week_up + week_down) * 100) if (week_up + week_down) > 0 else None
+
+    winter_top5  = winter.get("top_5", [])
+    upcoming_dep = winter.get("upcoming_deployments", [])
+    rx_outliers  = rx.get("outliers_150pct_plus", [])
+
+    # Colours
+    def fep_color(fep):
+        if fep >= 70: return "#c04828"
+        if fep >= 55: return "#8a6200"
+        if fep >= 40: return "#1e40af"
+        return "#166534"
+
+    def risk_bg(risk):
+        m = {"critical":("#fee2e2","#c04828"), "high":("#fef3c7","#92400e"),
+             "moderate":("#dbeafe","#1e40af"), "low":("#dcfce7","#166534")}
+        return m.get(risk, ("#f0f0f0","#333"))
+
+    # Alert block
+    if crisis:
+        alert_html = "".join(
+            f'<div style="background:#fee2e2;border-left:4px solid #c04828;padding:10px 14px;margin-bottom:8px;border-radius:0 4px 4px 0">'
+            f'<strong style="color:#c04828">🔴 Crisis Precursor: {n}</strong> — FEP {next((d["fep"] for d in all_dists if d["name"]==n), "?")} — rising and in critical band</div>'
+            for n in crisis
+        )
+    elif critical_count > 0:
+        names = ", ".join(d["name"] for d in all_dists if d["risk"] == "critical")
+        alert_html = f'<div style="background:#fff5f5;border-left:4px solid #c04828;padding:10px 14px;border-radius:0 4px 4px 0"><strong style="color:#c04828">Critical band:</strong> {names}</div>'
+    else:
+        alert_html = '<div style="background:#f0fdf4;border-left:4px solid #166534;padding:10px 14px;border-radius:0 4px 4px 0;color:#166534">✅ No crisis precursors flagged this week.</div>'
+
+    # FEP table rows (top 6 by risk, rest collapsed)
+    fep_rows = ""
+    for i, d in enumerate(all_dists):
+        bg, tc = risk_bg(d["risk"])
+        delta = d.get("delta_week", 0)
+        delta_str = f"+{delta}" if delta > 0 else ("—" if delta == 0 else str(delta))
+        delta_color = "#c04828" if delta > 2 else "#166534" if delta < -2 else "#666"
+        fep_rows += (
+            f'<tr style="border-bottom:1px solid #e8e0d4">' 
+            f'<td style="padding:6px 8px;font-size:12px;color:#666">{i+1}</td>'
+            f'<td style="padding:6px 8px;font-size:13px;font-weight:500">{d["name"]}</td>'
+            f'<td style="padding:6px 8px;font-size:14px;font-weight:700;color:{fep_color(d["fep"])}">{d["fep"]}</td>'
+            f'<td style="padding:6px 8px"><span style="background:{bg};color:{tc};font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase">{d["risk"]}</span></td>'
+            f'<td style="padding:6px 8px;font-size:12px;font-weight:600;color:{delta_color}">{delta_str}</td>'
+            f'</tr>'
+        )
+
+    # Winter rows
+    winter_rows = ""
+    for w in winter_top5[:5]:
+        wvi = w.get("wvi", 0)
+        wvi_c = "#c04828" if wvi >= 70 else "#8a6200" if wvi >= 55 else "#166534"
+        winter_rows += (
+            f'<tr style="border-bottom:1px solid #e8e0d4">'
+            f'<td style="padding:6px 8px;font-size:13px;font-weight:500">{w["name"]}</td>'
+            f'<td style="padding:6px 8px;font-size:14px;font-weight:700;color:{wvi_c}">{wvi}</td>'
+            f'<td style="padding:6px 8px;font-size:11px;color:#666">{w.get("tier","—")}</td>'
+            f'</tr>'
+        )
+
+    # Rx outlier rows
+    rx_rows = "".join(
+        f'<tr style="border-bottom:1px solid #e8e0d4">'
+        f'<td style="padding:6px 8px;font-size:13px;font-weight:500">{o["district"]}</td>'
+        f'<td style="padding:6px 8px;font-size:12px;color:#666">{o["signal"]}</td>'
+        f'<td style="padding:6px 8px;font-size:13px;font-weight:700;color:#c04828">{o["ratio"]}× ▲▲</td>'
+        f'</tr>'
+        for o in rx_outliers[:6]
+    ) or '<tr><td colspan="3" style="padding:8px;font-size:12px;color:#888">No signals ≥1.5× this week.</td></tr>'
+
+    # Top ADA questions
+    ada_qs = "".join(
+        f'<li style="margin-bottom:5px;font-size:13px">'
+        f'<span style="font-weight:600;color:#1a3a2a">({q["count"]}×)</span> {q["q"].capitalize()[:100]}</li>'
+        for q in top_ada[:5]
+    ) or '<li style="color:#888;font-size:13px">No questions this week.</li>'
+
+    vera_qs = "".join(
+        f'<li style="margin-bottom:5px;font-size:13px">'
+        f'<span style="font-weight:600;color:#4c1d95">({q["count"]}×)</span> {q["q"].capitalize()[:100]}</li>'
+        for q in top_vera[:4]
+    ) or '<li style="color:#888;font-size:13px">No challenges this week.</li>'
+
+    flagged_block = ""
+    if flagged > 0:
+        flagged_block = f'''
+        <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:6px;padding:12px 16px;margin-bottom:16px">
+          <div style="font-weight:700;color:#c04828;margin-bottom:6px">👎 {flagged} response{"s" if flagged>1 else ""} flagged as unhelpful this week</div>
+          <div style="font-size:12px;color:#666">Review the agent system prompts at 
+            <a href="https://www.assistiv.cloud/logs/" style="color:#2d6b47">assistiv.cloud/logs</a>
+          </div>
+        </div>'''
+
+    sat_block = ""
+    if sat_pct is not None:
+        sat_color = "#166534" if sat_pct >= 80 else "#8a6200" if sat_pct >= 60 else "#c04828"
+        sat_block = f'<span style="color:{sat_color};font-weight:700">{sat_pct}% satisfaction</span> · '
+
+    upcoming_block = ""
+    if upcoming_dep:
+        items = "".join(
+            f'<li style="margin-bottom:4px;font-size:13px"><strong>{d["district"]}</strong> — {d["action"].replace("_"," ").title()}: <span style="color:#8a6200">{d["window"]}</span></li>'
+            for d in upcoming_dep[:4]
+        )
+        upcoming_block = f'<div style="margin-top:12px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62;margin-bottom:6px">Deployment windows opening soon</div><ul style="margin:0;padding-left:16px">{items}</ul></div>'
+
+    html = f"""<!DOCTYPE html>
+<html lang="en-GB">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Assistiv Weekly Report Card — {week}</title></head>
+<body style="margin:0;padding:0;background:#f7f5f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+<div style="max-width:640px;margin:0 auto;padding:24px 16px">
+
+  <!-- HEADER -->
+  <div style="background:#1a3a2a;border-radius:10px 10px 0 0;padding:24px 28px;margin-bottom:0">
+    <div style="font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px">Weekly Intelligence Report Card</div>
+    <div style="font-size:22px;font-weight:700;color:#ffffff;line-height:1.1">Assistiv Platform<br><span style="color:rgba(255,255,255,0.6);font-weight:400;font-size:18px">Kent &amp; Medway</span></div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:8px">{week} · Generated {generated} · assistiv.cloud</div>
+  </div>
+
+  <!-- STAT STRIP -->
+  <div style="background:#ffffff;padding:16px 28px;border-left:1px solid #d8e4dc;border-right:1px solid #d8e4dc;display:flex;gap:0">
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td style="text-align:center;padding:8px 0;border-right:1px solid #e8e0d4">
+        <div style="font-size:24px;font-weight:700;color:{"#c04828" if critical_count > 0 else "#1a3a2a"}">{critical_count}</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62">Critical</div>
+      </td>
+      <td style="text-align:center;padding:8px 0;border-right:1px solid #e8e0d4">
+        <div style="font-size:24px;font-weight:700;color:#8a6200">{high_count}</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62">High risk</div>
+      </td>
+      <td style="text-align:center;padding:8px 0;border-right:1px solid #e8e0d4">
+        <div style="font-size:24px;font-weight:700;color:{"#c04828" if risers else "#1a3a2a"}">{len(risers)}</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62">Rising ↑</div>
+      </td>
+      <td style="text-align:center;padding:8px 0;border-right:1px solid #e8e0d4">
+        <div style="font-size:24px;font-weight:700;color:#1a3a2a">{week_q}</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62">Questions</div>
+      </td>
+      <td style="text-align:center;padding:8px 0">
+        <div style="font-size:24px;font-weight:700;color:{"#166534" if sat_pct and sat_pct>=80 else "#8a6200" if sat_pct and sat_pct>=60 else "#1a3a2a"}">{f"{sat_pct}%" if sat_pct is not None else "—"}</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62">Satisfaction</div>
+      </td>
+    </tr></table>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div style="background:#ffffff;border:1px solid #d8e4dc;border-top:none;border-radius:0 0 10px 10px;padding:24px 28px">
+
+    <!-- ALERTS -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#5a6b62;margin-bottom:8px">⚠ Alerts</div>
+      {alert_html}
+      {f'<div style="margin-top:8px;font-size:12px;color:#c04828">Rising this week: {", ".join(f"{n} (+{d} pts)" for n,_,d in [(r["name"],r["fep"],r["delta"]) for r in risers])}</div>' if risers else ""}
+    </div>
+
+    <!-- FEP TABLE -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#5a6b62;margin-bottom:8px">📊 FEP District Scores</div>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e0d4;border-radius:6px;overflow:hidden">
+        <thead>
+          <tr style="background:#f7f5f0">
+            <th style="padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62;font-weight:600">#</th>
+            <th style="padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62;font-weight:600">District</th>
+            <th style="padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62;font-weight:600">FEP</th>
+            <th style="padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62;font-weight:600">Risk</th>
+            <th style="padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#5a6b62;font-weight:600">Δ wk</th>
+          </tr>
+        </thead>
+        <tbody>{fep_rows}</tbody>
+      </table>
+    </div>
+
+    <!-- TWO COL: WINTER + PRESCRIBING -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px"><tr valign="top">
+      <td width="50%" style="padding-right:10px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#5a6b62;margin-bottom:8px">❄ Winter Top 5</div>
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e0d4;border-radius:6px;overflow:hidden">
+          <thead><tr style="background:#f7f5f0">
+            <th style="padding:5px 8px;text-align:left;font-size:10px;color:#5a6b62;font-weight:600">District</th>
+            <th style="padding:5px 8px;text-align:left;font-size:10px;color:#5a6b62;font-weight:600">WVI</th>
+            <th style="padding:5px 8px;text-align:left;font-size:10px;color:#5a6b62;font-weight:600">Tier</th>
+          </tr></thead>
+          <tbody>{winter_rows}</tbody>
+        </table>
+        {upcoming_block}
+      </td>
+      <td width="50%" style="padding-left:10px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#5a6b62;margin-bottom:8px">💊 Prescribing Outliers</div>
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e8e0d4;border-radius:6px;overflow:hidden">
+          <thead><tr style="background:#f7f5f0">
+            <th style="padding:5px 8px;text-align:left;font-size:10px;color:#5a6b62;font-weight:600">District</th>
+            <th style="padding:5px 8px;text-align:left;font-size:10px;color:#5a6b62;font-weight:600">Signal</th>
+            <th style="padding:5px 8px;text-align:left;font-size:10px;color:#5a6b62;font-weight:600">Ratio</th>
+          </tr></thead>
+          <tbody>{rx_rows}</tbody>
+        </table>
+      </td>
+    </tr></table>
+
+    <!-- AGENT QUESTIONS -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#5a6b62;margin-bottom:8px">🤖 Agent Intelligence — {week_q} questions this week</div>
+      {flagged_block}
+      <div style="font-size:12px;color:#5a6b62;margin-bottom:8px">{sat_block}{week_ada} ADA · {week_vera} VERA · {week_up} 👍 {week_down} 👎</div>
+      <table width="100%" cellpadding="0" cellspacing="0"><tr valign="top">
+        <td width="50%" style="padding-right:8px">
+          <div style="font-size:11px;font-weight:600;color:#1a3a2a;margin-bottom:6px">✦ Top ADA questions</div>
+          <ul style="margin:0;padding-left:16px">{ada_qs}</ul>
+        </td>
+        <td width="50%" style="padding-left:8px">
+          <div style="font-size:11px;font-weight:600;color:#4c1d95;margin-bottom:6px">⚖ Top VERA challenges</div>
+          <ul style="margin:0;padding-left:16px">{vera_qs}</ul>
+        </td>
+      </tr></table>
+    </div>
+
+    <!-- LINKS -->
+    <div style="border-top:1px solid #e8e0d4;padding-top:16px;margin-top:4px">
+      <table cellpadding="0" cellspacing="0"><tr>
+        <td style="padding-right:10px"><a href="https://www.assistiv.cloud/briefing/" style="display:inline-block;background:#1a3a2a;color:#ffffff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:6px;text-decoration:none">Commissioner Briefing →</a></td>
+        <td style="padding-right:10px"><a href="https://www.assistiv.cloud/logs/digest/" style="display:inline-block;background:#f7f5f0;border:1px solid #d8e4dc;color:#1a3a2a;font-size:12px;font-weight:600;padding:8px 16px;border-radius:6px;text-decoration:none">Full Report Card →</a></td>
+        <td><a href="https://www.assistiv.cloud/logs/" style="display:inline-block;background:#f7f5f0;border:1px solid #d8e4dc;color:#1a3a2a;font-size:12px;font-weight:600;padding:8px 16px;border-radius:6px;text-decoration:none">Agent Logs →</a></td>
+      </tr></table>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div style="padding:16px 0;font-size:11px;color:#8a9e8a;text-align:center;line-height:1.7">
+    Assistiv Systems Limited · Company No. 17082597 · Faversham, Kent<br>
+    Population triage instrument only — not a clinical document.<br>
+    <a href="https://www.assistiv.cloud" style="color:#2d6b47">assistiv.cloud</a>
+  </div>
+
+</div>
+</body>
+</html>"""
+    return html
+
+
+def send_email(subject, html_body):
+    """Send digest email via Resend API."""
+    api_key = os.environ.get("RESEND_API_KEY")
+    if not api_key:
+        print("  ⚠ RESEND_API_KEY not set — skipping email")
+        return False
+
+    try:
+        resp = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": "Assistiv Digest <digest@assistiv.cloud>",
+                "to": ["simon@assistiv.co"],
+                "subject": subject,
+                "html": html_body,
+            },
+            timeout=20,
+        )
+        if resp.ok:
+            print(f"  ✓ Email sent — {resp.json().get('id','?')}")
+            return True
+        else:
+            print(f"  ✗ Email failed: {resp.status_code} {resp.text[:200]}")
+            return False
+    except Exception as e:
+        print(f"  ✗ Email error: {e}")
+        return False
+
+
+# ── SEND ──────────────────────────────────────────────────────────────
+print("\nBuilding and sending email digest...")
+crisis_label = f"🔴 {len(crisis)} crisis precursor{'s' if len(crisis)>1 else ''}" if crisis else (
+    f"🟠 {len(critical)} critical district{'s' if len(critical)>1 else ''}" if critical else "✅ No alerts"
+)
+subject = f"Assistiv Report Card {WEEK_NUM} — {crisis_label} · {len(week_entries)} agent questions"
+email_html = build_email_html(summary, digest_md)
+send_email(subject, email_html)
+
 
 print(f"\n{'='*60}")
 print(f"Digest complete — {WEEK_NUM}")
