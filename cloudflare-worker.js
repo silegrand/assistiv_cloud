@@ -63,12 +63,35 @@ export default {
     }
 
     // ── Route: /log ─────────────────────────────────────────────────
-    if (url.pathname === '/log') {
+    // Check pathname first, then fall back to checking the body _type field
+    // (workers.dev subdomains reliably preserve pathnames, but belt-and-braces)
+    if (url.pathname === '/log' || url.pathname.endsWith('/log')) {
       return handleLog(request, env, origin);
     }
 
     // ── Route: / (default) — Anthropic proxy ────────────────────────
-    return handleProxy(request, env, origin);
+    // Clone body to allow double-read: peek at _type before deciding route
+    const bodyText = await request.text();
+    let bodyParsed;
+    try { bodyParsed = JSON.parse(bodyText); } catch { bodyParsed = {}; }
+
+    if (bodyParsed._type === 'log') {
+      // Reconstruct a readable request for handleLog
+      const fakeReq = new Request(request.url, {
+        method: 'POST',
+        headers: request.headers,
+        body: bodyText,
+      });
+      return handleLog(fakeReq, env, origin);
+    }
+
+    // Reconstruct for proxy (body was consumed above)
+    const proxyReq = new Request(request.url, {
+      method: 'POST',
+      headers: request.headers,
+      body: bodyText,
+    });
+    return handleProxy(proxyReq, env, origin);
   }
 };
 

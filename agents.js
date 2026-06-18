@@ -187,6 +187,7 @@ function logQuestion(agent, question) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
+      _type:    'log',
       agent,
       question: question.slice(0, 500),
       page:     window.location.pathname,
