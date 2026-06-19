@@ -1,6 +1,6 @@
 {
   "week": "2026-W25",
-  "generated": "2026-06-18",
+  "generated": "2026-06-19",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -153,19 +153,24 @@
     ]
   },
   "agents": {
-    "week_total": 1,
+    "week_total": 2,
     "week_ada": 1,
-    "week_vera": 0,
+    "week_vera": 1,
     "week_up": 0,
     "week_down": 0,
-    "all_time": 1,
+    "all_time": 2,
     "top_ada": [
       {
         "q": "where is this data from and can we trust it?",
         "count": 1
       }
     ],
-    "top_vera": [],
+    "top_vera": [
+      {
+        "q": "should a commissioner act on these findings alone?",
+        "count": 1
+      }
+    ],
     "flagged": 0
   },
   "winter": {

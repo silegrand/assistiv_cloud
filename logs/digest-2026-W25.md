@@ -104,17 +104,20 @@ Signals ≥1.5× England average — highest concern level:
 
 ## 🤖 Agent Intelligence — ADA & VERA
 
-**This week:** 1 questions — 1 to ADA, 0 to VERA
+**This week:** 2 questions — 1 to ADA, 1 to VERA
 
 **Ratings this week:** 0 👍 helpful · 0 👎 not helpful
 
-**All-time totals:** 1 questions · 0 👍 · 0 👎
+**All-time totals:** 2 questions · 0 👍 · 0 👎
 
 **Top ADA questions this week:**
 - (1×) Where is this data from and can we trust it?
 
+**Top VERA challenges this week:**
+- (1×) Should a commissioner act on these findings alone?
+
 **Most active pages this week:**
-- `/` — 1 questions
+- `/` — 2 questions
 
 ---
 
@@ -132,6 +135,6 @@ Signals ≥1.5× England average — highest concern level:
 
 ---
 
-*Generated automatically 2026-06-18 by Assistiv Systems weekly pipeline. All data OGL v3 (NHS/ONS sources) except SECAmb FOI. Population triage instrument only — not a clinical document. Assistiv Systems Limited, Company No. 17082597, Faversham, Kent.*
+*Generated automatically 2026-06-19 by Assistiv Systems weekly pipeline. All data OGL v3 (NHS/ONS sources) except SECAmb FOI. Population triage instrument only — not a clinical document. Assistiv Systems Limited, Company No. 17082597, Faversham, Kent.*
 
 [View live platform](https://www.assistiv.cloud) · [Commissioner Briefing](https://www.assistiv.cloud/briefing/) · [Agent Logs](https://www.assistiv.cloud/logs/)
