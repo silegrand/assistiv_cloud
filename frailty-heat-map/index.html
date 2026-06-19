@@ -185,6 +185,27 @@ body {
   flex-shrink: 0;
 }
 
+/* Environmental risk strip (thermal + air), stacked in the side panel */
+.env-strip { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.env-risk { border-radius: 8px; padding: 0.6rem 0.7rem; border: 1px solid; }
+.env-risk.heat { background: #fff5ed; border-color: #f0c39a; }
+.env-risk.cold { background: #eef4fb; border-color: #b9d0ea; }
+.env-risk.none { background: #f1f6f1; border-color: #cfe0d4; }
+.env-risk.aq-moderate { background: #fdfbe9; border-color: #e4dca0; }
+.env-risk.aq-high { background: #f6edf7; border-color: #d4b3da; }
+.env-risk-head { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem; }
+.env-risk-icon { font-size: 0.95rem; }
+.env-risk-title { font-family: var(--mono, monospace); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: #333; }
+.env-risk.heat .env-risk-title { color: #b45816; }
+.env-risk.cold .env-risk-title { color: #2a5a93; }
+.env-risk.none .env-risk-title { color: #3f6b4f; }
+.env-risk.aq-moderate .env-risk-title { color: #8a7012; }
+.env-risk.aq-high .env-risk-title { color: #7a3d86; }
+.env-risk-temp { margin-left: auto; font-family: var(--mono, monospace); font-size: 0.56rem; color: #777; }
+.env-risk-body { font-size: 0.72rem; line-height: 1.45; color: #2a2a2a; }
+.env-risk-body strong { font-weight: 600; }
+.env-risk-src { font-family: var(--mono, monospace); font-size: 0.5rem; letter-spacing: 0.02em; color: #999; margin-top: 0.4rem; }
+
 .panel-tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -937,6 +958,27 @@ body {
 
   <!-- SIDE PANEL -->
   <div class="side-panel">
+    <!-- ENVIRONMENTAL RISK STRIP — live thermal + air quality, computed on load -->
+    <div class="env-strip">
+      <div class="env-risk" id="env-risk" style="display:none">
+        <div class="env-risk-head">
+          <span class="env-risk-icon" id="env-risk-icon">☀</span>
+          <span class="env-risk-title" id="env-risk-title">Thermal risk</span>
+          <span class="env-risk-temp" id="env-risk-temp"></span>
+        </div>
+        <div class="env-risk-body" id="env-risk-body"></div>
+        <div class="env-risk-src" id="env-risk-src">Open-Meteo · UKHSA thresholds · central Kent</div>
+      </div>
+      <div class="env-risk" id="air-risk" style="display:none">
+        <div class="env-risk-head">
+          <span class="env-risk-icon" id="air-risk-icon">◷</span>
+          <span class="env-risk-title" id="air-risk-title">Air quality risk</span>
+          <span class="env-risk-temp" id="air-risk-temp"></span>
+        </div>
+        <div class="env-risk-body" id="air-risk-body"></div>
+        <div class="env-risk-src" id="air-risk-src">Open-Meteo air quality · UK DAQI guidance</div>
+      </div>
+    </div>
     <div class="panel-tabs">
       <div class="panel-tab active" id="tab-detail" onclick="switchTab('detail')">District Detail</div>
       <div class="panel-tab" id="tab-ranked" onclick="switchTab('ranked')">Ranked Zones</div>
@@ -2140,6 +2182,94 @@ async function fetchWeatherRisk() {
 fetchWeatherRisk();
 // ── LIVE DATA INIT — fetches kent-fep-data.json + history before rendering ──
 let historyData = null;
+let liveDistrictsForEnv = [];
+
+// Thermal risk box (heat/cold) — names high-FEP districts
+async function renderWeatherRiskBox(districts) {
+  const box = document.getElementById('env-risk');
+  if (!box) return;
+  const top3 = [...districts].sort((a,b) => b.fep - a.fep).slice(0,3)
+    .map(d => `${d.name} (FEP ${d.fep})`).join(', ');
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=51.27&longitude=0.52'
+      + '&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min'
+      + '&timezone=Europe/London&forecast_days=1';
+    const r = await fetch(url, {cache:'no-store'});
+    if (!r.ok) throw new Error('forecast unavailable');
+    const w = await r.json();
+    const tmax = Math.round(w.daily.temperature_2m_max[0]);
+    const tmin = Math.round(w.daily.temperature_2m_min[0]);
+    const feelsMax = Math.round(w.daily.apparent_temperature_max[0]);
+    const feelsMin = Math.round(w.daily.apparent_temperature_min[0]);
+    let state, icon, title, temp, body;
+    if (tmax >= 27) {
+      state='heat'; icon='☀'; title='Heat stress risk elevated'; temp=`max ${tmax}°C · feels ${feelsMax}°C`;
+      body=`<strong>Heat stress risk elevated (max ${tmax}°C, feels ${feelsMax}°C).</strong> Anticholinergic burden impairs thermoregulation; diuretic and ACE/ARB users face electrolyte depletion. Prioritise outreach to ${top3}.`;
+    } else if (tmin <= 2) {
+      state='cold'; icon='❄'; title='Cold stress risk elevated'; temp=`min ${tmin}°C · feels ${feelsMin}°C`;
+      body=`<strong>Cold stress risk elevated (min ${tmin}°C, feels ${feelsMin}°C).</strong> Cold raises blood pressure and cardiac strain, and worsens COPD. Fuel poverty compounds it. Prioritise warmth outreach to ${top3}.`;
+    } else {
+      state='none'; icon='○'; title='No acute thermal risk'; temp=`${tmin}–${tmax}°C`;
+      body=`Today's forecast (${tmin}–${tmax}°C) is within comfortable range for most older adults. Highest baseline frailty: ${top3}.`;
+    }
+    box.className='env-risk '+state;
+    document.getElementById('env-risk-icon').textContent=icon;
+    document.getElementById('env-risk-title').textContent=title;
+    document.getElementById('env-risk-temp').textContent=temp;
+    document.getElementById('env-risk-body').innerHTML=body;
+    box.style.display='block';
+  } catch(e) { console.warn('Thermal box: forecast unavailable', e); box.style.display='none'; }
+}
+
+// Air quality box: names high-COPD districts (respiratory-vulnerable)
+async function renderAirQualityBox(districts) {
+  const box = document.getElementById('air-risk');
+  if (!box) return;
+  try {
+    const HSCM = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-hscm-data.json';
+    const AQ = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=51.27&longitude=0.52'
+      + '&hourly=pm2_5,european_aqi&timezone=Europe/London&forecast_days=5';
+    const [hRes, aRes] = await Promise.all([
+      fetch(HSCM + '?t=' + Date.now(), {cache:'no-store'}),
+      fetch(AQ, {cache:'no-store'})
+    ]);
+    if (!aRes.ok) throw new Error('air forecast unavailable');
+    const aq = await aRes.json();
+    const aqiArr = (aq.hourly && aq.hourly.european_aqi) || [];
+    const pmArr  = (aq.hourly && aq.hourly.pm2_5) || [];
+    if (!aqiArr.length) throw new Error('no aqi data');
+    const peakAqi = Math.round(Math.max(...aqiArr.filter(v => v != null)));
+    const peakPm  = Math.round(Math.max(...pmArr.filter(v => v != null)));
+    let copdTop = 'the highest-COPD districts';
+    try {
+      const hscm = await hRes.json();
+      const hd = hscm.districts || {};
+      const c = Object.entries(hd)
+        .map(([name, r]) => ({ name, v: (r.copd && typeof r.copd.value === 'number') ? r.copd.value : null }))
+        .filter(d => d.v != null).sort((a,b) => b.v - a.v).slice(0,3)
+        .map(d => `${d.name} (COPD ${d.v}%)`);
+      if (c.length) copdTop = c.join(', ');
+    } catch(e) {}
+    let state, icon, title, temp, body;
+    if (peakAqi >= 60) {
+      state='aq-high'; icon='◉'; title='Poor air quality forecast'; temp=`peak AQI ${peakAqi} · PM2.5 ${peakPm} (5-day)`;
+      body=`<strong>Poor air quality forecast in the next five days (peak AQI ${peakAqi}, PM2.5 ${peakPm} µg/m³).</strong> Raised particulates trigger COPD and heart-failure exacerbations in frail older people. Prioritise contact with respiratory-vulnerable patients in ${copdTop}.`;
+    } else if (peakAqi >= 40) {
+      state='aq-moderate'; icon='◐'; title='Moderate air quality forecast'; temp=`peak AQI ${peakAqi} (5-day)`;
+      body=`<strong>Moderate air quality forecast (peak AQI ${peakAqi}).</strong> Not yet in the alert range but worth caution for COPD and heart-failure patients in ${copdTop}.`;
+    } else {
+      state='none'; icon='○'; title='Good air quality forecast'; temp=`peak AQI ${peakAqi} (5-day)`;
+      body=`Air quality forecast to stay good over five days. No elevated pollution risk indicated. Highest baseline respiratory vulnerability: ${copdTop}.`;
+    }
+    box.className='env-risk '+state;
+    document.getElementById('air-risk-icon').textContent=icon;
+    document.getElementById('air-risk-title').textContent=title;
+    document.getElementById('air-risk-temp').textContent=temp;
+    document.getElementById('air-risk-body').innerHTML=body;
+    document.getElementById('air-risk-src').textContent='Open-Meteo air quality (European AQI) · UK DAQI guidance · COPD from HSCM';
+    box.style.display='block';
+  } catch(e) { console.warn('Air box: forecast unavailable', e); box.style.display='none'; }
+}
 
 (async function initWithLiveData() {
   const FEP_JSON  = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
@@ -2152,6 +2282,7 @@ let historyData = null;
     const res = await fetch(FEP_JSON + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const live = await res.json();
+    liveDistrictsForEnv = live.districts || [];
 
     // Build a LAD-code → district lookup from the JSON
     const byCode = {};
@@ -2208,6 +2339,13 @@ let historyData = null;
 
   // Render with whatever data we have (live or fallback)
   loadBoundaries();
+
+  // Environmental risk boxes (thermal + air), using live districts where available
+  const envDistricts = (typeof liveDistrictsForEnv !== 'undefined' && liveDistrictsForEnv.length)
+    ? liveDistrictsForEnv
+    : Object.values(DISTRICTS).map(d => ({ name: d.name, fep: d.fep, risk: d.risk }));
+  renderWeatherRiskBox(envDistricts);
+  renderAirQualityBox(envDistricts);
 })();
 </script>
 <!-- ═══════════════════════════════════════════════════════
