@@ -270,6 +270,30 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
 .nav-logo-core{width:8px;height:8px;background:#ffffff;z-index:2}
 .nav-logo-r1{width:18px;height:18px;border:1.5px solid rgba(255,255,255,0.6);background:none}
 .nav-logo-r2{width:30px;height:30px;border:1.5px solid rgba(255,255,255,0.25);background:none}
+
+/* ── Mobile refinements (briefing) ── */
+@media (max-width: 640px) {
+  .wrap { padding: 0 0.9rem; }
+  /* Topbar: keep on one line but shrink, hide subtitle to save room */
+  nav .brief-subtitle, nav [data-nav-sub] { display: none; }
+  .topbar-right { gap: 0.35rem; }
+  .badge { font-size: 0.5rem; padding: 0.12rem 0.4rem; }
+  .print-btn { font-size: 0.5rem !important; padding: 0.25rem 0.5rem !important; }
+  /* Brief header stacks date under title */
+  .brief-header { flex-direction: column; gap: 1rem; }
+  .brief-meta { text-align: left; }
+  /* Priority list keeps its columns but tightens */
+  .priority-item { gap: 0.4rem; }
+  /* Trend table: allow horizontal scroll */
+  .trend-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Heat strip: 13 columns is too many for phone — show all but smaller */
+  .heat-strip { grid-template-columns: repeat(13, 1fr); gap: 1px; }
+  /* Reduce card padding */
+  .card-body { padding: 0.75rem 0.85rem; }
+}
+@media (max-width: 400px) {
+  .stat-box { min-width: 70px; }
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <meta property="og:type" content="website">
@@ -282,6 +306,7 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
   <meta name="twitter:title" content="Commissioner Intelligence Briefing — Kent & Medway · Assistiv Cloud">
   <meta name="twitter:description" content="Live population intelligence briefing for Kent and Medway commissioners. Frailty risk, carer burden, NHS pressure, and winter readiness in one document.">
   <meta name="twitter:image" content="https://www.assistiv.cloud/og-image.png">
+  <link rel="stylesheet" href="/mobile.css">
 </head>
 <body>
 
