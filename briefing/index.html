@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
-<link rel="apple-touch-icon" href="/favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Commissioner Intelligence Briefing · Kent & Medway · Assistiv</title>
 <meta name="description" content="Live population intelligence briefing for Kent and Medway commissioners — frailty, NHS pressure, carers, falls, and winter risk in one view.">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -167,7 +165,9 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
 .heat-strip-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
 /* Environmental (heat/cold) risk box */
-.env-risk { border-radius: 10px; padding: 1rem 1.2rem; margin: 0 0 1.2rem; border: 1px solid; }
+.env-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 0 0 1.2rem; }
+@media (max-width: 680px) { .env-strip { grid-template-columns: 1fr; } }
+.env-risk { border-radius: 10px; padding: 1rem 1.2rem; border: 1px solid; }
 .env-risk.heat { background: #fff5ed; border-color: #f0c39a; }
 .env-risk.cold { background: #eef4fb; border-color: #b9d0ea; }
 .env-risk.none { background: #f1f6f1; border-color: #cfe0d4; }
@@ -177,6 +177,10 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
 .env-risk.heat .env-risk-title { color: #b45816; }
 .env-risk.cold .env-risk-title { color: #2a5a93; }
 .env-risk.none .env-risk-title { color: #3f6b4f; }
+.env-risk.aq-moderate { background: #fdfbe9; border-color: #e4dca0; }
+.env-risk.aq-moderate .env-risk-title { color: #8a7012; }
+.env-risk.aq-high { background: #f6edf7; border-color: #d4b3da; }
+.env-risk.aq-high .env-risk-title { color: #7a3d86; }
 .env-risk-temp { margin-left: auto; font-family: var(--mono); font-size: 0.66rem; color: var(--muted); }
 .env-risk-body { font-size: 0.86rem; line-height: 1.55; color: var(--ink); }
 .env-risk-body strong { font-weight: 600; }
@@ -325,15 +329,28 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
     </div>
   </div>
 
-  <!-- ENVIRONMENTAL RISK — live weather + clinical mechanism, computed on download -->
-  <div class="env-risk" id="env-risk" style="display:none">
-    <div class="env-risk-head">
-      <span class="env-risk-icon" id="env-risk-icon">☀</span>
-      <span class="env-risk-title" id="env-risk-title">Environmental risk</span>
-      <span class="env-risk-temp" id="env-risk-temp"></span>
+  <!-- ENVIRONMENTAL RISK STRIP — two boxes, live, computed on download -->
+  <div class="env-strip">
+    <!-- Thermal risk (heat/cold) -->
+    <div class="env-risk" id="env-risk" style="display:none">
+      <div class="env-risk-head">
+        <span class="env-risk-icon" id="env-risk-icon">☀</span>
+        <span class="env-risk-title" id="env-risk-title">Thermal risk</span>
+        <span class="env-risk-temp" id="env-risk-temp"></span>
+      </div>
+      <div class="env-risk-body" id="env-risk-body"></div>
+      <div class="env-risk-src" id="env-risk-src">Open-Meteo · UKHSA thresholds · forecast for central Kent</div>
     </div>
-    <div class="env-risk-body" id="env-risk-body"></div>
-    <div class="env-risk-src" id="env-risk-src">Open-Meteo · UKHSA thresholds · forecast for central Kent</div>
+    <!-- Air quality risk -->
+    <div class="env-risk" id="air-risk" style="display:none">
+      <div class="env-risk-head">
+        <span class="env-risk-icon" id="air-risk-icon">◷</span>
+        <span class="env-risk-title" id="air-risk-title">Air quality risk</span>
+        <span class="env-risk-temp" id="air-risk-temp"></span>
+      </div>
+      <div class="env-risk-body" id="air-risk-body"></div>
+      <div class="env-risk-src" id="air-risk-src">Open-Meteo air quality forecast · interpreted against UK DAQI guidance</div>
+    </div>
   </div>
 
   <!-- ALERT BANNER — shown if crisis_precursor districts exist or big movers -->
@@ -568,6 +585,7 @@ async function init() {
 
     render(fep, hist, wint);
     renderWeatherRisk(fep.districts || []);
+    renderAirQuality(fep.districts || []);
   } catch(e) {
     document.getElementById('loading').innerHTML =
       `<div style="font-size:0.8rem;color:#b91c1c;text-align:center">Could not load intelligence data. Please try again.<br><small>${e.message}</small></div>`;
@@ -717,6 +735,82 @@ async function renderWeatherRisk(districts) {
   } catch(e) {
     // If the forecast can't be reached, leave the box hidden rather than show stale risk
     console.warn('Environmental risk: forecast unavailable', e);
+    box.style.display = 'none';
+  }
+}
+
+// ── AIR QUALITY RISK ──────────────────────────────────────────────────
+// Fetches the 5-day air-quality forecast for central Kent and, on a poor-air day,
+// flags the respiratory-vulnerable (high-COPD) districts. This is the divergence
+// insight: on bad-air days the people at risk are the COPD population, a different
+// list from the frailty leaders. COPD prevalence is pulled live from the HSCM data.
+async function renderAirQuality(districts) {
+  const box = document.getElementById('air-risk');
+  if (!box) return;
+  try {
+    // Fetch COPD prevalence (HSCM) and the Open-Meteo air-quality forecast in parallel
+    const HSCM = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-hscm-data.json';
+    const AQ = 'https://air-quality-api.open-meteo.com/v1/air-quality'
+      + '?latitude=51.27&longitude=0.52'
+      + '&hourly=pm2_5,pm10,nitrogen_dioxide,ozone,european_aqi'
+      + '&timezone=Europe/London&forecast_days=5';
+    const [hRes, aRes] = await Promise.all([
+      fetch(HSCM + '?t=' + Date.now(), {cache:'no-store'}),
+      fetch(AQ, {cache:'no-store'})
+    ]);
+    if (!aRes.ok) throw new Error('air forecast unavailable');
+    const aq = await aRes.json();
+
+    // Peak European AQI and peak PM2.5 over the 5-day window
+    const aqiArr = (aq.hourly && aq.hourly.european_aqi) || [];
+    const pmArr  = (aq.hourly && aq.hourly.pm2_5) || [];
+    if (!aqiArr.length) throw new Error('no aqi data');
+    const peakAqi = Math.round(Math.max(...aqiArr.filter(v => v != null)));
+    const peakPm  = Math.round(Math.max(...pmArr.filter(v => v != null)));
+
+    // Top respiratory-vulnerable districts by COPD prevalence (live HSCM)
+    let copdTop = '';
+    try {
+      const hscm = await hRes.json();
+      const hd = hscm.districts || {};
+      const copd = Object.entries(hd)
+        .map(([name, r]) => ({ name, v: (r.copd && typeof r.copd.value === 'number') ? r.copd.value : null }))
+        .filter(d => d.v != null)
+        .sort((a,b) => b.v - a.v)
+        .slice(0,3)
+        .map(d => `${d.name} (COPD ${d.v}%)`);
+      copdTop = copd.join(', ');
+    } catch(e) { copdTop = 'the highest-COPD districts'; }
+
+    // Band the European AQI: 0-40 good, 40-60 moderate, 60+ poor/very poor
+    let state, icon, title, temp, body;
+    if (peakAqi >= 60) {
+      state = 'aq-high'; icon = '◉'; title = 'Poor air quality forecast';
+      temp = `peak AQI ${peakAqi} · PM2.5 ${peakPm} µg/m³ (5-day)`;
+      body = `<strong>Poor air quality forecast in the next five days (peak European AQI ${peakAqi}, PM2.5 ${peakPm} µg/m³).</strong> `
+        + `Raised particulate and NO2 levels trigger COPD and heart-failure exacerbations in frail older people, the leading cause of avoidable respiratory admissions on high-pollution days. `
+        + `Prioritise proactive contact with respiratory-vulnerable patients in ${copdTop}.`;
+    } else if (peakAqi >= 40) {
+      state = 'aq-moderate'; icon = '◐'; title = 'Moderate air quality forecast';
+      temp = `peak AQI ${peakAqi} · PM2.5 ${peakPm} µg/m³ (5-day)`;
+      body = `<strong>Moderate air quality forecast in the next five days (peak European AQI ${peakAqi}).</strong> `
+        + `Levels are not yet in the alert range but warrant caution for people with COPD or heart failure. `
+        + `Worth a watching brief on respiratory-vulnerable patients in ${copdTop}.`;
+    } else {
+      state = 'none'; icon = '○'; title = 'Good air quality forecast';
+      temp = `peak AQI ${peakAqi} (5-day)`;
+      body = `Air quality is forecast to stay in the good range over the next five days. No elevated respiratory risk from pollution indicated. Highest baseline respiratory vulnerability remains: ${copdTop}.`;
+    }
+    box.className = 'env-risk ' + state;
+    document.getElementById('air-risk-icon').textContent = icon;
+    document.getElementById('air-risk-title').textContent = title;
+    document.getElementById('air-risk-temp').textContent = temp;
+    document.getElementById('air-risk-body').innerHTML = body;
+    document.getElementById('air-risk-src').textContent =
+      'Open-Meteo air quality forecast (central Kent, European AQI) · interpreted against UK DAQI guidance · COPD from HSCM';
+    box.style.display = 'block';
+  } catch(e) {
+    console.warn('Air quality risk: forecast unavailable', e);
     box.style.display = 'none';
   }
 }
