@@ -187,6 +187,9 @@ body {
 
 /* Environmental risk strip (thermal + air), stacked in the side panel */
 .env-strip { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.env-strip-top { display: flex; gap: 0.7rem; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
+.env-strip-top .env-risk { flex: 1; }
+@media (max-width: 768px) { .env-strip-top { flex-direction: column; } }
 .env-risk { border-radius: 8px; padding: 0.6rem 0.7rem; border: 1px solid; }
 .env-risk.heat { background: #fff5ed; border-color: #f0c39a; }
 .env-risk.cold { background: #eef4fb; border-color: #b9d0ea; }
@@ -935,13 +938,26 @@ body {
   <div class="icb-source">OHID PHOF · NHS Kent &amp; Medway ICB QKS · Published 6 May 2026</div>
 </div>
 
-<!-- WEATHER RISK BANNER — always visible, four alert states -->
-<div class="weather-banner status-green" id="weather-banner">
-  <div class="weather-status-dot" id="weather-dot"></div>
-  <span class="weather-banner-label" id="weather-label">Checking…</span>
-  <span class="weather-banner-text"  id="weather-text">Fetching live weather data for Kent &amp; Medway…</span>
-  <span class="weather-banner-temp"  id="weather-temp"></span>
-  <span class="weather-banner-source">Open-Meteo · UKHSA · Met Office UKV</span>
+<!-- ENVIRONMENTAL RISK STRIP — live thermal + air quality, full-width top strip -->
+<div class="env-strip-top">
+  <div class="env-risk" id="env-risk" style="display:none">
+    <div class="env-risk-head">
+      <span class="env-risk-icon" id="env-risk-icon">☀</span>
+      <span class="env-risk-title" id="env-risk-title">Thermal risk</span>
+      <span class="env-risk-temp" id="env-risk-temp"></span>
+    </div>
+    <div class="env-risk-body" id="env-risk-body"></div>
+    <div class="env-risk-src" id="env-risk-src">Open-Meteo · UKHSA thresholds · central Kent</div>
+  </div>
+  <div class="env-risk" id="air-risk" style="display:none">
+    <div class="env-risk-head">
+      <span class="env-risk-icon" id="air-risk-icon">◷</span>
+      <span class="env-risk-title" id="air-risk-title">Air quality risk</span>
+      <span class="env-risk-temp" id="air-risk-temp"></span>
+    </div>
+    <div class="env-risk-body" id="air-risk-body"></div>
+    <div class="env-risk-src" id="air-risk-src">Open-Meteo air quality · UK DAQI guidance</div>
+  </div>
 </div>
 
 <!-- MAIN -->
@@ -958,27 +974,6 @@ body {
 
   <!-- SIDE PANEL -->
   <div class="side-panel">
-    <!-- ENVIRONMENTAL RISK STRIP — live thermal + air quality, computed on load -->
-    <div class="env-strip">
-      <div class="env-risk" id="env-risk" style="display:none">
-        <div class="env-risk-head">
-          <span class="env-risk-icon" id="env-risk-icon">☀</span>
-          <span class="env-risk-title" id="env-risk-title">Thermal risk</span>
-          <span class="env-risk-temp" id="env-risk-temp"></span>
-        </div>
-        <div class="env-risk-body" id="env-risk-body"></div>
-        <div class="env-risk-src" id="env-risk-src">Open-Meteo · UKHSA thresholds · central Kent</div>
-      </div>
-      <div class="env-risk" id="air-risk" style="display:none">
-        <div class="env-risk-head">
-          <span class="env-risk-icon" id="air-risk-icon">◷</span>
-          <span class="env-risk-title" id="air-risk-title">Air quality risk</span>
-          <span class="env-risk-temp" id="air-risk-temp"></span>
-        </div>
-        <div class="env-risk-body" id="air-risk-body"></div>
-        <div class="env-risk-src" id="air-risk-src">Open-Meteo air quality · UK DAQI guidance</div>
-      </div>
-    </div>
     <div class="panel-tabs">
       <div class="panel-tab active" id="tab-detail" onclick="switchTab('detail')">District Detail</div>
       <div class="panel-tab" id="tab-ranked" onclick="switchTab('ranked')">Ranked Zones</div>
@@ -2070,6 +2065,10 @@ function exportPDF(districtName) {
 // what an alert state looks like before one fires.
 async function fetchWeatherRisk() {
   const banner  = document.getElementById('weather-banner');
+  // Top weather banner was removed — its content now lives in the two
+  // environmental-risk boxes (renderWeatherRiskBox / renderAirQualityBox).
+  // Bail early if the banner element is gone to avoid null errors.
+  if (!banner) return;
   const label   = document.getElementById('weather-label');
   const text    = document.getElementById('weather-text');
   const tempEl  = document.getElementById('weather-temp');
