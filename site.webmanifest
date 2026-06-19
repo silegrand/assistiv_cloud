@@ -1,0 +1,11 @@
+{
+  "name": "Assistiv Cloud",
+  "short_name": "Assistiv",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/favicon.ico", "sizes": "32x32 16x16", "type": "image/x-icon" }
+  ],
+  "theme_color": "#365EBF",
+  "background_color": "#365EBF",
+  "display": "browser"
+}
