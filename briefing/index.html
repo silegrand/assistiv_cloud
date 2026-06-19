@@ -147,6 +147,23 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
 .risk-moderate { background: #dbeafe; color: var(--blue); }
 .risk-low      { background: #dcfce7; color: var(--green); }
 
+/* Heat strip — whole-county glance */
+.heat-strip-wrap { margin: 0 0 1.6rem; }
+.heat-strip-label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+.heat-strip { display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; }
+@media (max-width: 760px) { .heat-strip { grid-template-columns: repeat(7, 1fr); } }
+.heat-cell {
+  border-radius: 5px; padding: 0.5rem 0.3rem; text-align: center; text-decoration: none;
+  display: flex; flex-direction: column; gap: 0.15rem; min-height: 56px; justify-content: center;
+  transition: transform 0.12s; color: #fff;
+}
+.heat-cell:hover { transform: translateY(-2px); }
+.heat-cell .hc-fep { font-family: var(--serif); font-weight: 700; font-size: 1.05rem; line-height: 1; }
+.heat-cell .hc-name { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.02em; line-height: 1.1; opacity: 0.92; }
+.heat-strip-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 0.55rem; font-family: var(--mono); font-size: 0.58rem; color: var(--muted); }
+.heat-strip-legend span { display: flex; align-items: center; gap: 0.3rem; }
+.heat-strip-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
 /* ── TREND TABLE ── */
 .trend-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
 .trend-table th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0 0 0.5rem; text-align: left; border-bottom: 1px solid var(--border); }
@@ -304,6 +321,18 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
     <div>
       <div class="alert-title">Notable movement (past month)</div>
       <div class="alert-body" id="alert-warning-body"></div>
+    </div>
+  </div>
+
+  <!-- HEAT STRIP: all 13 districts at a glance, worst to best -->
+  <div class="heat-strip-wrap">
+    <div class="heat-strip-label">Kent &amp; Medway frailty heat · highest risk first</div>
+    <div class="heat-strip" id="heat-strip"></div>
+    <div class="heat-strip-legend">
+      <span><i style="background:var(--risk-critical)"></i> Critical 70+</span>
+      <span><i style="background:var(--risk-high)"></i> High 55&ndash;69</span>
+      <span><i style="background:var(--risk-moderate)"></i> Moderate 40&ndash;54</span>
+      <span><i style="background:var(--risk-low)"></i> Lower &lt;40</span>
     </div>
   </div>
 
@@ -531,6 +560,7 @@ function render(fep, hist, wint) {
   setEl('freshness-badge', `Live · ${dateStr}`);
 
   renderAlerts(districts, hist);
+  renderHeatStrip(districts);
   renderSummaryStats(districts);
   renderPriorityList(districts);
   renderTrend(districts, hist);
@@ -597,6 +627,21 @@ function renderSummaryStats(districts) {
       <div class="stat-label">Peak FEP score</div>
     </div>
   `;
+}
+
+// ── HEAT STRIP ────────────────────────────────────────────────────────
+function renderHeatStrip(districts) {
+  const el = document.getElementById('heat-strip');
+  if (!el) return;
+  const sorted = [...districts].sort((a, b) => b.fep - a.fep);
+  el.innerHTML = sorted.map(d => {
+    const bg = fepColor(d.fep);
+    const short = d.name.length > 10 ? d.name.replace(' & ', '/').replace('Tonbridge/Malling','T&Malling') : d.name;
+    return `<a class="heat-cell" href="/frailty-heat-map/" style="background:${bg}" title="${d.name}: FEP ${d.fep} (${d.risk})">
+      <span class="hc-fep">${d.fep}</span>
+      <span class="hc-name">${short}</span>
+    </a>`;
+  }).join('');
 }
 
 // ── PRIORITY LIST ─────────────────────────────────────────────────────
