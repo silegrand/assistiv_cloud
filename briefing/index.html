@@ -164,6 +164,22 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
 .heat-strip-legend span { display: flex; align-items: center; gap: 0.3rem; }
 .heat-strip-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
+/* Environmental (heat/cold) risk box */
+.env-risk { border-radius: 10px; padding: 1rem 1.2rem; margin: 0 0 1.2rem; border: 1px solid; }
+.env-risk.heat { background: #fff5ed; border-color: #f0c39a; }
+.env-risk.cold { background: #eef4fb; border-color: #b9d0ea; }
+.env-risk.none { background: #f1f6f1; border-color: #cfe0d4; }
+.env-risk-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+.env-risk-icon { font-size: 1.1rem; }
+.env-risk-title { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; }
+.env-risk.heat .env-risk-title { color: #b45816; }
+.env-risk.cold .env-risk-title { color: #2a5a93; }
+.env-risk.none .env-risk-title { color: #3f6b4f; }
+.env-risk-temp { margin-left: auto; font-family: var(--mono); font-size: 0.66rem; color: var(--muted); }
+.env-risk-body { font-size: 0.86rem; line-height: 1.55; color: var(--ink); }
+.env-risk-body strong { font-weight: 600; }
+.env-risk-src { font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.04em; color: var(--muted); margin-top: 0.55rem; }
+
 /* ── TREND TABLE ── */
 .trend-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
 .trend-table th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0 0 0.5rem; text-align: left; border-bottom: 1px solid var(--border); }
@@ -305,6 +321,17 @@ body { font-family: var(--sans); background: var(--linen); color: var(--text); m
       <div class="brief-gen" id="brief-gen">Generated from live data</div>
       <div class="brief-stamp">Assistiv Intelligence</div>
     </div>
+  </div>
+
+  <!-- ENVIRONMENTAL RISK — live weather + clinical mechanism, computed on download -->
+  <div class="env-risk" id="env-risk" style="display:none">
+    <div class="env-risk-head">
+      <span class="env-risk-icon" id="env-risk-icon">☀</span>
+      <span class="env-risk-title" id="env-risk-title">Environmental risk</span>
+      <span class="env-risk-temp" id="env-risk-temp"></span>
+    </div>
+    <div class="env-risk-body" id="env-risk-body"></div>
+    <div class="env-risk-src" id="env-risk-src">Open-Meteo · UKHSA thresholds · forecast for central Kent</div>
   </div>
 
   <!-- ALERT BANNER — shown if crisis_precursor districts exist or big movers -->
@@ -538,6 +565,7 @@ async function init() {
     if (!fep) throw new Error('FEP data unavailable');
 
     render(fep, hist, wint);
+    renderWeatherRisk(fep.districts || []);
   } catch(e) {
     document.getElementById('loading').innerHTML =
       `<div style="font-size:0.8rem;color:#b91c1c;text-align:center">Could not load intelligence data. Please try again.<br><small>${e.message}</small></div>`;
@@ -627,6 +655,68 @@ function renderSummaryStats(districts) {
       <div class="stat-label">Peak FEP score</div>
     </div>
   `;
+}
+
+// ── ENVIRONMENTAL (HEAT/COLD) RISK ────────────────────────────────────
+// Fetches today's forecast for central Kent and translates it into the clinical
+// mechanism that matters for frail older people, naming the live highest-FEP
+// districts to prioritise. Computed at download time so the brief reflects the day.
+async function renderWeatherRisk(districts) {
+  const box = document.getElementById('env-risk');
+  if (!box) return;
+  // Top 3 live FEP districts to prioritise
+  const top3 = [...districts].sort((a,b) => b.fep - a.fep).slice(0,3)
+    .map(d => `${d.name} (FEP ${d.fep})`).join(', ');
+  try {
+    // Central Kent ~ Maidstone (51.27, 0.52)
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=51.27&longitude=0.52'
+      + '&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min'
+      + '&timezone=Europe/London&forecast_days=1';
+    const r = await fetch(url, {cache:'no-store'});
+    if (!r.ok) throw new Error('forecast unavailable');
+    const w = await r.json();
+    const tmax = Math.round(w.daily.temperature_2m_max[0]);
+    const tmin = Math.round(w.daily.temperature_2m_min[0]);
+    const feelsMax = Math.round(w.daily.apparent_temperature_max[0]);
+    const feelsMin = Math.round(w.daily.apparent_temperature_min[0]);
+
+    let state, icon, title, temp, body;
+    if (tmax >= 27) {
+      // Heat risk (UKHSA heat-health alert territory)
+      state = 'heat'; icon = '☀'; title = 'Heat stress risk elevated';
+      temp = `forecast max ${tmax}°C · feels ${feelsMax}°C`;
+      body = `<strong>Heat stress risk elevated today (max ${tmax}°C, feels ${feelsMax}°C).</strong> `
+        + `Anticholinergic burden (antidepressants, anxiolytics, bladder antimuscarinics) impairs thermoregulation in older adults. `
+        + `Diuretic and ACE/ARB users face accelerated electrolyte depletion and dehydration. `
+        + `Prioritise welfare outreach to ${top3}.`;
+    } else if (tmin <= 2) {
+      // Cold risk
+      state = 'cold'; icon = '❄'; title = 'Cold stress risk elevated';
+      temp = `forecast min ${tmin}°C · feels ${feelsMin}°C`;
+      body = `<strong>Cold stress risk elevated today (min ${tmin}°C, feels ${feelsMin}°C).</strong> `
+        + `Cold raises blood pressure and cardiac strain, and worsens COPD and respiratory illness in frail older people. `
+        + `Poorly heated homes and fuel poverty compound the risk. `
+        + `Prioritise welfare and warmth outreach to ${top3}.`;
+    } else {
+      // Neutral
+      state = 'none'; icon = '○'; title = 'No acute environmental risk today';
+      temp = `${tmin}–${tmax}°C · feels ${feelsMin}–${feelsMax}°C`;
+      body = `Today's forecast (${tmin}–${tmax}°C) is within comfortable range for most older adults. `
+        + `No heat or cold health alert indicated. Highest baseline frailty remains: ${top3}.`;
+    }
+    box.className = 'env-risk ' + state;
+    document.getElementById('env-risk-icon').textContent = icon;
+    document.getElementById('env-risk-title').textContent = title;
+    document.getElementById('env-risk-temp').textContent = temp;
+    document.getElementById('env-risk-body').innerHTML = body;
+    document.getElementById('env-risk-src').textContent =
+      'Open-Meteo forecast (central Kent) · UKHSA heat/cold thresholds · district priority from live FEP';
+    box.style.display = 'block';
+  } catch(e) {
+    // If the forecast can't be reached, leave the box hidden rather than show stale risk
+    console.warn('Environmental risk: forecast unavailable', e);
+    box.style.display = 'none';
+  }
 }
 
 // ── HEAT STRIP ────────────────────────────────────────────────────────
