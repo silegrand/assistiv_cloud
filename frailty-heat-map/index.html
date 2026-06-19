@@ -2097,17 +2097,26 @@ async function fetchWeatherRisk() {
     const url = 'https://api.open-meteo.com/v1/forecast' +
       '?latitude=51.27&longitude=0.52' +
       '&current=temperature_2m,apparent_temperature' +
-      '&daily=temperature_2m_max,temperature_2m_min' +
+      '&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min' +
       '&timezone=Europe%2FLondon&forecast_days=3' +
       '&models=ukmo_seamless';
 
     const res  = await fetch(url);
     const data = await res.json();
     const temp = Math.round(data.current.temperature_2m);
-    const feel = Math.round(data.current.apparent_temperature);
     const maxT = Math.round(data.daily.temperature_2m_max[0]);
     const minT = Math.round(data.daily.temperature_2m_min[0]);
-    const tempStr = `${temp}°C feels ${feel}°C`;
+    const feelsMax = Math.round(data.daily.apparent_temperature_max[0]);
+    const feelsMin = Math.round(data.daily.apparent_temperature_min[0]);
+    // Show the day's peak feels-like to match the sidebar thermal-risk box
+    const feel = feelsMax;
+    const tempStr = `max ${maxT}°C · feels ${feelsMax}°C`;
+    // Live high-FEP districts — same source as the sidebar box.
+    // Falls back to hardcoded coastal names only if FEP data hasn't loaded yet.
+    const liveTop3 = (typeof liveDistrictsForEnv !== 'undefined' && liveDistrictsForEnv.length)
+      ? [...liveDistrictsForEnv].sort((a,b) => b.fep - a.fep).slice(0,3)
+          .map(d => `${d.name} (FEP ${d.fep})`).join(', ')
+      : 'Thanet, Folkestone &amp; Hythe, Dover';
 
     // ── HEAT THRESHOLDS ──────────────────────────────────────────────
     if (maxT >= HEAT_RED) {
@@ -2115,7 +2124,7 @@ async function fetchWeatherRisk() {
         `<strong>Heat emergency — forecast max ${maxT}°C.</strong> ` +
         `Patients on anticholinergics (antidepressants, anxiolytics, bladder antimuscarinics), diuretics, or ACE/ARBs at acute risk of hyperthermia and dehydration. ` +
         `Kent prescribing rates for these signals are above England average. ` +
-        `High-FEP districts (Thanet, Folkestone &amp; Hythe, Dover) are immediate priority for welfare checks and medication review.`,
+        `High-FEP districts (${liveTop3}) are immediate priority for welfare checks and medication review.`,
         tempStr);
 
     } else if (maxT >= HEAT_AMBER) {
@@ -2123,7 +2132,7 @@ async function fetchWeatherRisk() {
         `<strong>Heat stress risk elevated — forecast max ${maxT}°C.</strong> ` +
         `Anticholinergic burden (antidepressants, anxiolytics, bladder antimuscarinics) impairs thermoregulation in older adults. ` +
         `Diuretic and ACE/ARB users face accelerated electrolyte depletion. ` +
-        `Prioritise outreach to Thanet (FEP 63), Folkestone &amp; Hythe (57), Dover (57).`,
+        `Prioritise outreach to ${liveTop3}.`,
         tempStr);
 
     } else if (maxT >= HEAT_YELLOW) {
@@ -2346,6 +2355,10 @@ async function renderAirQualityBox(districts) {
     : Object.values(DISTRICTS).map(d => ({ name: d.name, fep: d.fep, risk: d.risk }));
   renderWeatherRiskBox(envDistricts);
   renderAirQualityBox(envDistricts);
+
+  // Re-run the top banner now that live FEP data is available, so its
+  // district priorities and feels-like temp match the sidebar box.
+  if (typeof fetchWeatherRisk === 'function') fetchWeatherRisk();
 })();
 </script>
 <!-- ═══════════════════════════════════════════════════════
