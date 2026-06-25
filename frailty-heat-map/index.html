@@ -36,7 +36,7 @@
   /* FEP colour scale */
   --fep-critical: #991b1b;
   --fep-high:     #b45309;
-  --fep-moderate: #d97706;
+  --fep-moderate: #eab308;
   --fep-low:      #166534;
 }
 
@@ -344,7 +344,7 @@ body {
 
 .risk-critical { background: #fef2f2; color: var(--fep-critical); border: 1px solid #fecaca; }
 .risk-high     { background: #fffbeb; color: var(--fep-high); border: 1px solid #fde68a; }
-.risk-moderate { background: #fffbeb; color: var(--fep-moderate); border: 1px solid #fcd34d; }
+.risk-moderate { background: #fffbeb; color: var(--fep-moderate); border: 1px solid #fde047; }
 .risk-low      { background: #f0fdf4; color: var(--fep-low); border: 1px solid #bbf7d0; }
 
 /* Signal bars */
@@ -657,7 +657,7 @@ body {
   margin-top: 0.85rem;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-left: 4px solid #d97706;
+  border-left: 4px solid #eab308;
   border-radius: 0 8px 8px 0;
   padding: 0.85rem 1rem;
 }
@@ -666,7 +666,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .07em;
-  color: #d97706;
+  color: #eab308;
   margin-bottom: 0.65rem;
   display: flex;
   align-items: center;
@@ -1014,19 +1014,19 @@ const DISTRICTS = {
 };
 
 const SIGNAL_NAMES = ['Over-75s Alone','Unplanned Admissions','Polypharmacy','Deprivation (IMD)','DWP Allow.','Care Home Gap'];
-const SIGNAL_COLORS = ['#2d6b47','#d97706','#b45309','#7c3aed','#0e7490','#b91c1c'];
+const SIGNAL_COLORS = ['#2d6b47','#eab308','#b45309','#7c3aed','#0e7490','#b91c1c'];
 
 function fepColor(score) {
   if (score >= 70) return '#991b1b';
   if (score >= 55) return '#b45309';
-  if (score >= 40) return '#d97706';
+  if (score >= 40) return '#eab308';
   return '#166534';
 }
 
 function fepFill(score) {
   if (score >= 70) return 'rgba(153,27,27,0.55)';
   if (score >= 55) return 'rgba(180,83,9,0.45)';
-  if (score >= 40) return 'rgba(217,119,6,0.45)';
+  if (score >= 40) return 'rgba(234,179,8,0.45)';
   return 'rgba(22,101,52,0.3)';
 }
 
@@ -1695,7 +1695,7 @@ function renderLegend() {
         <div><div class="legend-text">High Risk</div><div class="legend-sub">FEP 60–74 · Priority screening</div></div>
       </div>
       <div class="legend-item">
-        <div class="legend-swatch" style="background:rgba(217,119,6,0.35);border:1px solid #d97706"></div>
+        <div class="legend-swatch" style="background:rgba(217,119,6,0.35);border:1px solid #eab308"></div>
         <div><div class="legend-text">Moderate Risk</div><div class="legend-sub">FEP 45–59 · Monitor &amp; screen</div></div>
       </div>
       <div class="legend-item">
