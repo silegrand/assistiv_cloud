@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" sizes="any">
+<link rel="icon" href="/favicon.ico?v=3" sizes="32x32">
+<link rel="apple-touch-icon" href="/favicon.svg?v=3">
+<link rel="manifest" href="/site.webmanifest">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ASCOF Commissioning Intelligence — Kent & Medway. Adult Social Care Outcomes Framework performance mapped against FEP upstream frailty risk. Assistiv Systems.">
+<title>ASCOF Outcomes Intelligence — Kent & Medway · Assistiv Systems</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Nunito:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --bg:          #f7f5f0;
+  --surface:     #ffffff;
+  --surface2:    #f0ede6;
+  --border:      #ddd8ce;
+  --text:        #1a2e1e;
+  --text-muted:  #5a7260;
+  --text-dim:    #9aaa9e;
+  --nhs-blue:    #003087;
+  --nhs-mid:     #365EBF;
+  --red:         #b91c1c;
+  --amber:       #b45309;
+  --green:       #166534;
+  --purple:      #6d28d9;
+  --mono:        'DM Mono', monospace;
+  --serif:       'Cormorant Garamond', serif;
+  --sans:        'Nunito', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--nhs-blue);
+  padding: 0 1.25rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.topbar-right { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.badge {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.65);
+}
+.badge.live {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.45);
+  color: white;
+}
+.nav-back {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+.nav-back:hover { color: white; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+.logo-ring { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
+.logo-ring .dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; background: #fff; border-radius: 50%; }
+.logo-ring .r1  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 50%; }
+.logo-ring .r2  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 30px; height: 30px; border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; }
+.brand-label { display: flex; flex-direction: column; gap: 2px; }
+.brand-title { font-family: var(--sans); font-size: 0.88rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+.brand-sub   { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); line-height: 1; }
+
+/* ── DATA CURRENCY BANNER ── */
+.currency-banner {
+  background: #e8edf8;
+  padding: 0.3rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  border-bottom: 1px solid #c9d4ec;
+  flex-wrap: wrap;
+}
+.currency-left { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.currency-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: #365EBF; white-space: nowrap; }
+.currency-stat  { display: flex; align-items: baseline; gap: 0.3rem; white-space: nowrap; }
+.currency-val   { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: #1e3a7a; }
+.currency-desc  { font-family: var(--mono); font-size: 0.58rem; color: #365EBF; letter-spacing: 0.03em; text-transform: uppercase; }
+.currency-sep   { color: #b0bcd8; font-size: 0.65rem; user-select: none; }
+.currency-note  { font-family: var(--mono); font-size: 0.55rem; color: #6b7fa8; letter-spacing: 0.02em; }
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  gap: 1.75rem;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  border-left: 4px solid var(--nhs-mid);
+  padding-left: 1rem;
+}
+.page-header h1 {
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 0.35rem;
+}
+.page-header p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 72ch;
+}
+
+/* ── EXPLAINER BOX ── */
+.explainer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 700px) { .explainer { grid-template-columns: 1fr; } }
+.explainer-item {}
+.explainer-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.explainer-title { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.3rem; }
+.explainer-body  { font-size: 0.83rem; color: var(--text); line-height: 1.55; }
+.explainer-body strong { color: var(--nhs-blue); }
+
+/* ── SECTION TITLES ── */
+.section-title {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.1rem;
+}
+
+/* ── KPI GRID ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
+}
+@media (max-width: 800px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  border-top: 3px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.kpi-card.g-green  { border-top-color: #16a34a; }
+.kpi-card.g-amber  { border-top-color: #d97706; }
+.kpi-card.g-red    { border-top-color: #dc2626; }
+.kpi-card.g-blue   { border-top-color: var(--nhs-mid); }
+
+.kpi-measure {
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.kpi-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+.kpi-value {
+  font-family: var(--mono);
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.kpi-unit {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+.kpi-compare {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+.kpi-england {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+}
+.kpi-delta {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+.kpi-delta.pos { background: #dcfce7; color: #15803d; }
+.kpi-delta.neg { background: #fee2e2; color: #b91c1c; }
+.kpi-delta.neu { background: #f3f4f6; color: #6b7280; }
+.kpi-note {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+/* ── CHART PANELS ── */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+@media (max-width: 700px) { .chart-grid { grid-template-columns: 1fr; } }
+
+.chart-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+}
+.chart-panel-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+.chart-panel-sub {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.9rem;
+}
+.chart-wrap {
+  position: relative;
+  height: 220px;
+}
+
+/* ── GAP TABLE ── */
+.gap-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.gap-table-header {
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
+.gap-table-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.15rem; }
+.gap-table-sub   { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+thead th {
+  background: var(--surface2);
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0.55rem 1.2rem;
+  text-align: left;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+tbody td {
+  padding: 0.65rem 1.2rem;
+  color: var(--text);
+  vertical-align: middle;
+}
+.td-measure { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); }
+.td-label   { font-weight: 600; font-size: 0.8rem; }
+.td-note    { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; margin-top: 0.15rem; }
+.td-val     { font-family: var(--mono); font-weight: 700; font-size: 0.9rem; }
+.td-eng     { font-family: var(--mono); font-size: 0.8rem; color: var(--text-muted); }
+.pill {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.pill-green  { background: #dcfce7; color: #15803d; }
+.pill-amber  { background: #fef3c7; color: #92400e; }
+.pill-red    { background: #fee2e2; color: #b91c1c; }
+.pill-grey   { background: #f3f4f6; color: #6b7280; }
+
+/* ── NARRATIVE STRIP ── */
+.narrative {
+  background: #e8edf8;
+  border: 1px solid #c9d4ec;
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.narrative-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 0.1rem; }
+.narrative-body { font-size: 0.85rem; color: #1a2e6e; line-height: 1.65; }
+.narrative-body strong { color: var(--nhs-blue); }
+.narrative-body p + p { margin-top: 0.6rem; }
+
+/* ── ASCOT BRIDGE ── */
+.bridge-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.9rem;
+}
+@media (max-width: 700px) { .bridge-grid { grid-template-columns: 1fr; } }
+
+.bridge-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.bridge-arrow {
+  font-size: 1.1rem;
+  color: var(--nhs-mid);
+}
+.bridge-from {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.bridge-label { font-size: 0.82rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+.bridge-to {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--nhs-mid);
+  letter-spacing: 0.04em;
+}
+.bridge-body { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ── FOOTER ── */
+.page-footer {
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.footer-note { font-family: var(--mono); font-size: 0.58rem; color: var(--text-dim); letter-spacing: 0.03em; }
+.footer-links { display: flex; gap: 1rem; }
+.footer-links a { font-family: var(--mono); font-size: 0.58rem; color: var(--nhs-mid); text-decoration: none; letter-spacing: 0.03em; }
+.footer-links a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="nav-back">&#8592; Overview</a>
+    <div class="divider-v"></div>
+    <a href="/" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0" title="Assistiv Cloud">
+      <div class="logo-ring">
+        <div class="dot"></div><div class="r1"></div><div class="r2"></div>
+      </div>
+    </a>
+    <div class="divider-v"></div>
+    <div class="brand-label">
+      <span class="brand-title">ASCOF Outcomes Intelligence</span>
+      <span class="brand-sub">Kent &amp; Medway · Commissioning Layer</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge">ASCOF 2023–24</span>
+    <span class="badge">CASSR Level</span>
+    <span class="badge live">Dec 2024 Release</span>
+  </div>
+</div>
+
+<!-- CURRENCY BANNER -->
+<div class="currency-banner">
+  <div class="currency-left">
+    <span class="currency-label">Data Currency</span>
+    <div class="currency-stat">
+      <span class="currency-val">2023–24</span>
+      <span class="currency-desc">ASCOF</span>
+    </div>
+    <span class="currency-sep">·</span>
+    <div class="currency-stat">
+      <span class="currency-val">Dec 2024</span>
+      <span class="currency-desc">Published</span>
+    </div>
+    <span class="currency-sep">·</span>
+    <div class="currency-stat">
+      <span class="currency-val">Kent CC</span>
+      <span class="currency-desc">CASSR</span>
+    </div>
+    <span class="currency-sep">·</span>
+    <span class="currency-note">Source: NHS England Digital · Adult Social Care Outcomes Framework 2023–24 Official Statistics</span>
+  </div>
+  <div class="currency-left">
+    <span class="currency-note">ASCOF transitions to DHSC from 2024/25 onwards</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>Adult Social Care Outcomes<br>Kent &amp; Medway</h1>
+    <p>ASCOF measures what the current care system achieves for people already within it. This page pairs that accountability data with Assistiv's upstream FEP intelligence — showing not just where outcomes are today, but where unmet need is concentrating before it reaches the system.</p>
+  </div>
+
+  <!-- EXPLAINER -->
+  <div class="explainer">
+    <div class="explainer-item">
+      <div class="explainer-icon">📊</div>
+      <div class="explainer-title">What ASCOF measures</div>
+      <div class="explainer-body">Annual published scores for each council area — covering quality of life, independence, experience of care, and safety. It tells commissioners <strong>how the current system is performing</strong> on the people already in it.</div>
+    </div>
+    <div class="explainer-item">
+      <div class="explainer-icon">⚠️</div>
+      <div class="explainer-title">What ASCOF misses</div>
+      <div class="explainer-body">People who haven't yet entered formal care — the <strong>Missing Middle</strong> — don't appear in ASCOF denominators. Their outcomes aren't measured. Their needs aren't counted. They are the population Assistiv is designed to reach.</div>
+    </div>
+    <div class="explainer-item">
+      <div class="explainer-icon">🔗</div>
+      <div class="explainer-title">Why this matters here</div>
+      <div class="explainer-body">Pairing ASCOF performance with FEP district risk closes the loop: <strong>current outcomes + upstream risk = commissioning argument</strong>. Where outcomes are weak and FEP is high, the case for early intervention is strongest.</div>
+    </div>
+  </div>
+
+  <!-- KPI HEADLINE MEASURES -->
+  <div>
+    <div class="section-title">Headline ASCOF Measures — Kent County Council 2023–24</div>
+  </div>
+  <div class="kpi-grid">
+
+    <div class="kpi-card g-amber">
+      <div class="kpi-measure">Measure 1A</div>
+      <div class="kpi-label">Social care-related quality of life</div>
+      <div class="kpi-value">18.7<span class="kpi-unit"> /24</span></div>
+      <div class="kpi-compare">
+        <span class="kpi-england">England: 19.1</span>
+        <span class="kpi-delta neg">▼ Below avg</span>
+      </div>
+      <div class="kpi-note">Covers control, personal care, safety, social participation, occupation and food. Lower than national average — particularly among women and those aged 65+.</div>
+    </div>
+
+    <div class="kpi-card g-red">
+      <div class="kpi-measure">Measure 1B</div>
+      <div class="kpi-label">People with as much social contact as they'd like</div>
+      <div class="kpi-value">41.2<span class="kpi-unit">%</span></div>
+      <div class="kpi-compare">
+        <span class="kpi-england">England: 43.8%</span>
+        <span class="kpi-delta neg">▼ Below avg</span>
+      </div>
+      <div class="kpi-note">Less than half of people receiving care and support report having sufficient social contact. Social isolation is both cause and consequence of frailty deterioration.</div>
+    </div>
+
+    <div class="kpi-card g-green">
+      <div class="kpi-measure">Measure 2D1</div>
+      <div class="kpi-label">Still at home 91 days after hospital discharge</div>
+      <div class="kpi-value">84.1<span class="kpi-unit">%</span></div>
+      <div class="kpi-compare">
+        <span class="kpi-england">England: 83.8%</span>
+        <span class="kpi-delta pos">▲ Above avg</span>
+      </div>
+      <div class="kpi-note">Kent performs above the national average on reablement — a strong signal for the Successful Autonomy goal. Sustaining this requires upstream prevention.</div>
+    </div>
+
+    <div class="kpi-card g-amber">
+      <div class="kpi-measure">Measure 3A</div>
+      <div class="kpi-label">Overall satisfaction with care and support</div>
+      <div class="kpi-value">62.4<span class="kpi-unit">%</span></div>
+      <div class="kpi-compare">
+        <span class="kpi-england">England: 65.0%</span>
+        <span class="kpi-delta neg">▼ Below avg</span>
+      </div>
+      <div class="kpi-note">Satisfaction with care services is materially below the national figure. Improvement here may require earlier, person-led contact before crisis-driven entry to formal care.</div>
+    </div>
+
+  </div>
+
+  <!-- CHARTS -->
+  <div class="chart-grid">
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">Quality of Life Scores — Regional Comparison</div>
+      <div class="chart-panel-sub">Measure 1A · 2023–24 · Out of 24</div>
+      <div class="chart-wrap">
+        <canvas id="chart-qol"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">Sufficient Social Contact — Regional Comparison</div>
+      <div class="chart-panel-sub">Measure 1B · 2023–24 · % of survey respondents</div>
+      <div class="chart-wrap">
+        <canvas id="chart-social"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">Still at Home 91 Days Post-Discharge</div>
+      <div class="chart-panel-sub">Measure 2D1 · 2023–24 · % aged 65 and over</div>
+      <div class="chart-wrap">
+        <canvas id="chart-home"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-panel-title">ASCOF Performance vs FEP Risk — Kent Districts</div>
+      <div class="chart-panel-sub">1A Quality of Life score (CASSR) · FEP upstream risk (district) · Illustrative relationship</div>
+      <div class="chart-wrap">
+        <canvas id="chart-fep"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GAP ANALYSIS TABLE -->
+  <div class="gap-table">
+    <div class="gap-table-header">
+      <div class="gap-table-title">Full ASCOF Measure Set — Kent vs England 2023–24</div>
+      <div class="gap-table-sub">Red = materially below England average · Amber = within 5% below · Green = at or above average. Source: NHS England Digital official statistics, December 2024.</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Measure</th>
+          <th>Outcome domain</th>
+          <th>Kent</th>
+          <th>England</th>
+          <th>Gap</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="td-measure">1A</div></td>
+          <td>
+            <div class="td-label">Quality of life score</div>
+            <div class="td-note">Control, care, safety, social participation, occupation, food. Out of 24.</div>
+          </td>
+          <td><div class="td-val">18.7</div></td>
+          <td><div class="td-eng">19.1</div></td>
+          <td><div class="td-val" style="color:#dc2626">−0.4</div></td>
+          <td><span class="pill pill-amber">Below avg</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-measure">1B</div></td>
+          <td>
+            <div class="td-label">Sufficient social contact</div>
+            <div class="td-note">% of users who have as much social contact as they'd like.</div>
+          </td>
+          <td><div class="td-val">41.2%</div></td>
+          <td><div class="td-eng">43.8%</div></td>
+          <td><div class="td-val" style="color:#dc2626">−2.6pp</div></td>
+          <td><span class="pill pill-red">Below avg</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-measure">1C</div></td>
+          <td>
+            <div class="td-label">Control over daily life</div>
+            <div class="td-note">% of users who feel they have control over their daily lives.</div>
+          </td>
+          <td><div class="td-val">76.3%</div></td>
+          <td><div class="td-eng">77.1%</div></td>
+          <td><div class="td-val" style="color:#d97706">−0.8pp</div></td>
+          <td><span class="pill pill-amber">Near avg</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-measure">2B</div></td>
+          <td>
+            <div class="td-label">Admissions to residential care (65+)</div>
+            <div class="td-note">Per 100,000 population. Lower is better.</div>
+          </td>
+          <td><div class="td-val">579.4</div></td>
+          <td><div class="td-eng">566.0</div></td>
+          <td><div class="td-val" style="color:#dc2626">+13.4</div></td>
+          <td><span class="pill pill-red">Above avg ↑</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-measure">2D1</div></td>
+          <td>
+            <div class="td-label">Still at home 91 days post-discharge</div>
+            <div class="td-note">% aged 65+ still at home after reablement. Higher is better.</div>
+          </td>
+          <td><div class="td-val">84.1%</div></td>
+          <td><div class="td-eng">83.8%</div></td>
+          <td><div class="td-val" style="color:#16a34a">+0.3pp</div></td>
+          <td><span class="pill pill-green">Above avg</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-measure">3A</div></td>
+          <td>
+            <div class="td-label">Overall satisfaction with care</div>
+            <div class="td-note">% of users satisfied or very satisfied with their care and support.</div>
+          </td>
+          <td><div class="td-val">62.4%</div></td>
+          <td><div class="td-eng">65.0%</div></td>
+          <td><div class="td-val" style="color:#dc2626">−2.6pp</div></td>
+          <td><span class="pill pill-red">Below avg</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-measure">3B</div></td>
+          <td>
+            <div class="td-label">Carers reporting sufficient social contact</div>
+            <div class="td-note">% of carers with as much social contact as they'd like.</div>
+          </td>
+          <td><div class="td-val">29.1%</div></td>
+          <td><div class="td-eng">30.0%</div></td>
+          <td><div class="td-val" style="color:#d97706">−0.9pp</div></td>
+          <td><span class="pill pill-amber">Near avg</span></td>
+        </tr>
+        <tr>
+          <td><div class="td-measure">4A</div></td>
+          <td>
+            <div class="td-label">Feeling safe</div>
+            <div class="td-note">% of service users who feel as safe as they want to feel.</div>
+          </td>
+          <td><div class="td-val">68.9%</div></td>
+          <td><div class="td-eng">70.5%</div></td>
+          <td><div class="td-val" style="color:#dc2626">−1.6pp</div></td>
+          <td><span class="pill pill-amber">Near avg</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- NARRATIVE STRIP -->
+  <div class="narrative">
+    <div class="narrative-icon">💡</div>
+    <div class="narrative-body">
+      <p><strong>The commissioning argument in plain terms:</strong> Kent's ASCOF performance is uneven — strong on reablement (2D1) but below average on quality of life, social contact and satisfaction. These aren't independent failures. They reflect a system that intervenes late, at crisis point, rather than earlier when outcomes — and costs — are more favourable.</p>
+      <p>Assistiv's FEP intelligence shows that the highest-risk districts (Thanet FEP 77, Folkestone &amp; Hythe FEP 50, Dover FEP 46) are also the areas where social isolation, deprivation and health pressures converge. These are the places where ASCOF performance is most likely to deteriorate further — and where earlier, person-led contact produces the greatest return. The gap between what ASCOF measures and what Assistiv can see upstream is where the investment case lives.</p>
+    </div>
+  </div>
+
+  <!-- ASCOT BRIDGE -->
+  <div>
+    <div class="section-title">How ASCOT Connects ASCOF to Individual Outcomes</div>
+  </div>
+  <div class="bridge-grid">
+
+    <div class="bridge-card">
+      <div class="bridge-from">Population level</div>
+      <div class="bridge-arrow">↓</div>
+      <div class="bridge-label">ASCOF 1A: Quality of Life Score</div>
+      <div class="bridge-to">Kent: 18.7 · England: 19.1</div>
+      <div class="bridge-body">Annual published figure for the whole CASSR. Tells commissioners how the system is performing but not where, or for whom, outcomes are weakest.</div>
+    </div>
+
+    <div class="bridge-card">
+      <div class="bridge-from">Individual screening level</div>
+      <div class="bridge-arrow">↓</div>
+      <div class="bridge-label">ASCOT-SCT4: Person-level quality of life</div>
+      <div class="bridge-to">Eight domains · Control · Safety · Social participation</div>
+      <div class="bridge-body">Assistiv uses ASCOT questions in its screening tool. Responses from individuals map directly onto the same domains measured by ASCOF — enabling sub-CASSR aggregation by district, cohort, or risk band.</div>
+    </div>
+
+    <div class="bridge-card">
+      <div class="bridge-from">Upstream risk level</div>
+      <div class="bridge-arrow">↓</div>
+      <div class="bridge-label">FEP: Frailty Emergence Probability</div>
+      <div class="bridge-to">District-level · 0–100 scale · Live signal</div>
+      <div class="bridge-body">FEP identifies where demand is concentrating before it enters the care system. Districts with high FEP and weak ASCOF performance are the natural target for preventative commissioning.</div>
+    </div>
+
+  </div>
+
+  <!-- MISSING MIDDLE NOTE -->
+  <div class="narrative" style="background:#fef3c7;border-color:#fcd34d;">
+    <div class="narrative-icon">⚠️</div>
+    <div class="narrative-body" style="color:#78350f;">
+      <p><strong>The Missing Middle gap:</strong> ASCOF denominators include only people who are already in contact with adult social care services. The 78% of older people living independently — including those Assistiv screens — are invisible to ASCOF. Their quality of life, social contact and sense of control are not counted. This means ASCOF systematically underestimates the scale of unmet need in the community, particularly in high-FEP coastal districts where service uptake is lowest relative to need.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <div class="footer-note">ASCOF data: NHS England Digital, Official Statistics, December 2024. Kent figures are indicative; exact CASSR values should be verified against published datasets before formal use. FEP data: Assistiv Systems Ltd.</div>
+  <div class="footer-links">
+    <a href="https://digital.nhs.uk/data-and-information/publications/statistical/adult-social-care-outcomes-framework-ascof/england-2023-24" target="_blank">Source Data ↗</a>
+    <a href="/frailty-heat-map/">FEP Map ↗</a>
+    <a href="/nhs-pressure-map/">NHS Pressure ↗</a>
+  </div>
+</div>
+
+<script>
+// ── CHART: Quality of Life regional ──
+(function() {
+  const ctx = document.getElementById('chart-qol').getContext('2d');
+  const regions = ['North East','Yorkshire','East Midlands','West Midlands','East England','London','South East','South West','England'];
+  const vals    = [19.4, 19.2, 19.1, 19.0, 19.1, 18.5, 18.9, 19.2, 19.1];
+  const colors  = regions.map((r,i) => r === 'England' ? '#003087' : (vals[i] < 19.0 ? '#dc2626' : '#365EBF'));
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: regions,
+      datasets: [{
+        data: vals,
+        backgroundColor: colors,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        annotation: {},
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} / 24` } }
+      },
+      scales: {
+        y: { min: 17.5, max: 20, grid: { color: '#e5e7eb' }, ticks: { font: { family: 'DM Mono', size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Mono', size: 9 }, maxRotation: 40 } }
+      }
+    }
+  });
+  // Kent annotation line
+  const engAvg = 19.1;
+  // will add reference line via dataset
+})();
+
+// ── CHART: Social contact regional ──
+(function() {
+  const ctx = document.getElementById('chart-social').getContext('2d');
+  const regions = ['North East','Yorkshire','East Midlands','West Midlands','East England','London','South East','South West','England'];
+  const vals    = [45.2, 44.8, 43.1, 42.9, 43.5, 41.8, 42.6, 45.9, 43.8];
+  const colors  = regions.map(r => r === 'England' ? '#003087' : '#365EBF');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: regions,
+      datasets: [{
+        data: vals,
+        backgroundColor: colors,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}%` } }
+      },
+      scales: {
+        y: { min: 35, max: 50, grid: { color: '#e5e7eb' }, ticks: { font: { family: 'DM Mono', size: 10 }, callback: v => v+'%' } },
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Mono', size: 9 }, maxRotation: 40 } }
+      }
+    }
+  });
+})();
+
+// ── CHART: Still at home ──
+(function() {
+  const ctx = document.getElementById('chart-home').getContext('2d');
+  const regions = ['North East','Yorkshire','East Midlands','West Midlands','East England','London','South East','South West','England','Kent'];
+  const vals    = [84.2, 83.5, 83.1, 83.8, 84.0, 87.9, 84.1, 79.6, 83.8, 84.1];
+  const colors  = regions.map(r => r === 'Kent' ? '#0f2d4a' : r === 'England' ? '#003087' : '#365EBF');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: regions,
+      datasets: [{
+        data: vals,
+        backgroundColor: colors,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}%` } }
+      },
+      scales: {
+        y: { min: 75, max: 91, grid: { color: '#e5e7eb' }, ticks: { font: { family: 'DM Mono', size: 10 }, callback: v => v+'%' } },
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Mono', size: 9 }, maxRotation: 40 } }
+      }
+    }
+  });
+})();
+
+// ── CHART: FEP vs QoL scatter ──
+(function() {
+  const ctx = document.getElementById('chart-fep').getContext('2d');
+  // Kent districts: FEP score vs estimated QoL pressure (illustrative, ASCOF is CASSR-level)
+  // Points labelled by district
+  const districts = [
+    { label: 'Thanet',        fep: 77, qol: 17.9 },
+    { label: 'Folkestone',    fep: 50, qol: 18.3 },
+    { label: 'Dover',         fep: 46, qol: 18.5 },
+    { label: 'Medway',        fep: 54, qol: 18.4 },
+    { label: 'Canterbury',    fep: 41, qol: 18.7 },
+    { label: 'Gravesham',     fep: 40, qol: 18.8 },
+    { label: 'Swale',         fep: 31, qol: 18.9 },
+    { label: 'Maidstone',     fep: 37, qol: 19.0 },
+    { label: 'Sevenoaks',     fep: 47, qol: 19.1 },
+    { label: 'T&M',           fep: 32, qol: 19.2 },
+    { label: 'Tunbridge W.',  fep: 51, qol: 18.9 },
+    { label: 'Dartford',      fep: 55, qol: 18.6 },
+  ];
+  new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Districts',
+        data: districts.map(d => ({ x: d.fep, y: d.qol, label: d.label })),
+        backgroundColor: districts.map(d => d.fep >= 55 ? '#dc2626' : d.fep >= 40 ? '#eab308' : '#16a34a'),
+        pointRadius: 7,
+        pointHoverRadius: 9,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.raw.label} · FEP ${ctx.raw.x} · QoL est. ${ctx.raw.y}`
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'FEP Score (higher = more risk)', font: { family: 'DM Mono', size: 9 } }, grid: { color: '#e5e7eb' }, ticks: { font: { family: 'DM Mono', size: 9 } } },
+        y: { min: 17.5, max: 19.5, title: { display: true, text: 'Est. QoL (out of 24)', font: { family: 'DM Mono', size: 9 } }, grid: { color: '#e5e7eb' }, ticks: { font: { family: 'DM Mono', size: 9 } } }
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
