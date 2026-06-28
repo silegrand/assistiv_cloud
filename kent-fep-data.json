@@ -1,16 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-27T08:43:15.535397+00:00",
+    "generated": "2026-06-28T09:21:47.729895+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
     "epd_period": "Mar 2026",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real \u2014 11 Fingertips signals (district-level where published) + EPD from last manual run",
+    "data_quality": "real \u2014 10 Fingertips signals (district-level where published) + EPD from last manual run",
     "signals_real": [
       "falls_65",
-      "falls_65_79",
       "falls_80",
       "winter_mortality",
       "loneliness",
@@ -28,7 +27,7 @@
     ],
     "fingertips_resolution": {
       "falls_65": "district",
-      "falls_65_79": "district",
+      "falls_65_79": "unavailable",
       "falls_80": "district",
       "winter_mortality": "district",
       "loneliness": "icb_fallback",
@@ -103,10 +102,10 @@
         "label": "Falls admissions 65+"
       },
       "falls_65_79": {
-        "value": 959.92,
-        "england": 863.11,
-        "period": "2024/25",
-        "source": "NHS Fingertips indicator 22402",
+        "value": null,
+        "england": null,
+        "period": null,
+        "source": "NHS Fingertips 22402",
         "label": "Falls admissions 65-79"
       },
       "falls_80": {
