@@ -1,6 +1,6 @@
 {
-  "week": "2026-W26",
-  "generated": "2026-06-22",
+  "week": "2026-W27",
+  "generated": "2026-06-29",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -237,5 +237,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W26.md"
+  "markdown_path": "logs/digest-2026-W27.md"
 }
