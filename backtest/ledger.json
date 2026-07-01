@@ -10,6 +10,14 @@
       "n_districts": 13,
       "scored": false,
       "seeded_from_history": true
+    },
+    {
+      "target_month": "2026-07",
+      "frozen_at": "2026-07-01T13:43:19.863637+00:00",
+      "file": "backtest/predictions/fep-2026-07.json",
+      "source_sha256": "4c48d09fed3b52f5",
+      "n_districts": 13,
+      "scored": false
     }
   ]
 }
