@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-25T12:13:46.306733+00:00",
+    "generated": "2026-07-02T12:06:01.559485+00:00",
     "description": "Kent NHS Trust corridor care \u2014 Assistiv Systems",
     "version": "2.0",
     "refresh_type": "monthly \u2014 NHS England Corridor Care publication",
@@ -126,7 +126,7 @@
     },
     {
       "period_label": "May 2026",
-      "fetched": "2026-06-25",
+      "fetched": "2026-07-02",
       "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2-csv.csv",
       "trusts": {
         "RVV": {
