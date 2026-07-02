@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-07-01T09:59:20.025700+00:00",
+    "generated": "2026-07-02T09:28:40.812761+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
     "epd_period": "Mar 2026",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real \u2014 11 Fingertips signals (district-level where published) + EPD from last manual run",
+    "data_quality": "real \u2014 9 Fingertips signals (district-level where published) + EPD from last manual run",
     "signals_real": [
       "falls_65",
       "falls_65_79",
@@ -15,8 +15,6 @@
       "winter_mortality",
       "loneliness",
       "social_isolation",
-      "dementia_diagnosis",
-      "hip_fractures_65",
       "hip_fractures_80",
       "fuel_poverty",
       "copd_emergency"
@@ -33,8 +31,8 @@
       "winter_mortality": "district",
       "loneliness": "icb_fallback",
       "social_isolation": "icb_fallback",
-      "dementia_diagnosis": "district",
-      "hip_fractures_65": "district",
+      "dementia_diagnosis": "unavailable",
+      "hip_fractures_65": "unavailable",
       "hip_fractures_80": "district",
       "fuel_poverty": "district",
       "copd_emergency": "district",
@@ -138,17 +136,17 @@
         "label": "Social isolation SC users"
       },
       "dementia_diagnosis": {
-        "value": 62.3,
-        "england": 66.3,
-        "period": "2026",
-        "source": "NHS Fingertips indicator 92949",
+        "value": null,
+        "england": null,
+        "period": null,
+        "source": "NHS Fingertips 92949",
         "label": "Dementia diagnosis rate 65+"
       },
       "hip_fractures_65": {
-        "value": 542.97,
-        "england": 491.15,
-        "period": "2024/25",
-        "source": "NHS Fingertips indicator 41401",
+        "value": null,
+        "england": null,
+        "period": null,
+        "source": "NHS Fingertips 41401",
         "label": "Hip fractures 65+"
       },
       "hip_fractures_80": {
@@ -308,17 +306,17 @@
     {
       "name": "Thanet",
       "lad_code": "E07000114",
-      "fep": 77,
+      "fep": 76,
       "risk": "critical",
       "signals": [
         65.0,
         50.5,
-        58.7,
+        50.0,
         67.5,
         98.3,
         65.0,
         26.6,
-        56.3,
+        50.0,
         53.1,
         52.4,
         59.1,
@@ -357,8 +355,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 18200,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 61,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 60,
       "kpho_frailty_normalised": 100,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -452,8 +450,8 @@
         }
       },
       "list_size": 132994,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     },
     {
@@ -464,12 +462,12 @@
       "signals": [
         44.0,
         53.6,
-        56.0,
+        50.0,
         47.5,
         0,
         45.0,
         26.6,
-        42.5,
+        50.0,
         56.3,
         52.4,
         53.7,
@@ -508,8 +506,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 10800,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 49,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 48,
       "kpho_frailty_normalised": 64.3,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -615,12 +613,12 @@
       "signals": [
         53.0,
         40.3,
-        55.9,
+        50.0,
         54.0,
         51.7,
         54.0,
         29.8,
-        51.0,
+        50.0,
         54.8,
         48.6,
         53.8,
@@ -659,7 +657,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 19400,
-      "fingertips_district_signals": 7,
+      "fingertips_district_signals": 5,
       "fep_proxy": null,
       "kpho_frailty_normalised": null,
       "kpho_recalibrated": false,
@@ -766,12 +764,12 @@
       "signals": [
         29.0,
         69.5,
-        54.1,
+        50.0,
         29.0,
         92.0,
         32.5,
         26.6,
-        49.2,
+        50.0,
         52.7,
         52.4,
         58.2,
@@ -810,7 +808,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11200,
-      "fingertips_district_signals": 5,
+      "fingertips_district_signals": 3,
       "fep_proxy": 53,
       "kpho_frailty_normalised": 47.5,
       "kpho_recalibrated": true,
@@ -912,17 +910,17 @@
     {
       "name": "Folkestone & Hythe",
       "lad_code": "E07000112",
-      "fep": 50,
+      "fep": 49,
       "risk": "moderate",
       "signals": [
         61.0,
         45.4,
-        62.5,
+        50.0,
         61.0,
         9.2,
         60.0,
         26.6,
-        56.3,
+        50.0,
         62.8,
         52.4,
         44.6,
@@ -961,8 +959,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 14100,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 52,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 51,
       "kpho_frailty_normalised": 46.1,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1056,8 +1054,8 @@
         }
       },
       "list_size": 88498,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     },
     {
@@ -1068,12 +1066,12 @@
       "signals": [
         32.5,
         60.5,
-        50.1,
+        50.0,
         26.0,
         55.7,
         37.5,
         26.6,
-        51.2,
+        50.0,
         52.0,
         52.4,
         58.2,
@@ -1112,7 +1110,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 12100,
-      "fingertips_district_signals": 5,
+      "fingertips_district_signals": 3,
       "fep_proxy": 51,
       "kpho_frailty_normalised": 41.3,
       "kpho_recalibrated": true,
@@ -1219,12 +1217,12 @@
       "signals": [
         59.0,
         41.6,
-        50.2,
+        50.0,
         59.0,
         99.4,
         55.0,
         26.6,
-        55.8,
+        50.0,
         38.9,
         52.4,
         43.7,
@@ -1263,8 +1261,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13800,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 57,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 56,
       "kpho_frailty_normalised": 30.3,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1370,12 +1368,12 @@
       "signals": [
         45.0,
         42.1,
-        53.3,
+        50.0,
         42.5,
         31.6,
         46.0,
         26.6,
-        44.9,
+        50.0,
         51.2,
         52.4,
         78.6,
@@ -1414,7 +1412,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16300,
-      "fingertips_district_signals": 5,
+      "fingertips_district_signals": 3,
       "fep_proxy": 52,
       "kpho_frailty_normalised": 24.4,
       "kpho_recalibrated": true,
@@ -1516,17 +1514,17 @@
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
-      "fep": 40,
-      "risk": "moderate",
+      "fep": 39,
+      "risk": "low",
       "signals": [
         50.0,
         53.8,
-        53.2,
+        50.0,
         51.0,
         81.6,
         52.5,
         26.6,
-        56.6,
+        50.0,
         52.7,
         52.4,
         54.6,
@@ -1565,8 +1563,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11800,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 58,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 57,
       "kpho_frailty_normalised": 13.1,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1660,8 +1658,8 @@
         }
       },
       "list_size": 123189,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     },
     {
@@ -1672,12 +1670,12 @@
       "signals": [
         42.5,
         70.9,
-        61.8,
+        50.0,
         47.5,
         100,
         46.0,
         26.6,
-        50.3,
+        50.0,
         61.8,
         52.4,
         70.4,
@@ -1716,7 +1714,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16700,
-      "fingertips_district_signals": 5,
+      "fingertips_district_signals": 3,
       "fep_proxy": 60,
       "kpho_frailty_normalised": 2.4,
       "kpho_recalibrated": true,
@@ -1823,12 +1821,12 @@
       "signals": [
         48.0,
         41.8,
-        57.2,
+        50.0,
         49.0,
         38.5,
         50.0,
         26.6,
-        56.1,
+        50.0,
         52.7,
         52.4,
         40.1,
@@ -1867,8 +1865,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13600,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 51,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 50,
       "kpho_frailty_normalised": 14.7,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1969,17 +1967,17 @@
     {
       "name": "Tonbridge & Malling",
       "lad_code": "E07000115",
-      "fep": 32,
+      "fep": 31,
       "risk": "low",
       "signals": [
         39.0,
         65.7,
-        50.2,
+        50.0,
         39.0,
         54.0,
         42.5,
         26.6,
-        64.3,
+        50.0,
         53.3,
         52.4,
         41.1,
@@ -2018,8 +2016,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13100,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 51,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 50,
       "kpho_frailty_normalised": 2.9,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -2113,24 +2111,24 @@
         }
       },
       "list_size": 127302,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     },
     {
       "name": "Swale",
       "lad_code": "E07000113",
-      "fep": 31,
+      "fep": 30,
       "risk": "low",
       "signals": [
         56.0,
         39.7,
-        53.0,
+        50.0,
         56.0,
         15.5,
         56.0,
         26.6,
-        57.1,
+        50.0,
         51.2,
         52.4,
         46.9,
@@ -2169,8 +2167,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 15200,
-      "fingertips_district_signals": 5,
-      "fep_proxy": 51,
+      "fingertips_district_signals": 3,
+      "fep_proxy": 50,
       "kpho_frailty_normalised": 0,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -2264,8 +2262,8 @@
         }
       },
       "list_size": 148829,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     }
   ]
