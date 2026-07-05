@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-19T16:03:39.799656+00:00",
+    "generated": "2026-07-05T09:15:32.457561+00:00",
     "description": "Kent GP registered patients by district \u2014 Assistiv Systems",
     "version": "1.3",
     "refresh_type": "monthly \u2014 NHS Digital GP Registration",
@@ -408,7 +408,7 @@
   "history": [
     {
       "snapshot_date": "2026-06-01",
-      "fetched": "2026-06-19",
+      "fetched": "2026-07-05",
       "districts": {
         "Thanet": {
           "total_list_size": 132994,
