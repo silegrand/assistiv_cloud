@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-19T16:06:50.285903+00:00",
+    "generated": "2026-07-05T09:15:42.434616+00:00",
     "planning_year": "2026-27",
     "description": "Kent & Medway Winter Vulnerability Index \u2014 Assistiv Systems",
     "version": "1.0",
@@ -47,15 +47,15 @@
         "label": "Flu vaccination coverage 65+"
       },
       "falls_65": {
-        "value": 1917.36,
-        "england": 1870.47,
-        "period": "2024/25",
+        "value": null,
+        "england": null,
+        "period": null,
         "label": "Falls admissions 65+"
       },
       "mortality_rate": {
-        "value": 68.24,
-        "england": 45.83,
-        "period": "2024",
+        "value": null,
+        "england": null,
+        "period": null,
         "label": "All-cause mortality rate"
       }
     },
