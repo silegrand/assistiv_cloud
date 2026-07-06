@@ -1,6 +1,6 @@
 {
-  "week": "2026-W27",
-  "generated": "2026-06-29",
+  "week": "2026-W28",
+  "generated": "2026-07-06",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -31,7 +31,7 @@
     "fallers": [
       {
         "name": "Swale",
-        "fep": 31,
+        "fep": 30,
         "delta": -23
       },
       {
@@ -146,7 +146,7 @@
       },
       {
         "name": "Swale",
-        "fep": 31,
+        "fep": 30,
         "risk": "low",
         "delta_week": -23
       }
@@ -191,7 +191,33 @@
         "tier": "high"
       }
     ],
-    "upcoming_deployments": []
+    "upcoming_deployments": [
+      {
+        "district": "Maidstone",
+        "action": "Medication Review",
+        "window": "September 2026"
+      },
+      {
+        "district": "Medway",
+        "action": "Medication Review",
+        "window": "September 2026"
+      },
+      {
+        "district": "Tunbridge Wells",
+        "action": "Medication Review",
+        "window": "September 2026"
+      },
+      {
+        "district": "Gravesham",
+        "action": "Medication Review",
+        "window": "September 2026"
+      },
+      {
+        "district": "Sevenoaks",
+        "action": "Medication Review",
+        "window": "September 2026"
+      }
+    ]
   },
   "prescribing": {
     "outliers_150pct_plus": [
@@ -237,5 +263,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W27.md"
+  "markdown_path": "logs/digest-2026-W28.md"
 }
