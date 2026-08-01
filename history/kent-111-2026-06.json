@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "generated": "2026-08-01T08:59:45.863177+00:00",
+    "description": "NHS 111 / IUC demand \u2014 Kent & Medway ICB (estimated) v2",
+    "period": "2026-06",
+    "period_nice": "Jun 2026",
+    "icb": "NHS Kent and Medway ICB (QKS)",
+    "icb_pop": 1900000,
+    "secamb_contract": "Kent, Medway & Sussex",
+    "kent_weight": 0.4,
+    "source": "NHS England IUCADC \u2014 Provisional Aggregated Raw Data CSV",
+    "source_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/07/Provisional-IUCADC-Raw-Jun26_QE86a.csv",
+    "note": "SECAmb contract covers Kent, Medway & Sussex. Kent ICB figures estimated at 40% of contract total based on population share. Item codes: A01=calls, E02=amb, E03=ED, G03=GP."
+  },
+  "kent_icb_estimated": {
+    "calls_received": 39955,
+    "calls_answered": 34696,
+    "amb_dispatched": 2035,
+    "ed_referrals": 4804,
+    "gp_referrals": 3701,
+    "treated_advised": 5675,
+    "call_rate_per_1000": 21.0,
+    "amb_rate_per_1000": 1.1,
+    "ed_rate_per_1000": 2.5
+  },
+  "secamb_contract_raw": {
+    "calls_received": 99887,
+    "calls_answered": 86741,
+    "amb_dispatched": 5087,
+    "ed_referrals": 12009,
+    "gp_referrals": 9252,
+    "treated_advised": 14188
+  },
+  "england_reference_monthly": {
+    "call_rate_per_1000": 65.4,
+    "amb_rate_per_1000": 3.9,
+    "ed_rate_per_1000": 7.7,
+    "note": "Annualised 2024/25 IUCADC national rates \u00f7 12"
+  },
+  "ratios": {
+    "call_rate": 0.321,
+    "amb_rate": 0.282,
+    "ed_rate": 0.325
+  }
+}
