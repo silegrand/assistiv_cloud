@@ -1,6 +1,6 @@
 {
-  "week": "2026-W32",
-  "generated": "2026-08-03",
+  "week": "2026-W33",
+  "generated": "2026-08-10",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -268,5 +268,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W32.md"
+  "markdown_path": "logs/digest-2026-W33.md"
 }
