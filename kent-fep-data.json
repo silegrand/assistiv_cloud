@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-09-01T11:24:55.438823+00:00",
+    "generated": "2026-09-02T11:00:26.128993+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
@@ -159,9 +159,9 @@
         "label": "Hip fractures 80+"
       },
       "fuel_poverty": {
-        "value": 10.97,
-        "england": 13.71,
-        "period": "2023",
+        "value": 8.81,
+        "england": 15.73,
+        "period": "2024",
         "source": "NHS Fingertips indicator 93759",
         "label": "Fuel poverty"
       },
