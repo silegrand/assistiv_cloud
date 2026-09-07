@@ -1,6 +1,6 @@
 {
-  "week": "2026-W36",
-  "generated": "2026-08-31",
+  "week": "2026-W37",
+  "generated": "2026-09-07",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -208,6 +208,11 @@
         "window": "October 2026"
       },
       {
+        "district": "Maidstone",
+        "action": "Social Connection",
+        "window": "November 2026"
+      },
+      {
         "district": "Medway",
         "action": "Medication Review",
         "window": "September 2026"
@@ -215,11 +220,6 @@
       {
         "district": "Medway",
         "action": "Falls Prevention",
-        "window": "October 2026"
-      },
-      {
-        "district": "Medway",
-        "action": "Respiratory Outreach",
         "window": "October 2026"
       }
     ]
@@ -268,5 +268,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W36.md"
+  "markdown_path": "logs/digest-2026-W37.md"
 }
