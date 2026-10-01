@@ -34,6 +34,14 @@
       "source_sha256": "2f3817892bf35f67",
       "n_districts": 13,
       "scored": false
+    },
+    {
+      "target_month": "2026-10",
+      "frozen_at": "2026-10-01T15:58:56.823730+00:00",
+      "file": "backtest/predictions/fep-2026-10.json",
+      "source_sha256": "fda97ea9c87926b6",
+      "n_districts": 13,
+      "scored": false
     }
   ]
 }
