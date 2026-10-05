@@ -1,6 +1,6 @@
 {
-  "week": "2026-W40",
-  "generated": "2026-09-28",
+  "week": "2026-W41",
+  "generated": "2026-10-05",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -70,7 +70,9 @@
         "delta": -6
       }
     ],
-    "crisis_precursors": [],
+    "crisis_precursors": [
+      "Thanet"
+    ],
     "all_districts": [
       {
         "name": "Thanet",
@@ -194,11 +196,6 @@
     "upcoming_deployments": [
       {
         "district": "Maidstone",
-        "action": "Medication Review",
-        "window": "September 2026"
-      },
-      {
-        "district": "Maidstone",
         "action": "Falls Prevention",
         "window": "October 2026"
       },
@@ -214,13 +211,18 @@
       },
       {
         "district": "Medway",
-        "action": "Medication Review",
-        "window": "September 2026"
+        "action": "Falls Prevention",
+        "window": "October 2026"
       },
       {
         "district": "Medway",
-        "action": "Falls Prevention",
+        "action": "Respiratory Outreach",
         "window": "October 2026"
+      },
+      {
+        "district": "Medway",
+        "action": "Social Connection",
+        "window": "November 2026"
       }
     ]
   },
@@ -268,5 +270,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W40.md"
+  "markdown_path": "logs/digest-2026-W41.md"
 }
