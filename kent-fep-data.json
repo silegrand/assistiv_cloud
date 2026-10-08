@@ -1,17 +1,18 @@
 {
   "meta": {
-    "generated": "2026-10-07T13:10:52.164607+00:00",
+    "generated": "2026-10-08T13:08:07.574668+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
     "epd_period": "Mar 2026",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real \u2014 10 Fingertips signals (district-level where published) + EPD from last manual run",
+    "data_quality": "real \u2014 11 Fingertips signals (district-level where published) + EPD from last manual run",
     "signals_real": [
       "falls_65",
       "falls_65_79",
       "falls_80",
+      "winter_mortality",
       "loneliness",
       "social_isolation",
       "dementia_diagnosis",
@@ -29,7 +30,7 @@
       "falls_65": "district",
       "falls_65_79": "district",
       "falls_80": "district",
-      "winter_mortality": "unavailable",
+      "winter_mortality": "district",
       "loneliness": "icb_fallback",
       "social_isolation": "icb_fallback",
       "dementia_diagnosis": "district",
@@ -116,10 +117,10 @@
         "label": "Falls admissions 80+"
       },
       "winter_mortality": {
-        "value": null,
-        "england": null,
-        "period": null,
-        "source": "NHS Fingertips 90360",
+        "value": 9.8,
+        "england": 8.7,
+        "period": "Aug 2021 - Jul 2022",
+        "source": "NHS Fingertips indicator 90360",
         "label": "Winter mortality index"
       },
       "loneliness": {
@@ -307,14 +308,14 @@
     {
       "name": "Thanet",
       "lad_code": "E07000114",
-      "fep": 75,
+      "fep": 77,
       "risk": "critical",
       "signals": [
         65.0,
         50.5,
         58.7,
         67.5,
-        50.0,
+        98.3,
         65.0,
         26.6,
         56.3,
@@ -356,8 +357,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 18200,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 58,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 61,
       "kpho_frailty_normalised": 100,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -451,21 +452,21 @@
         }
       },
       "list_size": 132994,
-      "fep_delta": -2,
-      "fep_delta_direction": "falling",
-      "crisis_precursor": false
+      "fep_delta": 2,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": true
     },
     {
       "name": "Dartford",
       "lad_code": "E07000107",
-      "fep": 57,
+      "fep": 55,
       "risk": "high",
       "signals": [
         44.0,
         53.6,
         56.0,
         47.5,
-        50.0,
+        0,
         45.0,
         26.6,
         42.5,
@@ -507,8 +508,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 10800,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 52,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 49,
       "kpho_frailty_normalised": 64.3,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -602,9 +603,9 @@
         }
       },
       "list_size": 269871,
-      "fep_delta": 2,
-      "fep_delta_direction": "rising",
-      "crisis_precursor": true
+      "fep_delta": -2,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false
     },
     {
       "name": "Medway",
@@ -616,7 +617,7 @@
         40.3,
         55.9,
         54.0,
-        50.0,
+        51.7,
         54.0,
         29.8,
         51.0,
@@ -658,7 +659,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 19400,
-      "fingertips_district_signals": 6,
+      "fingertips_district_signals": 7,
       "fep_proxy": null,
       "kpho_frailty_normalised": null,
       "kpho_recalibrated": false,
@@ -753,172 +754,21 @@
         }
       },
       "list_size": 337497,
-      "fep_delta": -1,
-      "fep_delta_direction": "falling",
-      "crisis_precursor": false
-    },
-    {
-      "name": "Folkestone & Hythe",
-      "lad_code": "E07000112",
-      "fep": 51,
-      "risk": "moderate",
-      "signals": [
-        61.0,
-        45.4,
-        62.5,
-        61.0,
-        50.0,
-        60.0,
-        26.6,
-        56.3,
-        62.8,
-        52.4,
-        44.6,
-        42.4,
-        40.1,
-        49.3,
-        45.2,
-        34.1,
-        100,
-        50.0,
-        74.7,
-        50.0,
-        100
-      ],
-      "signal_names": [
-        "Over-75s Living Alone",
-        "Falls Admissions 65+",
-        "Hip Fracture Rate 65+",
-        "Deprivation (IMD)",
-        "Winter Mortality Index",
-        "Care Home Gap",
-        "Loneliness Rate",
-        "Dementia Diagnosis Rate",
-        "Hip Fractures 80+",
-        "Social Isolation Rate",
-        "Hypnotics Prescribing",
-        "Antidepressant Rate",
-        "Bisphosphonate Rate",
-        "Diuretics Rate",
-        "ACE/ARB Prescribing",
-        "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements",
-        "Anti-Dementia Drug Rate",
-        "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
-      ],
-      "pop75": 14100,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 55,
-      "kpho_frailty_normalised": 46.1,
-      "kpho_recalibrated": true,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 9.103,
-          "england": 10.2,
-          "items": 1056,
-          "ratio": 0.892,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 5.793,
-          "england": 8.5,
-          "items": 672,
-          "ratio": 0.682,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 93.345,
-          "england": 110.0,
-          "items": 10828,
-          "ratio": 0.849,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 5.448,
-          "england": 6.8,
-          "items": 632,
-          "ratio": 0.801,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.466,
-          "england": 2.5,
-          "items": 286,
-          "ratio": 0.986,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 85.888,
-          "england": 95.0,
-          "items": 9963,
-          "ratio": 0.904,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 11.457,
-          "england": 4.2,
-          "items": 1329,
-          "ratio": 2.728,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anti_dementia": {
-          "rate_per_1000": 4.181,
-          "england": 2.8,
-          "items": 485,
-          "ratio": 1.493,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "denosumab": {
-          "rate_per_1000": 0,
-          "england": 0.9,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "parkinsons": {
-          "rate_per_1000": 6.138,
-          "england": 2.4,
-          "items": 712,
-          "ratio": 2.558,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      },
-      "list_size": 88498,
-      "fep_delta": 1,
-      "fep_delta_direction": "rising",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
       "name": "Tunbridge Wells",
       "lad_code": "E07000116",
-      "fep": 49,
+      "fep": 51,
       "risk": "moderate",
       "signals": [
         29.0,
         69.5,
         54.1,
         29.0,
-        50.0,
+        92.0,
         32.5,
         26.6,
         49.2,
@@ -960,8 +810,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11200,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 50,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 53,
       "kpho_frailty_normalised": 47.5,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1055,6 +905,157 @@
         }
       },
       "list_size": 377485,
+      "fep_delta": 2,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
+    },
+    {
+      "name": "Folkestone & Hythe",
+      "lad_code": "E07000112",
+      "fep": 50,
+      "risk": "moderate",
+      "signals": [
+        61.0,
+        45.4,
+        62.5,
+        61.0,
+        9.2,
+        60.0,
+        26.6,
+        56.3,
+        62.8,
+        52.4,
+        44.6,
+        42.4,
+        40.1,
+        49.3,
+        45.2,
+        34.1,
+        100,
+        50.0,
+        74.7,
+        50.0,
+        100
+      ],
+      "signal_names": [
+        "Over-75s Living Alone",
+        "Falls Admissions 65+",
+        "Hip Fracture Rate 65+",
+        "Deprivation (IMD)",
+        "Winter Mortality Index",
+        "Care Home Gap",
+        "Loneliness Rate",
+        "Dementia Diagnosis Rate",
+        "Hip Fractures 80+",
+        "Social Isolation Rate",
+        "Hypnotics Prescribing",
+        "Antidepressant Rate",
+        "Bisphosphonate Rate",
+        "Diuretics Rate",
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
+      ],
+      "pop75": 14100,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 52,
+      "kpho_frailty_normalised": 46.1,
+      "kpho_recalibrated": true,
+      "epd_district": {
+        "hypnotics": {
+          "rate_per_1000": 9.103,
+          "england": 10.2,
+          "items": 1056,
+          "ratio": 0.892,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "anxiolytics": {
+          "rate_per_1000": 5.793,
+          "england": 8.5,
+          "items": 672,
+          "ratio": 0.682,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "antidepressants": {
+          "rate_per_1000": 93.345,
+          "england": 110.0,
+          "items": 10828,
+          "ratio": 0.849,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "bisphosphonates": {
+          "rate_per_1000": 5.448,
+          "england": 6.8,
+          "items": 632,
+          "ratio": 0.801,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "diuretics": {
+          "rate_per_1000": 2.466,
+          "england": 2.5,
+          "items": 286,
+          "ratio": 0.986,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ace_arb": {
+          "rate_per_1000": 85.888,
+          "england": 95.0,
+          "items": 9963,
+          "ratio": 0.904,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "bladder_antimusc": {
+          "rate_per_1000": 11.457,
+          "england": 4.2,
+          "items": 1329,
+          "ratio": 2.728,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "anti_dementia": {
+          "rate_per_1000": 4.181,
+          "england": 2.8,
+          "items": 485,
+          "ratio": 1.493,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "denosumab": {
+          "rate_per_1000": 0,
+          "england": 0.9,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "parkinsons": {
+          "rate_per_1000": 6.138,
+          "england": 2.4,
+          "items": 712,
+          "ratio": 2.558,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        }
+      },
+      "list_size": 88498,
       "fep_delta": -1,
       "fep_delta_direction": "falling",
       "crisis_precursor": false
@@ -1069,7 +1070,7 @@
         60.5,
         50.1,
         26.0,
-        50.0,
+        55.7,
         37.5,
         26.6,
         51.2,
@@ -1111,7 +1112,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 12100,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 51,
       "kpho_frailty_normalised": 41.3,
       "kpho_recalibrated": true,
@@ -1213,14 +1214,14 @@
     {
       "name": "Dover",
       "lad_code": "E07000108",
-      "fep": 44,
+      "fep": 46,
       "risk": "moderate",
       "signals": [
         59.0,
         41.6,
         50.2,
         59.0,
-        50.0,
+        99.4,
         55.0,
         26.6,
         55.8,
@@ -1262,8 +1263,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13800,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 53,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 57,
       "kpho_frailty_normalised": 30.3,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1357,21 +1358,21 @@
         }
       },
       "list_size": 105906,
-      "fep_delta": -3,
-      "fep_delta_direction": "falling",
+      "fep_delta": 2,
+      "fep_delta_direction": "rising",
       "crisis_precursor": false
     },
     {
       "name": "Canterbury",
       "lad_code": "E07000106",
-      "fep": 42,
+      "fep": 41,
       "risk": "moderate",
       "signals": [
         45.0,
         42.1,
         53.3,
         42.5,
-        50.0,
+        31.6,
         46.0,
         26.6,
         44.9,
@@ -1413,8 +1414,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16300,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 54,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 52,
       "kpho_frailty_normalised": 24.4,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1508,21 +1509,21 @@
         }
       },
       "list_size": 210006,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     },
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
-      "fep": 39,
-      "risk": "low",
+      "fep": 40,
+      "risk": "moderate",
       "signals": [
         50.0,
         53.8,
         53.2,
         51.0,
-        50.0,
+        81.6,
         52.5,
         26.6,
         56.6,
@@ -1564,8 +1565,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11800,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 56,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 58,
       "kpho_frailty_normalised": 13.1,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1659,172 +1660,21 @@
         }
       },
       "list_size": 123189,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
-    },
-    {
-      "name": "Ashford",
-      "lad_code": "E07000105",
-      "fep": 37,
-      "risk": "low",
-      "signals": [
-        48.0,
-        41.8,
-        57.2,
-        49.0,
-        50.0,
-        50.0,
-        26.6,
-        56.1,
-        52.7,
-        52.4,
-        40.1,
-        61.8,
-        60.7,
-        65.2,
-        71.3,
-        37.5,
-        100,
-        50.0,
-        52.0,
-        50.0,
-        100
-      ],
-      "signal_names": [
-        "Over-75s Living Alone",
-        "Falls Admissions 65+",
-        "Hip Fracture Rate 65+",
-        "Deprivation (IMD)",
-        "Winter Mortality Index",
-        "Care Home Gap",
-        "Loneliness Rate",
-        "Dementia Diagnosis Rate",
-        "Hip Fractures 80+",
-        "Social Isolation Rate",
-        "Hypnotics Prescribing",
-        "Antidepressant Rate",
-        "Bisphosphonate Rate",
-        "Diuretics Rate",
-        "ACE/ARB Prescribing",
-        "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements",
-        "Anti-Dementia Drug Rate",
-        "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
-      ],
-      "pop75": 13600,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 52,
-      "kpho_frailty_normalised": 14.7,
-      "kpho_recalibrated": true,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 8.172,
-          "england": 10.2,
-          "items": 1046,
-          "ratio": 0.801,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 6.375,
-          "england": 8.5,
-          "items": 816,
-          "ratio": 0.75,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 135.922,
-          "england": 110.0,
-          "items": 17398,
-          "ratio": 1.236,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 8.25,
-          "england": 6.8,
-          "items": 1056,
-          "ratio": 1.213,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 3.258,
-          "england": 2.5,
-          "items": 417,
-          "ratio": 1.303,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 135.484,
-          "england": 95.0,
-          "items": 17342,
-          "ratio": 1.426,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 18.055,
-          "england": 4.2,
-          "items": 2311,
-          "ratio": 4.299,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anti_dementia": {
-          "rate_per_1000": 2.914,
-          "england": 2.8,
-          "items": 373,
-          "ratio": 1.041,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "denosumab": {
-          "rate_per_1000": 0,
-          "england": 0.9,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "parkinsons": {
-          "rate_per_1000": 8.469,
-          "england": 2.4,
-          "items": 1084,
-          "ratio": 3.529,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      },
-      "list_size": 133672,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
+      "fep_delta": 1,
+      "fep_delta_direction": "rising",
       "crisis_precursor": false
     },
     {
       "name": "Maidstone",
       "lad_code": "E07000110",
-      "fep": 35,
+      "fep": 37,
       "risk": "low",
       "signals": [
         42.5,
         70.9,
         61.8,
         47.5,
-        50.0,
+        100,
         46.0,
         26.6,
         50.3,
@@ -1866,8 +1716,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16700,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 57,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 60,
       "kpho_frailty_normalised": 2.4,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1961,35 +1811,35 @@
         }
       },
       "list_size": 196223,
-      "fep_delta": -1,
-      "fep_delta_direction": "falling",
+      "fep_delta": 2,
+      "fep_delta_direction": "rising",
       "crisis_precursor": false
     },
     {
-      "name": "Swale",
-      "lad_code": "E07000113",
-      "fep": 32,
+      "name": "Ashford",
+      "lad_code": "E07000105",
+      "fep": 36,
       "risk": "low",
       "signals": [
-        56.0,
-        39.7,
-        53.0,
-        56.0,
+        48.0,
+        41.8,
+        57.2,
+        49.0,
+        38.5,
         50.0,
-        56.0,
         26.6,
-        57.1,
-        51.2,
+        56.1,
+        52.7,
         52.4,
-        46.9,
-        57.0,
-        44.2,
-        46.7,
-        54.2,
-        28.3,
+        40.1,
+        61.8,
+        60.7,
+        65.2,
+        71.3,
+        37.5,
         100,
         50.0,
-        80.9,
+        52.0,
         50.0,
         100
       ],
@@ -2016,65 +1866,65 @@
         "Denosumab Prescribing",
         "Parkinson's Drug Rate"
       ],
-      "pop75": 15200,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 53,
-      "kpho_frailty_normalised": 0,
+      "pop75": 13600,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 51,
+      "kpho_frailty_normalised": 14.7,
       "kpho_recalibrated": true,
       "epd_district": {
         "hypnotics": {
-          "rate_per_1000": 9.562,
+          "rate_per_1000": 8.172,
           "england": 10.2,
-          "items": 1463,
-          "ratio": 0.937,
+          "items": 1046,
+          "ratio": 0.801,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "anxiolytics": {
-          "rate_per_1000": 4.81,
+          "rate_per_1000": 6.375,
           "england": 8.5,
-          "items": 736,
-          "ratio": 0.566,
+          "items": 816,
+          "ratio": 0.75,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "antidepressants": {
-          "rate_per_1000": 125.392,
+          "rate_per_1000": 135.922,
           "england": 110.0,
-          "items": 19185,
-          "ratio": 1.14,
+          "items": 17398,
+          "ratio": 1.236,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "bisphosphonates": {
-          "rate_per_1000": 6.013,
+          "rate_per_1000": 8.25,
           "england": 6.8,
-          "items": 920,
-          "ratio": 0.884,
+          "items": 1056,
+          "ratio": 1.213,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "diuretics": {
-          "rate_per_1000": 2.333,
+          "rate_per_1000": 3.258,
           "england": 2.5,
-          "items": 357,
-          "ratio": 0.933,
+          "items": 417,
+          "ratio": 1.303,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "ace_arb": {
-          "rate_per_1000": 102.967,
+          "rate_per_1000": 135.484,
           "england": 95.0,
-          "items": 15754,
-          "ratio": 1.084,
+          "items": 17342,
+          "ratio": 1.426,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "bladder_antimusc": {
-          "rate_per_1000": 12.595,
+          "rate_per_1000": 18.055,
           "england": 4.2,
-          "items": 1927,
-          "ratio": 2.999,
+          "items": 2311,
+          "ratio": 4.299,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
@@ -2087,10 +1937,10 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "anti_dementia": {
-          "rate_per_1000": 4.529,
+          "rate_per_1000": 2.914,
           "england": 2.8,
-          "items": 693,
-          "ratio": 1.618,
+          "items": 373,
+          "ratio": 1.041,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
@@ -2103,17 +1953,17 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         },
         "parkinsons": {
-          "rate_per_1000": 6.582,
+          "rate_per_1000": 8.469,
           "england": 2.4,
-          "items": 1007,
-          "ratio": 2.743,
+          "items": 1084,
+          "ratio": 3.529,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 148829,
-      "fep_delta": 1,
-      "fep_delta_direction": "rising",
+      "list_size": 133672,
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     },
     {
@@ -2126,7 +1976,7 @@
         65.7,
         50.2,
         39.0,
-        50.0,
+        54.0,
         42.5,
         26.6,
         64.3,
@@ -2168,7 +2018,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13100,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 51,
       "kpho_frailty_normalised": 2.9,
       "kpho_recalibrated": true,
@@ -2263,8 +2113,159 @@
         }
       },
       "list_size": 127302,
-      "fep_delta": 1,
-      "fep_delta_direction": "rising",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
+    },
+    {
+      "name": "Swale",
+      "lad_code": "E07000113",
+      "fep": 31,
+      "risk": "low",
+      "signals": [
+        56.0,
+        39.7,
+        53.0,
+        56.0,
+        15.5,
+        56.0,
+        26.6,
+        57.1,
+        51.2,
+        52.4,
+        46.9,
+        57.0,
+        44.2,
+        46.7,
+        54.2,
+        28.3,
+        100,
+        50.0,
+        80.9,
+        50.0,
+        100
+      ],
+      "signal_names": [
+        "Over-75s Living Alone",
+        "Falls Admissions 65+",
+        "Hip Fracture Rate 65+",
+        "Deprivation (IMD)",
+        "Winter Mortality Index",
+        "Care Home Gap",
+        "Loneliness Rate",
+        "Dementia Diagnosis Rate",
+        "Hip Fractures 80+",
+        "Social Isolation Rate",
+        "Hypnotics Prescribing",
+        "Antidepressant Rate",
+        "Bisphosphonate Rate",
+        "Diuretics Rate",
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
+      ],
+      "pop75": 15200,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 51,
+      "kpho_frailty_normalised": 0,
+      "kpho_recalibrated": true,
+      "epd_district": {
+        "hypnotics": {
+          "rate_per_1000": 9.562,
+          "england": 10.2,
+          "items": 1463,
+          "ratio": 0.937,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "anxiolytics": {
+          "rate_per_1000": 4.81,
+          "england": 8.5,
+          "items": 736,
+          "ratio": 0.566,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "antidepressants": {
+          "rate_per_1000": 125.392,
+          "england": 110.0,
+          "items": 19185,
+          "ratio": 1.14,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "bisphosphonates": {
+          "rate_per_1000": 6.013,
+          "england": 6.8,
+          "items": 920,
+          "ratio": 0.884,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "diuretics": {
+          "rate_per_1000": 2.333,
+          "england": 2.5,
+          "items": 357,
+          "ratio": 0.933,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ace_arb": {
+          "rate_per_1000": 102.967,
+          "england": 95.0,
+          "items": 15754,
+          "ratio": 1.084,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "bladder_antimusc": {
+          "rate_per_1000": 12.595,
+          "england": 4.2,
+          "items": 1927,
+          "ratio": 2.999,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "anti_dementia": {
+          "rate_per_1000": 4.529,
+          "england": 2.8,
+          "items": 693,
+          "ratio": 1.618,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "denosumab": {
+          "rate_per_1000": 0,
+          "england": 0.9,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "parkinsons": {
+          "rate_per_1000": 6.582,
+          "england": 2.4,
+          "items": 1007,
+          "ratio": 2.743,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        }
+      },
+      "list_size": 148829,
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
       "crisis_precursor": false
     }
   ]
