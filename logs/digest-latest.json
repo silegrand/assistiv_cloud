@@ -1,25 +1,25 @@
 {
-  "week": "2026-W41",
-  "generated": "2026-10-05",
+  "week": "2026-W42",
+  "generated": "2026-10-12",
   "fep": {
     "critical_count": 1,
-    "high_count": 1,
+    "high_count": 2,
     "top_district": "Thanet",
-    "top_fep": 77,
+    "top_fep": 75,
     "risers": [
       {
         "name": "Thanet",
-        "fep": 77,
+        "fep": 75,
         "delta": 16
       },
       {
         "name": "Tunbridge Wells",
-        "fep": 51,
+        "fep": 48,
         "delta": 14
       },
       {
         "name": "Dartford",
-        "fep": 55,
+        "fep": 57,
         "delta": 8
       },
       {
@@ -31,78 +31,78 @@
     "fallers": [
       {
         "name": "Swale",
-        "fep": 31,
+        "fep": 33,
         "delta": -23
       },
       {
         "name": "Ashford",
-        "fep": 36,
+        "fep": 38,
         "delta": -14
       },
       {
         "name": "Gravesham",
-        "fep": 40,
+        "fep": 39,
         "delta": -12
       },
       {
         "name": "Maidstone",
-        "fep": 37,
+        "fep": 33,
         "delta": -11
       },
       {
         "name": "Tonbridge & Malling",
-        "fep": 32,
+        "fep": 31,
         "delta": -11
       },
       {
         "name": "Dover",
-        "fep": 46,
+        "fep": 45,
         "delta": -10
       },
       {
         "name": "Canterbury",
-        "fep": 41,
+        "fep": 43,
         "delta": -9
       },
       {
         "name": "Folkestone & Hythe",
-        "fep": 50,
+        "fep": 51,
         "delta": -6
       }
     ],
     "crisis_precursors": [
-      "Thanet"
+      "Dartford"
     ],
     "all_districts": [
       {
         "name": "Thanet",
-        "fep": 77,
+        "fep": 75,
         "risk": "critical",
         "delta_week": 16
       },
       {
         "name": "Dartford",
-        "fep": 55,
+        "fep": 57,
         "risk": "high",
         "delta_week": 8
       },
       {
         "name": "Medway",
-        "fep": 54,
-        "risk": "moderate",
+        "fep": 55,
+        "risk": "high",
         "delta_week": 1
       },
       {
-        "name": "Tunbridge Wells",
+        "name": "Folkestone & Hythe",
         "fep": 51,
         "risk": "moderate",
-        "delta_week": 14
+        "delta_week": -6
       },
       {
-        "name": "Folkestone & Hythe",
-        "fep": 50,
+        "name": "Tunbridge Wells",
+        "fep": 48,
         "risk": "moderate",
-        "delta_week": -6
+        "delta_week": 14
       },
       {
         "name": "Sevenoaks",
@@ -112,45 +112,45 @@
       },
       {
         "name": "Dover",
-        "fep": 46,
+        "fep": 45,
         "risk": "moderate",
         "delta_week": -10
       },
       {
         "name": "Canterbury",
-        "fep": 41,
+        "fep": 43,
         "risk": "moderate",
         "delta_week": -9
       },
       {
         "name": "Gravesham",
-        "fep": 40,
-        "risk": "moderate",
+        "fep": 39,
+        "risk": "low",
         "delta_week": -12
       },
       {
-        "name": "Maidstone",
-        "fep": 37,
-        "risk": "low",
-        "delta_week": -11
-      },
-      {
         "name": "Ashford",
-        "fep": 36,
+        "fep": 38,
         "risk": "low",
         "delta_week": -14
       },
       {
-        "name": "Tonbridge & Malling",
-        "fep": 32,
+        "name": "Swale",
+        "fep": 33,
+        "risk": "low",
+        "delta_week": -23
+      },
+      {
+        "name": "Maidstone",
+        "fep": 33,
         "risk": "low",
         "delta_week": -11
       },
       {
-        "name": "Swale",
+        "name": "Tonbridge & Malling",
         "fep": 31,
         "risk": "low",
-        "delta_week": -23
+        "delta_week": -11
       }
     ]
   },
@@ -270,5 +270,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W41.md"
+  "markdown_path": "logs/digest-2026-W42.md"
 }
