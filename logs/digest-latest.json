@@ -1,6 +1,6 @@
 {
-  "week": "2026-W43",
-  "generated": "2026-10-19",
+  "week": "2026-W44",
+  "generated": "2026-10-26",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -70,9 +70,7 @@
         "delta": -6
       }
     ],
-    "crisis_precursors": [
-      "Thanet"
-    ],
+    "crisis_precursors": [],
     "all_districts": [
       {
         "name": "Thanet",
@@ -270,5 +268,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W43.md"
+  "markdown_path": "logs/digest-2026-W44.md"
 }
