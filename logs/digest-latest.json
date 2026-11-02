@@ -1,6 +1,6 @@
 {
-  "week": "2026-W44",
-  "generated": "2026-10-26",
+  "week": "2026-W45",
+  "generated": "2026-11-02",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -194,31 +194,26 @@
     "upcoming_deployments": [
       {
         "district": "Medway",
-        "action": "Falls Prevention",
-        "window": "October 2026"
-      },
-      {
-        "district": "Medway",
-        "action": "Respiratory Outreach",
-        "window": "October 2026"
-      },
-      {
-        "district": "Medway",
         "action": "Social Connection",
         "window": "November 2026"
       },
       {
         "district": "Dartford",
-        "action": "Falls Prevention",
-        "window": "October 2026"
+        "action": "Social Connection",
+        "window": "November 2026"
       },
       {
-        "district": "Dartford",
-        "action": "Respiratory Outreach",
-        "window": "October 2026"
+        "district": "Maidstone",
+        "action": "Social Connection",
+        "window": "November 2026"
       },
       {
-        "district": "Dartford",
+        "district": "Sevenoaks",
+        "action": "Social Connection",
+        "window": "November 2026"
+      },
+      {
+        "district": "Tunbridge Wells",
         "action": "Social Connection",
         "window": "November 2026"
       }
@@ -268,5 +263,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W44.md"
+  "markdown_path": "logs/digest-2026-W45.md"
 }
