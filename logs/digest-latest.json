@@ -1,6 +1,6 @@
 {
-  "week": "2026-W45",
-  "generated": "2026-11-02",
+  "week": "2026-W46",
+  "generated": "2026-11-09",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -46,7 +46,7 @@
       },
       {
         "name": "Maidstone",
-        "fep": 37,
+        "fep": 38,
         "delta": -11
       },
       {
@@ -128,7 +128,7 @@
       },
       {
         "name": "Maidstone",
-        "fep": 37,
+        "fep": 38,
         "risk": "low",
         "delta_week": -11
       },
@@ -263,5 +263,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W45.md"
+  "markdown_path": "logs/digest-2026-W46.md"
 }
