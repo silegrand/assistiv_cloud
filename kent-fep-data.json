@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-11-12T14:56:17.025088+00:00",
+    "generated": "2026-11-13T14:17:51.300570+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
     "epd_period": "Mar 2026",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real \u2014 10 Fingertips signals (district-level where published) + EPD from last manual run",
+    "data_quality": "real \u2014 11 Fingertips signals (district-level where published) + EPD from last manual run",
     "signals_real": [
       "falls_65",
       "falls_65_79",
@@ -17,6 +17,7 @@
       "social_isolation",
       "dementia_diagnosis",
       "hip_fractures_65",
+      "hip_fractures_80",
       "fuel_poverty",
       "copd_emergency"
     ],
@@ -34,7 +35,7 @@
       "social_isolation": "icb_fallback",
       "dementia_diagnosis": "district",
       "hip_fractures_65": "district",
-      "hip_fractures_80": "unavailable",
+      "hip_fractures_80": "district",
       "fuel_poverty": "district",
       "copd_emergency": "icb_fallback",
       "flu_vacc_65plus": "unavailable"
@@ -151,10 +152,10 @@
         "label": "Hip fractures 65+"
       },
       "hip_fractures_80": {
-        "value": null,
-        "england": null,
-        "period": null,
-        "source": "NHS Fingertips 41403",
+        "value": 1414.58,
+        "england": 1325.17,
+        "period": "2024/25",
+        "source": "NHS Fingertips indicator 41403",
         "label": "Hip fractures 80+"
       },
       "fuel_poverty": {
@@ -318,7 +319,7 @@
         65.0,
         27.7,
         56.3,
-        50.0,
+        53.1,
         52.4,
         59.1,
         62.9,
@@ -356,7 +357,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 18200,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 61,
       "kpho_frailty_normalised": 100,
       "kpho_recalibrated": true,
@@ -469,7 +470,7 @@
         45.0,
         27.7,
         42.5,
-        50.0,
+        56.3,
         52.4,
         53.7,
         44.6,
@@ -507,8 +508,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 10800,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 48,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 49,
       "kpho_frailty_normalised": 64.3,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -620,7 +621,7 @@
         54.0,
         31.0,
         51.0,
-        50.0,
+        54.8,
         48.6,
         53.8,
         64.3,
@@ -658,7 +659,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 19400,
-      "fingertips_district_signals": 6,
+      "fingertips_district_signals": 7,
       "fep_proxy": null,
       "kpho_frailty_normalised": null,
       "kpho_recalibrated": false,
@@ -771,7 +772,7 @@
         32.5,
         27.7,
         49.2,
-        50.0,
+        52.7,
         52.4,
         58.2,
         40.8,
@@ -809,7 +810,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11200,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 53,
       "kpho_frailty_normalised": 47.5,
       "kpho_recalibrated": true,
@@ -922,7 +923,7 @@
         60.0,
         27.7,
         56.3,
-        50.0,
+        62.8,
         52.4,
         44.6,
         42.4,
@@ -960,7 +961,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 14100,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 52,
       "kpho_frailty_normalised": 46.1,
       "kpho_recalibrated": true,
@@ -1073,7 +1074,7 @@
         37.5,
         27.7,
         51.2,
-        50.0,
+        52.0,
         52.4,
         58.2,
         46.2,
@@ -1111,7 +1112,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 12100,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 51,
       "kpho_frailty_normalised": 41.3,
       "kpho_recalibrated": true,
@@ -1224,7 +1225,7 @@
         55.0,
         27.7,
         55.8,
-        50.0,
+        38.9,
         52.4,
         43.7,
         52.7,
@@ -1262,7 +1263,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13800,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 57,
       "kpho_frailty_normalised": 30.3,
       "kpho_recalibrated": true,
@@ -1375,7 +1376,7 @@
         46.0,
         27.7,
         44.9,
-        50.0,
+        51.2,
         52.4,
         78.6,
         61.8,
@@ -1413,7 +1414,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16300,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 52,
       "kpho_frailty_normalised": 24.4,
       "kpho_recalibrated": true,
@@ -1526,7 +1527,7 @@
         52.5,
         27.7,
         56.6,
-        50.0,
+        52.7,
         52.4,
         54.6,
         55.0,
@@ -1564,7 +1565,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11800,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 58,
       "kpho_frailty_normalised": 13.1,
       "kpho_recalibrated": true,
@@ -1666,7 +1667,7 @@
     {
       "name": "Maidstone",
       "lad_code": "E07000110",
-      "fep": 37,
+      "fep": 38,
       "risk": "low",
       "signals": [
         42.5,
@@ -1677,7 +1678,7 @@
         46.0,
         27.7,
         50.3,
-        50.0,
+        61.8,
         52.4,
         70.4,
         62.1,
@@ -1715,8 +1716,8 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16700,
-      "fingertips_district_signals": 4,
-      "fep_proxy": 60,
+      "fingertips_district_signals": 5,
+      "fep_proxy": 61,
       "kpho_frailty_normalised": 2.4,
       "kpho_recalibrated": true,
       "epd_district": {
@@ -1810,8 +1811,8 @@
         }
       },
       "list_size": 196223,
-      "fep_delta": -1,
-      "fep_delta_direction": "falling",
+      "fep_delta": 1,
+      "fep_delta_direction": "rising",
       "crisis_precursor": false
     },
     {
@@ -1828,7 +1829,7 @@
         50.0,
         27.7,
         56.1,
-        50.0,
+        52.7,
         52.4,
         40.1,
         61.8,
@@ -1866,7 +1867,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13600,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 51,
       "kpho_frailty_normalised": 14.7,
       "kpho_recalibrated": true,
@@ -1979,7 +1980,7 @@
         42.5,
         27.7,
         64.3,
-        50.0,
+        53.3,
         52.4,
         41.1,
         38.4,
@@ -2017,7 +2018,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13100,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 51,
       "kpho_frailty_normalised": 2.9,
       "kpho_recalibrated": true,
@@ -2130,7 +2131,7 @@
         56.0,
         27.7,
         57.1,
-        50.0,
+        51.2,
         52.4,
         46.9,
         57.0,
@@ -2168,7 +2169,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 15200,
-      "fingertips_district_signals": 4,
+      "fingertips_district_signals": 5,
       "fep_proxy": 51,
       "kpho_frailty_normalised": 0,
       "kpho_recalibrated": true,
