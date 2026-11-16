@@ -1,6 +1,6 @@
 {
-  "week": "2026-W46",
-  "generated": "2026-11-09",
+  "week": "2026-W47",
+  "generated": "2026-11-16",
   "fep": {
     "critical_count": 1,
     "high_count": 1,
@@ -166,54 +166,54 @@
   "winter": {
     "top_5": [
       {
+        "name": "Maidstone",
+        "wvi": 63,
+        "tier": "high"
+      },
+      {
         "name": "Medway",
         "wvi": 63,
         "tier": "high"
       },
       {
-        "name": "Dartford",
-        "wvi": 60,
+        "name": "Tunbridge Wells",
+        "wvi": 62,
         "tier": "high"
       },
       {
-        "name": "Maidstone",
-        "wvi": 58,
+        "name": "Gravesham",
+        "wvi": 59,
         "tier": "high"
       },
       {
         "name": "Sevenoaks",
-        "wvi": 58,
-        "tier": "high"
-      },
-      {
-        "name": "Tunbridge Wells",
-        "wvi": 58,
+        "wvi": 59,
         "tier": "high"
       }
     ],
     "upcoming_deployments": [
-      {
-        "district": "Medway",
-        "action": "Social Connection",
-        "window": "November 2026"
-      },
-      {
-        "district": "Dartford",
-        "action": "Social Connection",
-        "window": "November 2026"
-      },
       {
         "district": "Maidstone",
         "action": "Social Connection",
         "window": "November 2026"
       },
       {
-        "district": "Sevenoaks",
+        "district": "Medway",
         "action": "Social Connection",
         "window": "November 2026"
       },
       {
         "district": "Tunbridge Wells",
+        "action": "Social Connection",
+        "window": "November 2026"
+      },
+      {
+        "district": "Gravesham",
+        "action": "Social Connection",
+        "window": "November 2026"
+      },
+      {
+        "district": "Sevenoaks",
         "action": "Social Connection",
         "window": "November 2026"
       }
@@ -263,5 +263,5 @@
       }
     ]
   },
-  "markdown_path": "logs/digest-2026-W46.md"
+  "markdown_path": "logs/digest-2026-W47.md"
 }
