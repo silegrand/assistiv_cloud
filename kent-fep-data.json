@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-11-15T13:49:08.776488+00:00",
+    "generated": "2026-11-16T15:19:30.755521+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
@@ -18,7 +18,7 @@
       "dementia_diagnosis",
       "hip_fractures_65",
       "hip_fractures_80",
-      "copd_emergency"
+      "fuel_poverty"
     ],
     "signals_synthetic": [
       "alone_75",
@@ -35,8 +35,8 @@
       "dementia_diagnosis": "district",
       "hip_fractures_65": "district",
       "hip_fractures_80": "district",
-      "fuel_poverty": "unavailable",
-      "copd_emergency": "icb_fallback",
+      "fuel_poverty": "district",
+      "copd_emergency": "unavailable",
       "flu_vacc_65plus": "unavailable"
     },
     "scoring_note": "Fingertips outcome signals use real LAD-level district data normalised vs England, with ICB-level fallback for any district not published at LAD level. Synthetic signals (over-75s living alone, IMD deprivation, care home gap) remain modelled pending real district sources. EPD prescribing reused from last manual NHSBSA run.",
@@ -158,17 +158,17 @@
         "label": "Hip fractures 80+"
       },
       "fuel_poverty": {
-        "value": null,
-        "england": null,
-        "period": null,
-        "source": "NHS Fingertips 93759",
+        "value": 8.81,
+        "england": 15.73,
+        "period": "2024",
+        "source": "NHS Fingertips indicator 93759",
         "label": "Fuel poverty"
       },
       "copd_emergency": {
-        "value": 11.18,
-        "england": 11.1,
-        "period": "2022 - 24",
-        "source": "NHS Fingertips indicator 41001",
+        "value": null,
+        "england": null,
+        "period": null,
+        "source": "NHS Fingertips 41001",
         "label": "COPD emergency admissions"
       },
       "flu_vacc_65plus": {
