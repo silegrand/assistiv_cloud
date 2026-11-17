@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-11-16T15:19:30.755521+00:00",
+    "generated": "2026-11-17T15:45:26.286727+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
     "epd_period": "Mar 2026",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real \u2014 10 Fingertips signals (district-level where published) + EPD from last manual run",
+    "data_quality": "real \u2014 11 Fingertips signals (district-level where published) + EPD from last manual run",
     "signals_real": [
       "falls_65",
       "falls_65_79",
@@ -18,7 +18,8 @@
       "dementia_diagnosis",
       "hip_fractures_65",
       "hip_fractures_80",
-      "fuel_poverty"
+      "fuel_poverty",
+      "copd_emergency"
     ],
     "signals_synthetic": [
       "alone_75",
@@ -36,7 +37,7 @@
       "hip_fractures_65": "district",
       "hip_fractures_80": "district",
       "fuel_poverty": "district",
-      "copd_emergency": "unavailable",
+      "copd_emergency": "icb_fallback",
       "flu_vacc_65plus": "unavailable"
     },
     "scoring_note": "Fingertips outcome signals use real LAD-level district data normalised vs England, with ICB-level fallback for any district not published at LAD level. Synthetic signals (over-75s living alone, IMD deprivation, care home gap) remain modelled pending real district sources. EPD prescribing reused from last manual NHSBSA run.",
@@ -165,10 +166,10 @@
         "label": "Fuel poverty"
       },
       "copd_emergency": {
-        "value": null,
-        "england": null,
-        "period": null,
-        "source": "NHS Fingertips 41001",
+        "value": 11.18,
+        "england": 11.1,
+        "period": "2022 - 24",
+        "source": "NHS Fingertips indicator 41001",
         "label": "COPD emergency admissions"
       },
       "flu_vacc_65plus": {
